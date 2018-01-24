@@ -54,5 +54,5 @@ requirements:
         - r-scales
 test:
     commands:
-        - $R -e "library('sbpiper')"
+        - $R -e "library('r-sbpipe')"
 
