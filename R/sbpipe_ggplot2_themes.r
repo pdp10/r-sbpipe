@@ -21,8 +21,6 @@
 # $Date: 2016-7-6 12:14:32 $
 
 
-library(ggplot2)
-
 
 # A theme for time courses. It extends ggplot2 theme_classic.
 #

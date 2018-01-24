@@ -20,28 +20,22 @@
 # $Date: 2015-11-16 12:14:32 $
 
 
-# retrieve SBpipe folder containing R scripts
-args <- commandArgs(trailingOnly = FALSE)
-SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-source(file.path(SBPIPE_R, 'sbpipe_ps2.r'))
+## retrieve SBpipe folder containing R scripts
+#args <- commandArgs(trailingOnly = FALSE)
+#SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+#source(file.path(SBPIPE_R, 'sbpipe_ps2.r'))
 
 
 
 # R Script to plot model double parameter scan time courses.
 #
-# :args[1]: the model name without extension
-# :args[2]: the 1st scanned parameter
-# :args[3]: the 2nd scanned parameter
-# :args[4]: the input directory
-# :args[5]: the output directory
-# :args[6]: the simulation run
-main <- function(args) {
-    model_noext <- args[1]
-    scanned_par1 <- args[2]
-    scanned_par2 <- args[3]
-    inputdir <- args[4]
-    outputdir <- args[5]
-    run <- args[6]
+# :model_noext: the model name without extension
+# :scanned_par1: the 1st scanned parameter
+# :scanned_par2: the 2nd scanned parameter
+# :inputdir: the input directory
+# :outputdir: the output directory
+# :run: the simulation run
+sbpipe_ps2_main <- function(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
     # Add controls here if any
     
@@ -50,7 +44,7 @@ main <- function(args) {
 }
 
 
-main(commandArgs(TRUE))
-# Clean the environment
-rm ( list=ls ( ) )
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
 

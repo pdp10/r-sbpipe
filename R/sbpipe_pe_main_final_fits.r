@@ -20,10 +20,10 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-# retrieve SBpipe folder containing R scripts
-args <- commandArgs(trailingOnly = FALSE)
-SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-source(file.path(SBPIPE_R, 'sbpipe_pe.r'))
+## retrieve SBpipe folder containing R scripts
+#args <- commandArgs(trailingOnly = FALSE)
+#SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+#source(file.path(SBPIPE_R, 'sbpipe_pe.r'))
 
 
 
@@ -31,21 +31,14 @@ source(file.path(SBPIPE_R, 'sbpipe_pe.r'))
 # R Script to run model parameter estimation analysis and plot results. This script analyses
 # best fits
 #
-# :args[1]: the model name without extension.
-# :args[2]: the dataset containing the best parameter fits
-# :args[3]: the directory to save the generated plots.
-# :args[4]: the percent of best fits to analyse.
-# :args[5]: true if parameters should be plotted in logspace.
-# :args[6]: true if axis labels should be plotted in scientific notation.
-main <- function(args) {
-  
-  model <- args[1]
-  finalfits_filenamein <- args[2]
-  plots_dir <- args[4]
-  best_fits_percent <- args[8]
-  logspace <- args[12]
-  scientific_notation <- args[13]
-  
+# :model: the model name without extension.
+# :finalfits_filenamein: the dataset containing the best parameter fits
+# :plots_dir: the directory to save the generated plots.
+# :best_fits_percent: the percent of best fits to analyse.
+# :logspace: true if parameters should be plotted in logspace.
+# :scientific_notation: true if axis labels should be plotted in scientific notation.
+sbpipe_pe_main_final_fits <- function(model, finalfits_filenamein, plots_dir, best_fits_percent, 
+                 logspace, scientific_notation) {
 
   if(logspace == 'True' || logspace == 'TRUE' || logspace == 'true') {
     logspace = TRUE
@@ -72,7 +65,7 @@ main <- function(args) {
 }
 
 
-main(commandArgs(TRUE))
-# Clean the environment
-rm ( list=ls ( ) )
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
 

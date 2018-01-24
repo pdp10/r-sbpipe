@@ -1,9 +1,38 @@
 Package: sbpiper
 Type: Package
-Title: R functions for the Python package SBpipe
+Title: R functions for SBpipe package
 Version: 1.0
 Date: 2018-01-24
 Author: Piero Dalle Pezze
 Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
-Description: R functions for model simulation, parameter estimation, and parameter scanning.
-License: LGPLv3
+URL: https://pdp10.github.io/sbpipe
+BugReports: https://github.com/pdp10/sbpiper/issues
+Depends: 
+    R (>= 3.2.0)
+Imports:
+    ggplot2 (>= 2.2.0),
+    reshape2,
+    Hmisc,
+    scales,
+    plyr,
+    data.table
+Description: R functions for model simulation, 
+    parameter estimation, and parameter scanning.
+License: LGPL-3 | file LICENSE
+LazyLoad: true
+Collate: 
+    'sbpipe_sim_main.r'
+    'sbpipe_ggplot2_themes.r'
+    'sbpipe_pe.r'
+    'sbpipe_pe_main.r'
+    'sbpipe_pe_main_all_fits.r'
+    'sbpipe_pe_main_final_fits.r'
+    'sbpipe_plots.r'
+    'sbpipe_ps1.r'
+    'sbpipe_ps1_main.r'
+    'sbpipe_ps2.r'
+    'sbpipe_ps2_main.r'
+    'sbpipe_sim.r'
+RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE)
+Encoding: UTF-8

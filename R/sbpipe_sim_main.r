@@ -20,38 +20,29 @@
 # $Date: 2016-07-7 16:14:32 $
 
 
-# retrieve SBpipe folder containing R scripts
-args <- commandArgs(trailingOnly = FALSE)
-SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-source(file.path(SBPIPE_R,'sbpipe_sim.r'))
+## retrieve SBpipe folder containing R scripts
+#args <- commandArgs(trailingOnly = FALSE)
+#SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+#source(file.path(SBPIPE_R,'sbpipe_sim.r'))
 
 
 
 # R Script to plot time courses and collect statistics.
 #
-# :args[1]: the model name without extension
-# :args[2]: the input directory
-# :args[3]: the output directory
-# :args[4]: the output file name containing the statistics
-# :args[5]: the output template file storing the summary of model simulation repeats
-# :args[6]: the file containing the experimental data.
-# :args[7]: TRUE if the experimental data should also be plotted
-# :args[8]: the alpha level for the data set
-# :args[9]: the label for the x axis (e.g. Time [min])
-# :args[10]: the label for the y axis (e.g. Level [a.u.])
-# :args[11]: the name of the column to process
-main <- function(args) {
-    model_noext <- args[1]
-    inputdir <- args[2]
-    outputdir <- args[3]
-    outputfile <- args[4]
-    repeats_file_template <- args[5]
-    exp_dataset <- args[6]
-    plot_exp_dataset <- args[7]
-    exp_dataset_alpha <- as.numeric(args[8])
-    xaxis_label <- args[9]
-    yaxis_label <- args[10]
-    column_to_read <- args[11]
+# :model_noext: the model name without extension
+# :inputdir: the input directory
+# :outputdir: the output directory
+# :outputfile: the output file name containing the statistics
+# :repeats_file_template: the output template file storing the summary of model simulation repeats
+# :exp_dataset: the file containing the experimental data.
+# :plot_exp_dataset: TRUE if the experimental data should also be plotted
+# :exp_dataset_alpha: the alpha level for the data set
+# :xaxis_label: the label for the x axis (e.g. Time [min])
+# :yaxis_label: the label for the y axis (e.g. Level [a.u.])
+# :column_to_read: the name of the column to process
+sbpipe_sim_main <- function(model_noext, inputdir, outputdir, outputfile, repeats_file_template, 
+                 exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label, 
+                 column_to_read) {
 
     if(plot_exp_dataset == 'True' || plot_exp_dataset == 'TRUE' || plot_exp_dataset == 'true') {
        print('experimental dataset will also be plotted')
@@ -78,7 +69,7 @@ main <- function(args) {
 }
 
 
-main(commandArgs(TRUE))
-# Clean the environment
-rm ( list=ls ( ) )
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
 
