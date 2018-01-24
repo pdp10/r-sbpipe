@@ -21,14 +21,21 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-library(reshape2)
-library(ggplot2)
-library(scales)
-library(plyr)
-library(Hmisc)
+# Roxygen2 will import the functions of the following package in the namespace of this package
+#' @import ggplot2
+#' @import reshape2
+#' @import Hmisc
+#' @import plyr
+#' @import scales
+
+#library(reshape2)
+#library(ggplot2)
+#library(scales)
+#library(plyr)
+#library(Hmisc)
 #library(gridExtra)
 
-require(graphics)
+#require(graphics)
 
 
 # Plot a generic histogram

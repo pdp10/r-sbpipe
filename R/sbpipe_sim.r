@@ -20,15 +20,17 @@
 # $Date: 2016-07-7 11:14:32 $
 
 
-library(ggplot2)
-library(data.table)
+# Roxygen2 will import the functions of the following package in the namespace of this package
+#' @import ggplot2
+#' @import data.table
 
 
 # retrieve SBpipe folder containing R scripts
-args <- commandArgs(trailingOnly = FALSE)
-SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-source(file.path(SBPIPE_R, 'sbpipe_plots.r'))
-source(file.path(SBPIPE_R, 'sbpipe_ggplot2_themes.r'))
+#args <- commandArgs(trailingOnly = FALSE)
+#SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+#source(file.path(SBPIPE_R, 'sbpipe_plots.r'))
+#source(file.path(SBPIPE_R, 'sbpipe_ggplot2_themes.r'))
+
 
 
 
