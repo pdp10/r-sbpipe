@@ -17,22 +17,10 @@
 # note, texlive can be installed via conda, but still only works for linux/osx machines.
 
 name:
-  - sbpipe
+  - r-sbpipe
 channels:
   - r
   - defaults
 dependencies:
-  - nose
-  - pandas
-  - pyyaml
-  - python
-  - numpy
-  - scipy
-  - setuptools
   - r-essentials
   - r-hmisc
-  - r-devtools    # for sbpiper
-#  - colorlog     # -c conda-forge
-#  - snakemake >=3.10.1  (not available on windows) -c bioconda
-#  - texlive-core        (not available on windows) -c pkgw
-#  - texlive-selected    (not available on windows) -c pkgw

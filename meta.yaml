@@ -15,29 +15,22 @@
 
 
 
-# it uses load_setup_py_data from conda_build.jinja_context to populate some fields
-# with values fed from setuptools.
-
-{% set data = load_setup_py_data() %}
-
 package:
-  name: sbpipe
-  version: {{ data.get('version') }}
+  name: r-sbpipe
+  version: 1.0
 
 about:
-  summary: Pipelines for systems modelling of biological networks
-  home: https://github.com/pdp10/sbpipe
+  summary: R code for SBpipe
+  home: https://github.com/pdp10/r-sbpipe
   readme: README.md
   license: LGPL-3.0
   license_file: LICENSE
 
 build:
-  number: 1
-  script: python setup.py install
-  noarch: python
-  #string: py_{{ environ.get("PY_VER") }}_{{ environ.get("GIT_DESCRIBE_NUMBER", 0) }}
-  entry_points:
-    - sbpipe = sbpipe.__main__:main
+    number: '0'
+    rpaths:
+        - lib/
+        - lib/R/lib/
 
 source:
   #git_tag: v3.13.0
@@ -45,16 +38,21 @@ source:
   path: ../
 
 requirements:
-  build:
-    - python
-    - setuptools
-  run:
-    - pyyaml
-    - python
-
+    build:
+        - r-base 3.4.2
+        - r-ggplot2
+        - r-hmisc
+        - r-reshape2
+        - r-plyr
+        - r-scales
+    run:
+        - r-base 3.4.2
+        - r-ggplot2
+        - r-hmisc
+        - r-reshape2
+        - r-plyr
+        - r-scales
 test:
-  requires:
-    - nose
-  run:
-    - tests/test_suite.py
+    commands:
+        - $R -e "library('sbpiper')"
 
