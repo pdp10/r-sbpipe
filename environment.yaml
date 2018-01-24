@@ -17,7 +17,7 @@
 # note, texlive can be installed via conda, but still only works for linux/osx machines.
 
 name:
-  - r-sbpipe
+  - sbpiper
 channels:
   - r
   - defaults
