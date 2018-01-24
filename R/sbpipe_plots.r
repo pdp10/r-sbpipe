@@ -282,7 +282,7 @@ plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='
         # ddply for adding an extra column (rescale). rescale normalises the column `value` within [0,1].
         # `value` contain the time course values.
         # ddply is applied by `variable`, the column containing the time course names after melt().
-        mdf <- ddply(mdf, .(variable), transform, rescale=rescale(value))
+        mdf <- ddply(mdf, .(variable), transform, rescale=scales::rescale(value))
         # use geom_raster() for generating a heatmap
         g <- g + geom_raster(data=mdf, aes(variable, Time, fill=rescale))
     } else {
