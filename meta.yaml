@@ -20,7 +20,7 @@ package:
   version: 1.0
 
 about:
-  summary: R code for SBpipe
+  summary: R functions for SBpipe
   home: https://github.com/pdp10/r-sbpipe
   readme: README.md
   license: LGPL-3.0
