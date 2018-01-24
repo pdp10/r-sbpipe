@@ -1,0 +1,9 @@
+Package: sbpiper
+Type: Package
+Title: R functions for the Python package SBpipe
+Version: 1.0
+Date: 2018-01-24
+Author: Piero Dalle Pezze
+Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
+Description: R functions for model simulation, parameter estimation, and parameter scanning.
+License: LGPLv3
