@@ -1,4 +1,4 @@
-Package: sbpiper
+Package: r-sbpipe
 Type: Package
 Title: R functions for SBpipe package
 Version: 1.0
@@ -6,7 +6,7 @@ Date: 2018-01-24
 Author: Piero Dalle Pezze
 Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
 URL: https://pdp10.github.io/sbpipe
-BugReports: https://github.com/pdp10/sbpiper/issues
+BugReports: https://github.com/pdp10/r-sbpipe/issues
 Depends: 
     R (>= 3.2.0)
 Imports:
