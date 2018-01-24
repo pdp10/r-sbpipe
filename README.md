@@ -5,4 +5,4 @@
 
 [![Anaconda Cloud](https://anaconda.org/pdp10/sbpipe/badges/version.svg)](https://anaconda.org/pdp10/sbpipe)
 
-R code for SBpipe (see: https://pdp10.github.io/sbpipe)
+R code for SBpipe (see: https://pdp10.github.io/sbpipe).
