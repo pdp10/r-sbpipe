@@ -21,7 +21,8 @@
 
 
 
-library(ggplot2)
+# Roxygen2 will import the functions of the following package in the namespace of this package
+#' @import ggplot2
 
 ## retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)

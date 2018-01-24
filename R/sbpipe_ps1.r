@@ -20,10 +20,11 @@
 # $Date: 2016-07-6 12:14:32 $
 
 
- 
-library(ggplot2)
-library(reshape2)
-library(data.table)
+# Roxygen2 will import the functions of the following package in the namespace of this package
+#' @import ggplot2
+#' @import reshape2
+#' @import data.table
+
 
 # retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)

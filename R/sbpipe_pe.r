@@ -20,8 +20,8 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-library(ggplot2)
-#library(scales)
+# Roxygen2 will import the functions of the following package in the namespace of this package
+#' @import ggplot2
 
 
 ## retrieve SBpipe folder containing R scripts
