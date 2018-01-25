@@ -22,7 +22,8 @@
 
 
 # Roxygen2 will import the functions of the following package in the namespace of this package
-#' @import ggplot2
+# #' @import ggplot2
+# As this package is small, instead of doing this we just use the operator :: .
 
 ## retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)
@@ -33,14 +34,14 @@
 
 
 
-# Plot model double parameter scan time courses.
-#
-# :param model: the model name without extension
-# :param scanned_par1: the 1st scanned parameter
-# :param scanned_par2: the 2nd scanned parameter
-# :param inputdir: the input directory
-# :param outputdir: the output directory
-# :param run: the simulation run
+#' Plot model double parameter scan time courses.
+#'
+#' @param model the model name without extension
+#' @param scanned_par1 the 1st scanned parameter
+#' @param scanned_par2 the 2nd scanned parameter
+#' @param inputdir the input directory
+#' @param outputdir the output directory
+#' @param run the simulation run
 plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
     theme_set(basic_theme(36))
@@ -119,3 +120,27 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
       }
   }
 }
+
+
+#' Main R function for SBpipe pipeline: parameter_scan2().
+#'
+#' @param model_noext the model name without extension
+#' @param scanned_par1 the 1st scanned parameter
+#' @param scanned_par2 the 2nd scanned parameter
+#' @param inputdir the input directory
+#' @param outputdir the output directory
+#' @param run the simulation run
+#' @export
+sbpipe_ps2 <- function(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run) {
+  
+  # Add controls here if any
+  
+  plot_double_param_scan_data(model_noext, scanned_par1, scanned_par2, 
+                              inputdir, outputdir, run)
+}
+
+
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
+

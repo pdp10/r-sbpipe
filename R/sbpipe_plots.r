@@ -21,12 +21,19 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+# e.g. reshape2::melt variable.name and value.name
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
 # Roxygen2 will import the functions of the following package in the namespace of this package
 #' @import ggplot2
-#' @import reshape2
-#' @import Hmisc
-#' @import plyr
-#' @import scales
+# #' @import reshape2
+# #' @import data.table
+# #' @import Hmisc
+# #' @import plyr
+# #' @import scales
+# As this package is small, instead of doing this we just use the operator :: . 
+# We only leave this for ggplot2 and reshape2
 
 #library(reshape2)
 #library(ggplot2)
@@ -233,7 +240,7 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 # :param yaxis_label: the yaxis label
 # :param bar_type: the type of bar ("mean", "mean_sd", "mean_sd_ci95")
 plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_label="", bar_type="mean", alpha=1) {
-    mdf <- melt(df,id.vars="Time",variable.name="species",value.name="conc")
+    mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
         g <- g + stat_summary(data=mdf, aes(x=Time, y=conc),
                               geom="ribbon", fun.data = mean_sdl, fill="#99CCFF", alpha=alpha)
@@ -258,7 +265,7 @@ plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_lab
 # :param xaxis_label: the xaxis label
 # :param yaxis_label: the yaxis label
 plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_label="", alpha=1) {
-    mdf <- melt(df,id.vars="Time",variable.name="species",value.name="conc")
+    mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
     g <- g + geom_line(data=mdf,aes(x=Time,y=conc,color=species), size=1.0, alpha=alpha) +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title) +
          theme(legend.position="none")
@@ -277,12 +284,12 @@ plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_lab
 # :param yaxis_label: the yaxis label
 plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='', yaxis_label='') {
 
-    mdf <- melt(df,id.vars="Time")
+    mdf <- reshape2::melt(df,id.vars="Time")
     if(scaled) {
         # ddply for adding an extra column (rescale). rescale normalises the column `value` within [0,1].
         # `value` contain the time course values.
-        # ddply is applied by `variable`, the column containing the time course names after melt().
-        mdf <- ddply(mdf, .(variable), transform, rescale=scales::rescale(value))
+        # ddply is applied by `variable`, the column containing the time course names after reshape2::melt().
+        mdf <- plyr::ddply(mdf, .(variable), transform, rescale=scales::rescale(value))
         # use geom_raster() for generating a heatmap
         g <- g + geom_raster(data=mdf, aes(variable, Time, fill=rescale))
     } else {

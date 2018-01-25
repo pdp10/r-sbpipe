@@ -12,7 +12,6 @@ Depends:
 Imports:
     ggplot2 (>= 2.2.0),
     reshape2,
-    Hmisc,
     scales,
     plyr,
     data.table
@@ -21,18 +20,12 @@ Description: R functions for model simulation,
 License: LGPL-3 | file LICENSE
 LazyLoad: true
 Collate: 
-    'sbpipe_sim_main.r'
     'sbpipe_ggplot2_themes.r'
-    'sbpipe_pe.r'
-    'sbpipe_pe_main.r'
-    'sbpipe_pe_main_all_fits.r'
-    'sbpipe_pe_main_final_fits.r'
-    'sbpipe_plots.r'
-    'sbpipe_ps1.r'
-    'sbpipe_ps1_main.r'
-    'sbpipe_ps2.r'
-    'sbpipe_ps2_main.r'
+    'sbpipe_plots.r'    
     'sbpipe_sim.r'
+    'sbpipe_ps1.r'
+    'sbpipe_ps2.r'
+    'sbpipe_pe.r'    
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
