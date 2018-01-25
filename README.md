@@ -7,17 +7,28 @@
 
 R code for SBpipe (see: https://pdp10.github.io/sbpipe).
 
+## Users
 
-### Installation: 
-- `install.packages("devtools")`
-- `devtools::install_github("pdp10/sbpiper")`
+#### Installation: 
+- install.packages("devtools")
+- devtools::install_github("pdp10/sbpiper")
+
+#### Installation using Conda: 
+- conda install -c pdp10 sbpiper
 
 
-### Packaging:
+## Developers
+
+#### Packaging:
 Within R: 
 - `devtools::check("sbpiper")`
 - `devtools::build("sbpiper")`
 
 Then:
-- `R CMD INSTALL sbpiper_X.Y.tar.gz`
+- `R CMD INSTALL sbpiper_X.Y.Z.tar.gz`
 
+#### Packaging for Conda: 
+- conda metapackage sbpiper X.Y.Z --dependencies r-essentials --summary "R functions for pdp10/SBpipe"
+- conda install anaconda-client
+- anaconda login
+- anaconda upload sbpiper-X.Y.Z-0.tar.bz2

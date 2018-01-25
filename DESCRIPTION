@@ -1,7 +1,7 @@
 Package: sbpiper
 Type: Package
 Title: R functions for SBpipe package
-Version: 1.0
+Version: 1.0.0
 Date: 2018-01-24
 Author: Piero Dalle Pezze
 Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
