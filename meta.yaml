@@ -17,7 +17,7 @@
 
 package:
   name: sbpiper
-  version: 1.0
+  version: 1.0.0
 
 about:
   summary: R functions for SBpipe
@@ -33,25 +33,15 @@ build:
         - lib/R/lib/
 
 source:
-  #git_tag: v3.13.0
-  #git_url: https://github.com/pdp10/sbpipe.git
+  #git_tag: v1.0.0
+  #git_url: https://github.com/pdp10/sbpiper.git
   path: ../
 
 requirements:
     build:
-        - r-base 3.4.2
-        - r-ggplot2
-        - r-reshape2
-#        - r-hmisc
-#        - r-plyr
-#        - r-scales
+        - r-essentials
     run:
-        - r-base 3.4.2
-        - r-ggplot2
-        - r-reshape2
-        - r-scales        
-#        - r-hmisc
-#        - r-plyr
+        - r-essentials      
 test:
     commands:
         - $R -e "library('sbpiper')"
