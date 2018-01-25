@@ -14,15 +14,16 @@
 # along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
 
 
+{% set version= '1.0.0' %}
 
 package:
   name: sbpiper
-  version: 1.0.0
+  version: {{ version }}
 
 source:
-  git_rev: v1.0.0
-  git_url: https://github.com/pdp10/sbpiper.git
-  #path: ../
+  #git_rev: v{{ version }}
+  #git_url: https://github.com/pdp10/sbpiper.git
+  path: ../
   
 about:
   summary: R functions for SBpipe
@@ -39,9 +40,9 @@ build:
 
 requirements:
     build:
-        #- r-essentials
+        - r-essentials
     run:
-        #- r-essentials      
+        - r-essentials      
 test:
     commands:
         - $R -e "library('sbpiper')"

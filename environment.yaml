@@ -19,7 +19,7 @@
 name:
   - sbpiper
 channels:
-#  - r
+  - r
   - defaults
 dependencies:
-#  - r-essentials
+  - r-essentials
