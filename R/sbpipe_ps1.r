@@ -20,12 +20,6 @@
 # $Date: 2016-07-6 12:14:32 $
 
 
-# Roxygen2 will import the functions of the following package in the namespace of this package
-# #' @import ggplot2
-# #' @import reshape2
-# #' @import data.table
-# As this package is small, instead of doing this we just use the operator :: .
-
 
 # retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)

@@ -12,9 +12,8 @@ Depends:
 Imports:
     ggplot2 (>= 2.2.0),
     reshape2,
-    scales,
-    plyr,
-    data.table
+    data.table,
+    scales
 Description: R functions for model simulation, 
     parameter estimation, and parameter scanning.
 License: LGPL-3 | file LICENSE

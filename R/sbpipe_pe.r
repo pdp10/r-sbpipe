@@ -20,10 +20,6 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-# Roxygen2 will import the functions of the following package in the namespace of this package
-# #' @import ggplot2
-# As this package is small, instead of doing this we just use the operator :: .
-
 
 ## retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)
@@ -151,7 +147,7 @@ plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_pre
             }
           }
           if(scientific_notation) {
-             g <- g + scale_x_continuous(labels=scientific) + scale_y_continuous(labels=scientific)
+             g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
           }
           ggsave(fileout, dpi=300, width=8, height=6)
         }
@@ -192,13 +188,11 @@ plot_sampled_ple <- function(df99, objval_col, cl66_objval, cl95_objval, cl99_ob
         fileout <- file.path(plots_dir, paste(model, "_approx_ple_", dfCols[i], ".png", sep=""))
         g <- scatterplot_ple(df99, ggplot(), dfCols[i], objval_col, cl66_objval, cl95_objval, cl99_objval) +
             theme(legend.key.height = unit(0.5, "in"))
-#       g <- scatterplot_ple(df95, ggplot(), dfCols[i], objval_col, cl66_objval, cl95_objval) +
-#            theme(legend.key.height = unit(0.5, "in"))
         if(logspace) {
             g <- g + xlab(paste("log10(",dfCols[i],")",sep=""))
         }
         if(scientific_notation) {
-            g <- g + scale_x_continuous(labels=scientific) + scale_y_continuous(labels=scientific)
+            g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
         }
         g <- g + ggtitle("PLE (sampled)")
         ggsave(fileout, dpi=300, width=8, height=6)

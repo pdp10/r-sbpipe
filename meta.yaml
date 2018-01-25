@@ -41,17 +41,17 @@ requirements:
     build:
         - r-base 3.4.2
         - r-ggplot2
-        - r-hmisc
         - r-reshape2
-        - r-plyr
-        - r-scales
+#        - r-hmisc
+#        - r-plyr
+#        - r-scales
     run:
         - r-base 3.4.2
         - r-ggplot2
-        - r-hmisc
         - r-reshape2
-        - r-plyr
-        - r-scales
+        - r-scales        
+#        - r-hmisc
+#        - r-plyr
 test:
     commands:
         - $R -e "library('sbpiper')"

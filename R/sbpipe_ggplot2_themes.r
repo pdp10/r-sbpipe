@@ -22,10 +22,10 @@
 
 
 
-# A theme for time courses. It extends ggplot2 theme_classic.
-#
-# :param base_size: the font size
-# :param base_family: the font family
+#' A theme for time courses. It extends ggplot2 theme_classic.
+#'
+#' @param base_size the font size
+#' @param base_family the font family
 tc_theme <- function (base_size=12, base_family="") {
   theme_classic(base_size=base_size, base_family=base_family) %+replace% 
   theme(aspect.ratio = 0.5,
@@ -40,10 +40,10 @@ tc_theme <- function (base_size=12, base_family="") {
 }
 
 
-# A generic basic theme for time courses. It extends ggplot2 theme_classic.
-#
-# :param base_size: the font size
-# :param base_family: the font family
+#' A generic basic theme for time courses. It extends ggplot2 theme_classic.
+#'
+#' @param base_size the font size
+#' @param base_family the font family
 basic_theme <- function (base_size=12, base_family="") {
   theme_classic(base_size=base_size, base_family=base_family) %+replace% 
   theme(aspect.ratio = 1,

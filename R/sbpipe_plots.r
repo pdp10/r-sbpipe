@@ -21,34 +21,38 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-# e.g. reshape2::melt variable.name and value.name
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
-
 # Roxygen2 will import the functions of the following package in the namespace of this package
 #' @import ggplot2
-# #' @import reshape2
-# #' @import data.table
-# #' @import Hmisc
-# #' @import plyr
-# #' @import scales
+# @import reshape2
+# @import data.table
 # As this package is small, instead of doing this we just use the operator :: . 
-# We only leave this for ggplot2 and reshape2
+# We only leave this for ggplot2
 
 #library(reshape2)
 #library(ggplot2)
-#library(scales)
-#library(plyr)
-#library(Hmisc)
 #library(gridExtra)
 
-#require(graphics)
+require(graphics)
 
 
-# Plot a generic histogram
-#
-# :param dfCol: a data frame with exactly one column.
-# :param g: the current ggplot to overlap
+
+#' Normalise a vector within 0 and 1
+#'
+#' @param vec the vector to normalise 
+#' @param na.rm TRUE if NA values should be discarded
+#' @return the normalised vector
+normalise_vec <- function(vec, na.rm = TRUE) {
+  ranx <- range(vec, na.rm = na.rm)
+  vec.norm <- (vec - ranx[1]) / diff(ranx)
+  return(vec.norm)
+}
+
+
+#' Plot a generic histogram
+#'
+#' @param dfCol a data frame with exactly one column.
+#' @param g the current ggplot to overlap
+#' @return the plot
 histogramplot <- function(dfCol, g=ggplot()) {
     g <- g +
         geom_histogram(data=dfCol, aes_string(x=colnames(dfCol)), binwidth=density(dfCol[,])$bw, colour="black", fill="blue") +
@@ -58,16 +62,17 @@ histogramplot <- function(dfCol, g=ggplot()) {
 
 
 
-# Plot a scatter plot using a coloured palette
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param colNameX: the name of the column for the X axis
-# :param colNameY: the name of the column for the Y axis
-# :param colNameColor: the name of the column whose values are used as 3rd dimension
-# :param dot_size: the size of the dots in the scatterplot
-# :param colours: the palette to use
-# :param limits: the limits for the palette (NULL if no limit is used)
+#' Plot a scatter plot using a coloured palette
+#'
+#' @param df a data frame
+#' @param g the current ggplot to overlap
+#' @param colNameX the name of the column for the X axis
+#' @param colNameY the name of the column for the Y axis
+#' @param colNameColor the name of the column whose values are used as 3rd dimension
+#' @param dot_size the size of the dots in the scatterplot
+#' @param colours the palette to use
+#' @param limits the limits for the palette (NULL if no limit is used)
+#' @return the plot
 scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColor, dot_size=1.0, colours=colorRampPalette(c("blue4", "blue", "cyan", "green", "yellow", "orange", "red", "red4"))(100), limits=NULL) {
 
 # If the third coordinate has equal values, then use the first value (default: red)
@@ -87,49 +92,23 @@ scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColo
 }
 
 
-
-# Plot a profile likelihood estimation (PLE) scatter plot
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param colNameX: the name of the column for the X axis
-# :param colNameY: the name of the column for the Y axis
-# :param conf_level_66: the 66% confidence level to plot
-# :param conf_level_95: the 95% confidence level to plot
-# :param dot_size: the size of the dots in the scatterplot
-scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, conf_level_95, dot_size=0.1) {
-  g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size)
-  if (conf_level_66 > 0) {
-      g <- g + geom_hline(df.last, aes(yintercept=conf_level_66, color="_66", linetype="_66"), size=2, show.legend=TRUE) +
-          geom_hline(df.last, aes(yintercept=conf_level_95, color="_95", linetype="_95"), size=2, show.legend=TRUE) +
-          scale_colour_manual(name="", labels=c("_95"="CL95%","_66"="CL66%"), values=c("_95"="blue","_66"="red")) +
-          scale_linetype_manual(name="", labels=c("_95"="CL95%","_66"="CL66%"), values=c("_95"="dashed", "_66"="dotted"))
-  }
-  g <- g +
-      ylab('obj val') +
-      theme(axis.text.x=element_text(vjust = 1))
-  return(g)
-}
-
-
-
-# Plot a profile likelihood estimation (PLE) scatter plot
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param colNameX: the name of the column for the X axis
-# :param colNameY: the name of the column for the Y axis
-# :param conf_level_66: the 66% confidence level to plot
-# :param conf_level_95: the 95% confidence level to plot
-# :param conf_level_99: the 99% confidence level to plot
-# :param dot_size: the size of the dots in the scatterplot
+#' Plot a profile likelihood estimation (PLE) scatter plot
+#'
+#' @param df a data frame
+#' @param g the current ggplot to overlap
+#' @param colNameX the name of the column for the X axis
+#' @param colNameY the name of the column for the Y axis
+#' @param conf_level_66 the 66\% confidence level to plot
+#' @param conf_level_95 the 95\% confidence level to plot
+#' @param conf_level_99 the 99\% confidence level to plot
+#' @param dot_size the size of the dots in the scatterplot
+#' @return the plot
 scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, conf_level_95, conf_level_99, dot_size=0.1) {
   df.thresholds <- data.frame(conf_level_66, conf_level_95, conf_level_99)
   g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size)
 
   if (conf_level_66 > 0) {
       g <- g +
-          geom_hline(data=df.thresholds, aes(yintercept=conf_level_66, color="_66", linetype="_66"), size=2, show.legend=TRUE) +
           geom_hline(data=df.thresholds, aes(yintercept=conf_level_66, color="_66", linetype="_66"), size=2, show.legend=TRUE) +
           geom_hline(data=df.thresholds, aes(yintercept=conf_level_95, color="_95", linetype="_95"), size=2, show.legend=TRUE) +
           geom_hline(data=df.thresholds, aes(yintercept=conf_level_99, color="_99", linetype="_99"), size=2, show.legend=TRUE) +
@@ -146,13 +125,14 @@ scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, c
 
 
 
-# Plot a generic scatter plot
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param colNameX: the name of the column for the X axis
-# :param colNameY: the name of the column for the Y axis
-# :param dot_size: the size of the dots in the scatterplot
+#' Plot a generic scatter plot
+#'
+#' @param df a data frame
+#' @param g the current ggplot to overlap
+#' @param colNameX the name of the column for the X axis
+#' @param colNameY the name of the column for the Y axis
+#' @param dot_size the size of the dots in the scatterplot
+#' @return the plot
 scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
   g <- g +
        geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size) +
@@ -162,13 +142,14 @@ scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 
 
 
-# Plot a generic scatter plot in log10 scale
-#
-# :param df: a data frame to trasform to log10 scale
-# :param g: the current ggplot to overlap
-# :param colNameX: the name of the column for the X axis
-# :param colNameY: the name of the column for the Y axis
-# :param dot_size: the size of the dots in the scatterplot
+#' Plot a generic scatter plot in log10 scale
+#'
+#' @param df a data frame to trasform to log10 scale
+#' @param g the current ggplot to overlap
+#' @param colNameX the name of the column for the X axis
+#' @param colNameY the name of the column for the Y axis
+#' @param dot_size the size of the dots in the scatterplot
+#' @return the plot
 scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
   df <- log10(df)
   g <- scatterplot(df, g, colNameX, colNameY, dot_size) +
@@ -182,10 +163,11 @@ scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 
 
 
-# Plot the number of iterations vs objective values in log10 scale.
-#
-# :param objval_array: the array of objective function values.
-# :param g: the current ggplot to overlap
+#' Plot the number of iterations vs objective values in log10 scale.
+#'
+#' @param objval_array the array of objective function values.
+#' @param g the current ggplot to overlap
+#' @return the plot
 plot_fits <- function(objval_array, g=ggplot()) {
   iters <- c()
   j <- 0
@@ -214,12 +196,14 @@ plot_fits <- function(objval_array, g=ggplot()) {
 
 
 
-# Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).
-#
-# :param df_exp_dataset: the experimental data set
-# :param g: the current ggplot to overlap
-# :param readout: the name of the readout
-# :param max_sim_tp: the maximum simulated time point
+#' Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).
+#'
+#' @param df_exp_dataset the experimental data set
+#' @param g the current ggplot to overlap
+#' @param readout the name of the readout
+#' @param max_sim_tp the maximum simulated time point
+#' @param alpha the amount of alpha transparency
+#' @return the plot
 plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim_tp=0, alpha=1) {
     # Let's add the experimental data set to the plot
     time <- colnames(df_exp_dataset)[1]
@@ -231,14 +215,16 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 
 
 
-# Plot repeated time courses in the same plot with mean, 1 standard deviation, and 95% confidence intervals.
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param title: the title
-# :param xaxis_label: the xaxis label
-# :param yaxis_label: the yaxis label
-# :param bar_type: the type of bar ("mean", "mean_sd", "mean_sd_ci95")
+#' Plot repeated time courses in the same plot with mean, 1 standard deviation, and 95\% confidence intervals.
+#'
+#' @param df a data frame
+#' @param g the current ggplot to overlap
+#' @param title the title
+#' @param xaxis_label the xaxis label
+#' @param yaxis_label the yaxis label
+#' @param bar_type the type of bar ("mean", "mean_sd", "mean_sd_ci95")
+#' @param alpha the amount of alpha transparency
+#' @return the plot
 plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_label="", bar_type="mean", alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
@@ -257,13 +243,15 @@ plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_lab
 
 
 
-# Plot repeated time courses in the same plot separately. First column is Time.
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param title: the title
-# :param xaxis_label: the xaxis label
-# :param yaxis_label: the yaxis label
+#' Plot repeated time courses in the same plot separately. First column is Time.
+#'
+#' @param df a data frame
+#' @param g the current ggplot to overlap
+#' @param title the title of the plot 
+#' @param xaxis_label the xaxis label of the plot
+#' @param yaxis_label the yaxis label of the plot
+#' @param alpha the amount of alpha transparency
+#' @return the plot
 plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_label="", alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
     g <- g + geom_line(data=mdf,aes(x=Time,y=conc,color=species), size=1.0, alpha=alpha) +
@@ -274,26 +262,26 @@ plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_lab
 
 
 
-# Plot time courses organised as data frame columns with a heatmap. First column is Time.
-#
-# :param df: a data frame
-# :param g: the current ggplot to overlap
-# :param scaled: TRUE if the time course values should be scaled within [0,1]
-# :param title: the title
-# :param xaxis_label: the xaxis label
-# :param yaxis_label: the yaxis label
+#' Plot time courses organised as data frame columns with a heatmap.
+#'
+#' @param df a data frame, with Time as first column
+#' @param g the current ggplot to overlap
+#' @param scaled TRUE if the time course values should be scaled within 0 and 1.
+#' @param title the title of the plot 
+#' @param xaxis_label the xaxis label of the plot
+#' @param yaxis_label the yaxis label of the plot
+#' @return the plot
 plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='', yaxis_label='') {
-
-    mdf <- reshape2::melt(df,id.vars="Time")
     if(scaled) {
-        # ddply for adding an extra column (rescale). rescale normalises the column `value` within [0,1].
-        # `value` contain the time course values.
-        # ddply is applied by `variable`, the column containing the time course names after reshape2::melt().
-        mdf <- plyr::ddply(mdf, .(variable), transform, rescale=scales::rescale(value))
-        # use geom_raster() for generating a heatmap
-        g <- g + geom_raster(data=mdf, aes(variable, Time, fill=rescale))
+        # normalise within 0 and 1
+        df.norm <- cbind(data.frame(df[1]), apply(df[-1], 2, normalise_vec))
+        colnames(df.norm)[1] <- "Time"
+        mdf <- reshape2::melt(df.norm,id.vars="Time")
+        # use geom_raster() for generating a heatmap    
+        g <- g + geom_raster(data=mdf, aes(variable, Time, fill=value))    
     } else {
-        # use geom_raster() for generating a heatmap
+        mdf <- reshape2::melt(df,id.vars="Time")      
+        # use geom_raster() for generating a heatmap    
         g <- g + geom_raster(data=mdf, aes(variable, Time, fill=value))
     }
     g <- g + scale_fill_gradient(low = "white", high = "steelblue") +
