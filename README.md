@@ -28,7 +28,7 @@ Then:
 - `R CMD INSTALL sbpiper_X.Y.Z.tar.gz`
 
 #### Packaging for Conda: 
-- conda metapackage sbpiper X.Y.Z --dependencies r-essentials --summary "R functions for pdp10/SBpipe"
 - conda install anaconda-client
+- conda build meta.yaml
 - anaconda login
 - anaconda upload sbpiper-X.Y.Z-0.tar.bz2
