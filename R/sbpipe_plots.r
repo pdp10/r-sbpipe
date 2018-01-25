@@ -226,17 +226,17 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 #' @param alpha the amount of alpha transparency
 #' @return the plot
 plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_label="", bar_type="mean", alpha=1) {
-    mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
+    mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
-        g <- g + stat_summary(data=mdf, aes(x=Time, y=conc),
+        g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"),
                               geom="ribbon", fun.data = mean_sdl, fill="#99CCFF", alpha=alpha)
         if(bar_type == "mean_sd_ci95") {
-            g <- g + stat_summary(data=mdf, aes(x=Time, y=conc),
+            g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"),
                                   geom="ribbon", fun.data=mean_cl_normal,
                                   fun.args=list(conf.int=0.95), fill="#5588CC", alpha=alpha)   # #CCFFFF
         }
     }
-    g <- g + stat_summary(data=mdf, aes(x=Time, y=conc), geom="line", fun.y=mean, size=1.0, color="black") +
+    g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"), geom="line", fun.y=mean, size=1.0, color="black") +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title)
     return(g)
 }
@@ -253,8 +253,8 @@ plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_lab
 #' @param alpha the amount of alpha transparency
 #' @return the plot
 plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_label="", alpha=1) {
-    mdf <- reshape2::melt(df,id.vars="Time",variable.name="species",value.name="conc")
-    g <- g + geom_line(data=mdf,aes(x=Time,y=conc,color=species), size=1.0, alpha=alpha) +
+    mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
+    g <- g + geom_line(data=mdf,aes_string(x="Time",y="value",color="variable"), size=1.0, alpha=alpha) +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title) +
          theme(legend.position="none")
     return(g)
@@ -276,13 +276,13 @@ plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='
         # normalise within 0 and 1
         df.norm <- cbind(data.frame(df[1]), apply(df[-1], 2, normalise_vec))
         colnames(df.norm)[1] <- "Time"
-        mdf <- reshape2::melt(df.norm,id.vars="Time")
+        mdf <- reshape2::melt(df.norm,id.vars="Time",variable.name="variable",value.name="value")
         # use geom_raster() for generating a heatmap    
-        g <- g + geom_raster(data=mdf, aes(variable, Time, fill=value))    
+        g <- g + geom_raster(data=mdf, aes_string(x="variable", y="Time", fill="value"))    
     } else {
-        mdf <- reshape2::melt(df,id.vars="Time")      
+        mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")      
         # use geom_raster() for generating a heatmap    
-        g <- g + geom_raster(data=mdf, aes(variable, Time, fill=value))
+        g <- g + geom_raster(data=mdf, aes_string(x="variable", y="Time", fill="value"))
     }
     g <- g + scale_fill_gradient(low = "white", high = "steelblue") +
              # NOTE we will flip the coordinates later.
