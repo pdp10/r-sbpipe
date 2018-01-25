@@ -20,11 +20,6 @@
 # $Date: 2016-07-6 12:14:32 $
 
 
-# Roxygen2 will import the functions of the following package in the namespace of this package
-#' @import ggplot2
-#' @import reshape2
-#' @import data.table
-
 
 # retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)
@@ -35,9 +30,10 @@
 
 
 
-# Return the indexes of the files as sorted by levels.
-#
-# :param files: the scanned files.
+#' Return the indexes of the files as sorted by levels.
+#'
+#' @param files the scanned files.
+#' @return the index of the levels
 get_sorted_level_indexes <- function(files) {
     levels <- c()
     levels.index <- c()
@@ -60,24 +56,20 @@ get_sorted_level_indexes <- function(files) {
 }
 
 
-
-
-
-# Plot model single parameter scan time courses
-#
-# :param model: The model name
-# :param inhibition_only: true if the scanning only decreases the variable amount (inhibition only)
-# :param outputdir: the output directory
-# :param sim_data_folder: the name of the folder containing the simulated data
-# :param sim_plots_folder: the name of the folder containing the simulated plots
-# :param xaxis_label: the label for the x axis (e.g. Time (min))
-# :param run: the simulation number
-# :param percent_levels: true if scanning levels are in percent (default: TRUE)
-# :param min_level: the minimum level (default: 0)
-# :param max_level: the maximum level (default: 100)
-# :param levels_number: the number of levels (default: 10)
-# :param xaxis_label: the label for the x axis (e.g. Time [min])
-# :param yaxis_label: the label for the y axis (e.g. Level [a.u.])
+#' Plot model single parameter scan time courses
+#'
+#' @param model The model name
+#' @param inhibition_only true if the scanning only decreases the variable amount (inhibition only)
+#' @param outputdir the output directory
+#' @param sim_data_folder the name of the folder containing the simulated data
+#' @param sim_plots_folder the name of the folder containing the simulated plots
+#' @param run the simulation number
+#' @param percent_levels true if scanning levels are in percent (default TRUE)
+#' @param min_level the minimum level (default: 0)
+#' @param max_level the maximum level (default: 100)
+#' @param levels_number the number of levels (default: 10)
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 plot_single_param_scan_data <- function(model, inhibition_only,
 					outputdir, sim_data_folder, sim_plots_folder, run,
 					percent_levels=TRUE, min_level=0, 
@@ -135,7 +127,7 @@ plot_single_param_scan_data <- function(model, inhibition_only,
     #print(levels.index)
 
     # Read variable
-    timecourses <- data.frame(fread(file.path(inputdir, files[1])))
+    timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
     column <- names(timecourses)
     my_time <- timecourses[,c('Time')]
     # let's plot now! :)
@@ -147,15 +139,15 @@ plot_single_param_scan_data <- function(model, inhibition_only,
         df <- data.frame(time=my_time, check.names=FALSE)
         for(m in 1:length(levels.index)) {
             #print(files[levels.index[m]])
-            col.level <- fread(file.path(inputdir,files[levels.index[m]]), select=c(column[j]))
+            col.level <- data.table::fread(file.path(inputdir,files[levels.index[m]]), select=c(column[j]))
             df <- cbind(df, a=col.level)
             colnames(df)[ncol(df)] <- as.character(m+10)
         }
         
         # plot the data
-        df.melt <- melt(df, id=c("time"))
+        df.melt <- reshape2::melt(df, id=c("time"), variable.name='variable', value.name='value')
         g <- ggplot() + 
-             geom_line(data=df.melt, aes(x=time, y=value, group=variable, color=variable), size=1.0) +
+             geom_line(data=df.melt, aes_string(x="time", y="value", group="variable", color="variable"), size=1.0) +
              scale_colour_manual("Levels", values=colors, labels=labels) +
              # scale_linetype_manual("Levels", values=linetype, labels=labels) +
              xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
@@ -166,16 +158,15 @@ plot_single_param_scan_data <- function(model, inhibition_only,
 }
 
 
-
-# Plot model single parameter scan time courses using homogeneous lines.
-#
-# :param model: The model name
-# :param outputdir: the output directory
-# :param sim_data_folder: the name of the folder containing the simulated data
-# :param sim_plots_folder: the name of the folder containing the simulated plots
-# :param run: the simulation number
-# :param xaxis_label: the label for the x axis (e.g. Time [min])
-# :param yaxis_label: the label for the y axis (e.g. Level [a.u.])
+#' Plot model single parameter scan time courses using homogeneous lines.
+#'
+#' @param model The model name
+#' @param outputdir the output directory
+#' @param sim_data_folder the name of the folder containing the simulated data
+#' @param sim_plots_folder the name of the folder containing the simulated plots
+#' @param run the simulation number
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 plot_single_param_scan_data_homogen <- function(model,
 					outputdir, sim_data_folder, 
 					sim_plots_folder, run,
@@ -195,7 +186,7 @@ plot_single_param_scan_data_homogen <- function(model,
 
     files <- list.files( path=inputdir, pattern=paste(model, '__rep_', run, '__level_', sep=""))
     # Read variable
-    timecourses <- data.frame(fread(file.path(inputdir, files[1])))
+    timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
     column <- names(timecourses)
     my_time <- timecourses[,c('Time')]
 
@@ -206,18 +197,79 @@ plot_single_param_scan_data_homogen <- function(model,
         df <- data.frame(time=my_time, check.names=FALSE)
         for(m in 1:length(files)) {
           #print(files[levels.index[m]])
-          col.level <- fread(file.path(inputdir,files[m]), select=c(column[j]))
+          col.level <- data.table::fread(file.path(inputdir,files[m]), select=c(column[j]))
           df <- cbind(df, a=col.level)
           colnames(df)[ncol(df)] <- as.character(m)
         }
         
         # plot the data
-        df.melt <- melt(df, id=c("time"))
+        df.melt <- reshape2::melt(df, id=c("time"), variable.name='variable', value.name='value')
         g <- ggplot() + 
-          geom_line(data=df.melt, aes(x=time, y=value, group=variable), color='blue', size=1.0) +
+          geom_line(data=df.melt, aes_string(x="time", y="value", group="variable"), color='blue', size=1.0) +
           xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
           ggsave(file.path(outputdir, paste(model, "__rep_", run, "__eval_", column[j], ".png", sep="" )),
                  dpi=300,  width=8, height=8)
     }
 }
+
+
+#' Main R function for SBpipe pipeline: parameter_scan1(). 
+#'
+#' @param model_noext the model name without extension
+#' @param inhibition_only true if the scanning only decreases the variable amount (inhibition only)
+#' @param outputdir the output directory
+#' @param sim_data_folder the name of the folder containing the simulated data
+#' @param sim_plots_folder the name of the folder containing the simulated plots
+#' @param run the simulation number
+#' @param percent_levels true if scanning levels are in percent
+#' @param min_level the minimum level
+#' @param max_level the maximum level
+#' @param levels_number the number of levels
+#' @param homogeneous_lines true if lines should be plotted homogeneously
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @export
+sbpipe_ps1 <- function(model_noext, inhibition_only, outputdir, sim_data_folder, sim_plots_folder, 
+                            run, percent_levels, min_level, max_level, levels_number, homogeneous_lines, 
+                            xaxis_label, yaxis_label) {
+  
+  # Add controls here if any
+  if(homogeneous_lines=="true" || homogeneous_lines=="True" || homogeneous_lines=="TRUE") {
+    homogeneous_lines <- TRUE
+  } else {
+    homogeneous_lines <- FALSE
+  }
+  
+  if(inhibition_only=="true" || inhibition_only=="True" || inhibition_only=="TRUE") {
+    inhibition_only <- TRUE
+  } else {
+    inhibition_only <- FALSE
+  }
+  
+  if(percent_levels=="true" || percent_levels=="True" || percent_levels=="TRUE") {
+    percent_levels <- TRUE
+  } else {
+    percent_levels <- FALSE
+  }
+  
+  
+  if(homogeneous_lines) {
+    plot_single_param_scan_data_homogen(model_noext,
+                                        outputdir, sim_data_folder,
+                                        sim_plots_folder, run,
+                                        xaxis_label, yaxis_label)
+  } else {    
+    plot_single_param_scan_data(model_noext, inhibition_only,
+                                outputdir, sim_data_folder,
+                                sim_plots_folder, run,
+                                percent_levels, min_level,
+                                max_level, levels_number,
+                                xaxis_label, yaxis_label)
+  }
+}
+
+
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
 

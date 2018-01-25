@@ -20,10 +20,6 @@
 # $Date: 2016-07-7 11:14:32 $
 
 
-# Roxygen2 will import the functions of the following package in the namespace of this package
-#' @import ggplot2
-#' @import data.table
-
 
 # retrieve SBpipe folder containing R scripts
 #args <- commandArgs(trailingOnly = FALSE)
@@ -33,18 +29,15 @@
 
 
 
-
-
 #### STATISTICS #####
 
 
-
-# For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar, 
-# min, 1st quantile, median, 3rd quantile, and max.
-#
-# :param timepoint.values: array of values for a certain time point
-# :param nfiles: the number of files (samples) 
-# :return: the statistics for the array of values for a specific time point
+#' For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar, 
+#' min, 1st quantile, median, 3rd quantile, and max.
+#'
+#' @param timepoint.values array of values for a certain time point
+#' @param nfiles the number of files (samples) 
+#' @return the statistics for the array of values for a specific time point
 compute_descriptive_statistics <- function(timepoint.values, nfiles) {
 	timepoint <- list("mean"=0,"sd"=0,"var"=0,"skew"=0,"kurt"=0,"ci95"=0,
 			  "coeffvar"=0,"min"=0,"stquantile"=0,"median"=0,"rdquantile"=0,"max"=0)
@@ -70,11 +63,11 @@ compute_descriptive_statistics <- function(timepoint.values, nfiles) {
 
 
 
-# Return the column names of the statitics to calculate
-#
-# :param column.names: an array of column names
-# :param readout: the name of the readout
-# :return: the column names including the readout name
+#' Return the column names of the statitics to calculate
+#'
+#' @param column.names an array of column names
+#' @param readout the name of the readout
+#' @return the column names including the readout name
 get_column_names_statistics <- function(column.names, readout) {    
     column.names <- c (column.names,
                        paste(readout, "_Mean", sep=""),
@@ -96,12 +89,12 @@ get_column_names_statistics <- function(column.names, readout) {
 
 
 
-# Add the statistics for a readout to the table of statistics. The first column is Time.
-#
-# :param statistics: the table of statistics to fill up
-# :param readout: the statistics for this readout.
-# :param colidx: the position in the table to put the readout statistics
-# :return: The table of statistics including this readout.
+#' Add the statistics for a readout to the table of statistics. The first column is Time.
+#'
+#' @param statistics the table of statistics to fill up
+#' @param readout the statistics for this readout.
+#' @param colidx the position in the table to put the readout statistics
+#' @return The table of statistics including this readout.
 get_stats <- function(statistics, readout, colidx=2) {
     #print(readout$mean) 
     statistics[,colidx]   <- readout$mean
@@ -120,15 +113,15 @@ get_stats <- function(statistics, readout, colidx=2) {
 }
 
 
-# Plot model readouts with statistics for each time point.
-#
-# :param inputdir: the input directory containing the time course files
-# :param outputdir: the output directory
-# :param model: the model name
-# :param outputfile: the name of the file to store the statistics
-# :param xaxis_label: the xaxis label 
-# :param yaxis_label: the yaxis label
-# :param column_to_read: the name of the column to process
+#' Plot model readouts with statistics for each time point.
+#'
+#' @param inputdir the input directory containing the time course files
+#' @param outputdir the output directory
+#' @param model the model name
+#' @param outputfile the name of the file to store the statistics
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @param column_to_read the name of the column to process
 gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label="", yaxis_label="", column_to_read="X1") {
     
     theme_set(tc_theme(36)) #28
@@ -143,7 +136,7 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
     print(files)
         
     # Read the simulated time course data sets
-    timecourses <- fread(file.path(inputdir, files[1]), select=c('Time', column_to_read))
+    timecourses <- data.table::fread(file.path(inputdir, files[1]), select=c('Time', column_to_read))
 
     column <- names (timecourses)
 
@@ -169,7 +162,7 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
         # Extract column[j] for each file.
         dataset <- data.frame(na)
         for(i in 1:length(files)) {
-            dataset <- data.frame(dataset, fread(file.path(inputdir,files[i]), select=c(column[j])))
+            dataset <- data.frame(dataset, data.table::fread(file.path(inputdir,files[i]), select=c(column[j])))
         }
         # remove the first column (na)
         dataset <- subset(dataset, select=-c(na))
@@ -226,9 +219,11 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
 #### PLOTS #####
 
 
-# Check the experimental data set.
-#
-# :param exp_dataset: a full path file containing the experimental data.
+#' Check the experimental data set.
+#'
+#' @param exp_dataset a full path file containing the experimental data.
+#' @param plot_exp_dataset TRUE if the data set file should be plotted.
+#' @return TRUE if the file exists.
 check_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
     if (plot_exp_dataset) {
         # check that exp_dataset exists and that the file ends with .csv (it is not a dir!)
@@ -244,14 +239,15 @@ check_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
 
 
 
-# Load the experimental data set.
-#
-# :param exp_dataset: a full path file containing the experimental data.
-# :param plot_exp_dataset: TRUE if the experimental data should also be plotted
+#' Load the experimental data set.
+#'
+#' @param exp_dataset a full path file containing the experimental data.
+#' @param plot_exp_dataset TRUE if the experimental data should also be plotted
+#' @return the loaded data set.
 load_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
     df_exp_dataset <- data.frame()
     if(check_exp_dataset(exp_dataset, plot_exp_dataset)) {
-        df_exp_dataset <- data.frame(fread(exp_dataset))
+        df_exp_dataset <- data.frame(data.table::fread(exp_dataset))
     }
     return (df_exp_dataset)
 }
@@ -259,17 +255,17 @@ load_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
 
 
 
-# Plots the simulation time courses in a combined representation
-#
-# :param inputdir: the input directory containing the time course files
-# :param outputdir: the output directory
-# :param model: the model name
-# :param exp_dataset: a full path file containing the experimental data.
-# :param plot_exp_dataset: TRUE if the experimental data should also be plotted
-# :param exp_dataset_alpha: the alpha level for the data set
-# :param xaxis_label: the xaxis label
-# :param yaxis_label: the yaxis label
-# :param column_to_read: the name of the column to process
+#' Plots the simulation time courses in a combined representation
+#'
+#' @param inputdir the input directory containing the time course files
+#' @param outputdir the output directory
+#' @param model the model name
+#' @param exp_dataset a full path file containing the experimental data.
+#' @param plot_exp_dataset TRUE if the experimental data should also be plotted
+#' @param exp_dataset_alpha the alpha level for the data set
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @param column_to_read the name of the column to process
 plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
                            exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
 
@@ -286,7 +282,7 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
   df_exp_dataset <- load_exp_dataset(exp_dataset, plot_exp_dataset)
 
   for(i in 1:length(files)) {
-    df <- fread( file.path(inputdir, files[i]))
+    df <- data.table::fread( file.path(inputdir, files[i]))
     readout <- gsub(paste(model, '_', sep=''), '', gsub('.csv', '', basename(files[i])))
     template_filename <- file.path(outputdir, gsub('.csv', '.png', basename(files[i])))
 
@@ -334,17 +330,17 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
 
 
 
-# Plots the simulations time course separately
-#
-# :param inputdir: the input directory containing the time course files
-# :param outputdir: the output directory
-# :param model: the model name
-# :param exp_dataset: a full path file containing the experimental data.
-# :param plot_exp_dataset: TRUE if the experimental data should also be plotted
-# :param exp_dataset_alpha: the alpha level for the data set
-# :param xaxis_label: the xaxis label
-# :param yaxis_label: the yaxis label
-# :param column_to_read: the name of the column to process
+#' Plots the simulations time course separately.
+#'
+#' @param inputdir the input directory containing the time course files
+#' @param outputdir the output directory
+#' @param model the model name
+#' @param exp_dataset a full path file containing the experimental data.
+#' @param plot_exp_dataset TRUE if the experimental data should also be plotted
+#' @param exp_dataset_alpha the alpha level for the data set
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @param column_to_read the name of the column to process
 plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
                           exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
 
@@ -361,7 +357,7 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
   df_exp_dataset <- load_exp_dataset(exp_dataset, plot_exp_dataset)
 
   for(i in 1:length(files)) {
-    df <- fread( file.path(inputdir, files[i]) )
+    df <- data.table::fread( file.path(inputdir, files[i]) )
     # print(df)
     readout <- gsub(paste(model, '_', sep=''), '', gsub('.csv', '', basename(files[i])))
     fileout <- file.path(outputdir, gsub('.csv', '.png', basename(files[i])))
@@ -385,12 +381,12 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
 }
 
 
-# Summarise the simulations
-#
-# :param inputdir: the input directory containing the time course files
-# :param model: the model name
-# :param outputfile: the name of the file to store the simulations
-# :param column_to_read: the name of the column to process
+#' Summarise the simulations.
+#'
+#' @param inputdir the input directory containing the time course files
+#' @param model the model name
+#' @param outputfile the name of the file to store the simulations
+#' @param column_to_read the name of the column to process
 summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
 
   # collect all files in the directory
@@ -398,7 +394,7 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
   #print(files)
 
   # Read the simulated time course data sets
-  timecourses <- fread( file.path(inputdir, files[1]), select=c('Time', column_to_read))
+  timecourses <- data.table::fread( file.path(inputdir, files[1]), select=c('Time', column_to_read))
   column <- names (timecourses)
 
   timepoints <- timecourses$Time
@@ -411,7 +407,7 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
         summary <- NULL
         cbind(summary, timepoints) -> summary
         for(j in 1:length(files)) {
-          sim_file <- fread( file.path(inputdir, files[j]), select=c(column[i]))
+          sim_file <- data.table::fread( file.path(inputdir, files[j]), select=c(column[i]))
           summary <- cbind(summary, sim_file)
         }
         summary <- data.frame(summary)
@@ -420,4 +416,54 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
       }
   }
 }
+
+
+#' Main R function for SBpipe pipeline: simulate(). 
+#'
+#' @param model_noext the model name without extension
+#' @param inputdir the input directory
+#' @param outputdir the output directory
+#' @param outputfile the output file name containing the statistics
+#' @param repeats_file_template the output template file storing the summary of model simulation repeats
+#' @param exp_dataset the file containing the experimental data.
+#' @param plot_exp_dataset TRUE if the experimental data should also be plotted
+#' @param exp_dataset_alpha the alpha level for the data set
+#' @param xaxis_label the label for the x axis (e.g. Time (min))
+#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @param column_to_read the name of the column to process
+#' @export
+sbpipe_sim <- function(model_noext, inputdir, outputdir, outputfile, repeats_file_template, 
+                            exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label, 
+                            column_to_read) {
+  
+  if(plot_exp_dataset == 'True' || plot_exp_dataset == 'TRUE' || plot_exp_dataset == 'true') {
+    print('experimental dataset will also be plotted')
+    plot_exp_dataset = TRUE
+  } else {
+    plot_exp_dataset = FALSE
+  }
+  
+  print('generating a table of statistics')
+  gen_stats_table(inputdir, outputdir, model_noext, outputfile, xaxis_label, yaxis_label, column_to_read)
+  
+  print('summarising the time course repeats in tables')
+  summarise_data(inputdir, model_noext, repeats_file_template, column_to_read)
+  
+  files <- list.files( path=inputdir, pattern=model_noext )
+  if(length(files) > 1) {
+    print('plotting separate time courses')
+    plot_sep_sims(dirname(repeats_file_template), outputdir, model_noext, exp_dataset, plot_exp_dataset,
+                  exp_dataset_alpha, xaxis_label, yaxis_label, column_to_read)
+  }
+  print('plotting combined time courses')
+  plot_comb_sims(dirname(repeats_file_template), outputdir, model_noext, exp_dataset, plot_exp_dataset,
+                 exp_dataset_alpha, xaxis_label, yaxis_label, column_to_read)
+}
+
+
+#main(commandArgs(TRUE))
+## Clean the environment
+#rm ( list=ls ( ) )
+
+
 
