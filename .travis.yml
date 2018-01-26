@@ -1,0 +1,66 @@
+# This file is part of sbpipe.
+#
+# sbpipe is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# sbpipe is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
+
+language: r
+cache: packages
+r:
+  # We don't actually use the Travis R, but this keeps it organized.
+  - release
+install:
+
+  # install xvfb
+  # we don't have X11 on Travis-CI, so we use a virtual framebuffer
+  # because R packages for generating figures were compiled with X11
+  # support.
+  - sudo apt-get update
+  - sudo apt-get install xvfb
+  - PID=$$
+  # create a virtual screen and suppress the output
+  - Xvfb :$PID -screen 0 800x600x16 2>/dev/null 1>&2 &
+  - xvfb_pid=$!
+  - export DISPLAY=:$PID.0
+
+
+  # install miniconda
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  # install conda build in order to build the conda package for SBpiper
+  - conda install conda-build
+  - conda config --set anaconda_upload no
+
+  # install SBpiper. R dependencies are retrieved from Anaconda Cloud.
+  # create the `sbpiper` environment
+  - conda env create --name sbpiper --file environment.yaml
+  - source activate sbpiper
+
+  # install sbpiper using conda build
+  #- conda build conda_recipe/meta.yaml
+  #- conda install sbpipe --use-local
+
+  - R -e 'library("devtools"); devtools::check("sbpiper")'
+  - R -e 'library("devtools"); devtools::build("sbpiper")'  
+  
+# command to run tests
+script:
+  - R CMD build .
+  - R CMD check *tar.gz
+
