@@ -42,7 +42,7 @@ Developers can check and build SBpiper using the following commands:
 
 Finally, sbpiper is installed with the command: 
 ```
-$ `R CMD INSTALL sbpiper_X.Y.Z.tar.gz`
+$ R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
 Conda recipe for SBpiper retrieves the code from the `master` branch its the github repository. Therefore, before building the conda package, make sure that the `master` is updated with the new version. Anaconda client is needed and can be installed with the following commands:
