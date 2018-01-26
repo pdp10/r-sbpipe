@@ -44,24 +44,21 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
 
-  # install conda build in order to build the conda package for SBpiper
-  - conda install conda-build
-  - conda config --set anaconda_upload no
-
-  # install SBpiper. R dependencies are retrieved from Anaconda Cloud.
+  # install SBpiper's R dependencies from Anaconda Cloud.
   # create the `sbpiper` environment
   - conda env create --name sbpiper --file environment.yaml
   - source activate sbpiper
 
-  # install sbpiper using conda build
+
+  ## install conda build in order to build the conda package for SBpiper
+  #- conda install conda-build
+  #- conda config --set anaconda_upload no
+  
+  ## install sbpiper using conda build  
   #- conda build conda_recipe/meta.yaml
   #- conda install sbpipe --use-local
-
-  - R -e 'library("devtools"); devtools::check("sbpiper")'
-  - R -e 'library("devtools"); devtools::build("sbpiper")'  
   
 # command to run tests
 script:
   - R CMD build .
   - R CMD check *tar.gz
-
