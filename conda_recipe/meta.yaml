@@ -21,14 +21,13 @@ package:
   version: {{ version }}
 
 source:
-  #git_rev: v{{ version }}
-  #git_url: https://github.com/pdp10/sbpiper.git
-  path: ../
+  git_rev: master
+  git_url: https://github.com/pdp10/sbpiper.git
+  #path: ../
   
 about:
   summary: R functions for SBpipe
   home: https://github.com/pdp10/sbpiper
-  readme: README.md
   license: LGPL-3.0
   license_file: LICENSE
 
