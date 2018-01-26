@@ -10,7 +10,7 @@
 R code for SBpipe (see: [https://pdp10.github.io/sbpipe](https://pdp10.github.io/sbpipe)). 
 This package contains a collection of R utility functions used by SBpipe 
 for plotting and generating statistics. Originally, this source code was distributed within SBpipe. 
-SBpiper was conveived to improve modularity and allow users to invoke SBpipe functions for data analysis and plot generation directly from their R code.
+SBpiper was conceived to improve modularity and enable the invokation of SBpipe functions for data analysis and plot generation directly as an R library.
 
 ## Using SBpipe
 This dependency library is automatically installed by SBpipe via provided script or using conda, so no further step is needed. See the above link for instructions on how to install SBpipe. 
