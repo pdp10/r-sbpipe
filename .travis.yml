@@ -57,11 +57,12 @@ install:
   #- conda build conda_recipe/meta.yaml
   #- conda install sbpipe --use-local
 
-  - R -e 'library("devtools"); devtools::check("sbpiper")'
-  - R -e 'library("devtools"); devtools::build("sbpiper")'  
+  #- R -e 'devtools::check("sbpiper")'
+  #- R -e 'devtools::build("sbpiper")'  
   
 # command to run tests
 script:
+  - R CMD check .
   - R CMD build .
   - R CMD check *tar.gz
 
