@@ -1,17 +1,17 @@
-# This file is part of sbpipe.
+# This file is part of sbpiper.
 #
-# sbpipe is free software: you can redistribute it and/or modify
+# sbpiper is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# sbpipe is distributed in the hope that it will be useful,
+# sbpiper is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
 # You should have received a copy of the GNU Lesser General Public License
-# along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
+# along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
 # Object: Plots
@@ -23,6 +23,9 @@
 
 # Roxygen2 will import the functions of the following package in the namespace of this package
 #' @import ggplot2
+#' @importFrom stats density median qf qnorm quantile sd var
+#' @importFrom utils read.table tail write.table
+
 # @import reshape2
 # @import data.table
 # As this package is small, instead of doing this we just use the operator :: . 
@@ -41,6 +44,7 @@ require(graphics)
 #' @param vec the vector to normalise 
 #' @param na.rm TRUE if NA values should be discarded
 #' @return the normalised vector
+#' @export
 normalise_vec <- function(vec, na.rm = TRUE) {
   ranx <- range(vec, na.rm = na.rm)
   vec.norm <- (vec - ranx[1]) / diff(ranx)
@@ -53,6 +57,7 @@ normalise_vec <- function(vec, na.rm = TRUE) {
 #' @param dfCol a data frame with exactly one column.
 #' @param g the current ggplot to overlap
 #' @return the plot
+#' @export
 histogramplot <- function(dfCol, g=ggplot()) {
     g <- g +
         geom_histogram(data=dfCol, aes_string(x=colnames(dfCol)), binwidth=density(dfCol[,])$bw, colour="black", fill="blue") +
@@ -73,7 +78,8 @@ histogramplot <- function(dfCol, g=ggplot()) {
 #' @param colours the palette to use
 #' @param limits the limits for the palette (NULL if no limit is used)
 #' @return the plot
-scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColor, dot_size=1.0, colours=colorRampPalette(c("blue4", "blue", "cyan", "green", "yellow", "orange", "red", "red4"))(100), limits=NULL) {
+#' @export
+scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColor, dot_size=1.0, colours=grDevices::colorRampPalette(c("blue4", "blue", "cyan", "green", "yellow", "orange", "red", "red4"))(100), limits=NULL) {
 
 # If the third coordinate has equal values, then use the first value (default: red)
   colorCol <- df[,c(colNameColor)]
@@ -103,6 +109,7 @@ scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColo
 #' @param conf_level_99 the 99\% confidence level to plot
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @export
 scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, conf_level_95, conf_level_99, dot_size=0.1) {
   df.thresholds <- data.frame(conf_level_66, conf_level_95, conf_level_99)
   g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size)
@@ -133,6 +140,7 @@ scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, c
 #' @param colNameY the name of the column for the Y axis
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @export
 scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
   g <- g +
        geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size) +
@@ -150,6 +158,7 @@ scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 #' @param colNameY the name of the column for the Y axis
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @export
 scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
   df <- log10(df)
   g <- scatterplot(df, g, colNameX, colNameY, dot_size) +
@@ -168,6 +177,7 @@ scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 #' @param objval_array the array of objective function values.
 #' @param g the current ggplot to overlap
 #' @return the plot
+#' @export
 plot_fits <- function(objval_array, g=ggplot()) {
   iters <- c()
   j <- 0
@@ -204,6 +214,7 @@ plot_fits <- function(objval_array, g=ggplot()) {
 #' @param max_sim_tp the maximum simulated time point
 #' @param alpha the amount of alpha transparency
 #' @return the plot
+#' @export
 plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim_tp=0, alpha=1) {
     # Let's add the experimental data set to the plot
     time <- colnames(df_exp_dataset)[1]
@@ -225,6 +236,7 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 #' @param bar_type the type of bar ("mean", "mean_sd", "mean_sd_ci95")
 #' @param alpha the amount of alpha transparency
 #' @return the plot
+#' @export
 plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_label="", bar_type="mean", alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
@@ -252,6 +264,7 @@ plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_lab
 #' @param yaxis_label the yaxis label of the plot
 #' @param alpha the amount of alpha transparency
 #' @return the plot
+#' @export
 plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_label="", alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     g <- g + geom_line(data=mdf,aes_string(x="Time",y="value",color="variable"), size=1.0, alpha=alpha) +
@@ -271,6 +284,7 @@ plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_lab
 #' @param xaxis_label the xaxis label of the plot
 #' @param yaxis_label the yaxis label of the plot
 #' @return the plot
+#' @export
 plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='', yaxis_label='') {
     if(scaled) {
         # normalise within 0 and 1

@@ -38,6 +38,7 @@
 #' @param timepoint.values array of values for a certain time point
 #' @param nfiles the number of files (samples) 
 #' @return the statistics for the array of values for a specific time point
+#' @export
 compute_descriptive_statistics <- function(timepoint.values, nfiles) {
 	timepoint <- list("mean"=0,"sd"=0,"var"=0,"skew"=0,"kurt"=0,"ci95"=0,
 			  "coeffvar"=0,"min"=0,"stquantile"=0,"median"=0,"rdquantile"=0,"max"=0)
@@ -68,6 +69,7 @@ compute_descriptive_statistics <- function(timepoint.values, nfiles) {
 #' @param column.names an array of column names
 #' @param readout the name of the readout
 #' @return the column names including the readout name
+#' @export
 get_column_names_statistics <- function(column.names, readout) {    
     column.names <- c (column.names,
                        paste(readout, "_Mean", sep=""),
@@ -95,6 +97,7 @@ get_column_names_statistics <- function(column.names, readout) {
 #' @param readout the statistics for this readout.
 #' @param colidx the position in the table to put the readout statistics
 #' @return The table of statistics including this readout.
+#' @export
 get_stats <- function(statistics, readout, colidx=2) {
     #print(readout$mean) 
     statistics[,colidx]   <- readout$mean
@@ -122,6 +125,7 @@ get_stats <- function(statistics, readout, colidx=2) {
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
+#' @export
 gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label="", yaxis_label="", column_to_read="X1") {
     
     theme_set(tc_theme(36)) #28
@@ -224,6 +228,7 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
 #' @param exp_dataset a full path file containing the experimental data.
 #' @param plot_exp_dataset TRUE if the data set file should be plotted.
 #' @return TRUE if the file exists.
+#' @export
 check_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
     if (plot_exp_dataset) {
         # check that exp_dataset exists and that the file ends with .csv (it is not a dir!)
@@ -244,6 +249,7 @@ check_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
 #' @param exp_dataset a full path file containing the experimental data.
 #' @param plot_exp_dataset TRUE if the experimental data should also be plotted
 #' @return the loaded data set.
+#' @export
 load_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
     df_exp_dataset <- data.frame()
     if(check_exp_dataset(exp_dataset, plot_exp_dataset)) {
@@ -266,6 +272,7 @@ load_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
+#' @export
 plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
                            exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
 
@@ -341,6 +348,7 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
+#' @export
 plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
                           exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
 

@@ -1,17 +1,17 @@
-# This file is part of sbpipe.
+# This file is part of sbpiper.
 #
-# sbpipe is free software: you can redistribute it and/or modify
+# sbpiper is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# sbpipe is distributed in the hope that it will be useful,
+# sbpiper is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
 # You should have received a copy of the GNU Lesser General Public License
-# along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
+# along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
 #
@@ -70,6 +70,7 @@ get_sorted_level_indexes <- function(files) {
 #' @param levels_number the number of levels (default: 10)
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @export
 plot_single_param_scan_data <- function(model, inhibition_only,
 					outputdir, sim_data_folder, sim_plots_folder, run,
 					percent_levels=TRUE, min_level=0, 
@@ -89,7 +90,7 @@ plot_single_param_scan_data <- function(model, inhibition_only,
     linetype <- c()
 
     # deepskyblue.blue3 palette
-    palette.deepskyblue.blue3 <- colorRampPalette(c("deepskyblue", "blue3"))
+    palette.deepskyblue.blue3 <- grDevices::colorRampPalette(c("deepskyblue", "blue3"))
     
     # Scanning using a virtual variable (A_percent_level) defining the percent level of its corresponding real variable (A).
     # The scanninig is therefore done by percent levels and at the beginning.
@@ -101,7 +102,7 @@ plot_single_param_scan_data <- function(model, inhibition_only,
     } else {
       #linetype <- c(6,4,3,2,1,6,5,4,3,2,6)
       # darkorchid.magenta palette
-      palette.darkorchid.magenta <- colorRampPalette(c("darkorchid", "magenta"))
+      palette.darkorchid.magenta <- grDevices::colorRampPalette(c("darkorchid", "magenta"))
       # create my colours from the dodger.blue3 palette and the darkorchid.magenta palette
       colors1 <- palette.deepskyblue.blue3(as.numeric(levels_number)/2)
       colors2 <- palette.darkorchid.magenta(as.numeric(levels_number)/2+1)
@@ -167,6 +168,7 @@ plot_single_param_scan_data <- function(model, inhibition_only,
 #' @param run the simulation number
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @export
 plot_single_param_scan_data_homogen <- function(model,
 					outputdir, sim_data_folder, 
 					sim_plots_folder, run,

@@ -1,22 +1,24 @@
 Package: sbpiper
-Type: Package
-Title: R functions for SBpipe package
 Version: 1.0.0
 Date: 2018-01-24
+Title: Data Analysis Functions for SBpipe Package
 Author: Piero Dalle Pezze
 Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
-URL: https://pdp10.github.io/sbpiper
-BugReports: https://github.com/pdp10/sbpiper/issues
 Depends: 
     R (>= 3.2.0)
 Imports:
-    ggplot2 (>= 2.2.0),
-    reshape2,
     data.table,
-    scales
-Description: R functions for model simulation, 
+    ggplot2 (>= 2.2.0),
+    grDevices,
+    reshape2,
+    scales,
+    stats,
+    utils
+Description: Data analysis functions for model simulation, 
     parameter estimation, and parameter scanning.
 License: LGPL-3 | file LICENSE
+URL: https://github.com/pdp10/sbpiper
+BugReports: https://github.com/pdp10/sbpiper/issues
 LazyLoad: true
 Collate: 
     'sbpipe_ggplot2_themes.r'

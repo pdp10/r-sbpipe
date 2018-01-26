@@ -1,17 +1,17 @@
-# This file is part of sbpipe.
+# This file is part of sbpiper.
 #
-# sbpipe is free software: you can redistribute it and/or modify
+# sbpiper is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# sbpipe is distributed in the hope that it will be useful,
+# sbpiper is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
 # You should have received a copy of the GNU Lesser General Public License
-# along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
+# along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 language: r
 sudo: required
@@ -61,4 +61,4 @@ install:
 # command to run tests
 script:
   - R CMD build .
-  - R CMD check *tar.gz
+  - R CMD check *tar.gz --as-cran

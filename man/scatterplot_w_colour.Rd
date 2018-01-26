@@ -5,8 +5,8 @@
 \title{Plot a scatter plot using a coloured palette}
 \usage{
 scatterplot_w_colour(df, g = ggplot(), colNameX, colNameY, colNameColor,
-  dot_size = 1, colours = colorRampPalette(c("blue4", "blue", "cyan",
-  "green", "yellow", "orange", "red", "red4"))(100), limits = NULL)
+  dot_size = 1, colours = (grDevices::colorRampPalette(c("blue4", "blue",
+  "cyan", "green", "yellow", "orange", "red", "red4")))(100), limits = NULL)
 }
 \arguments{
 \item{df}{a data frame}

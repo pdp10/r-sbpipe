@@ -1,17 +1,17 @@
-# This file is part of sbpipe.
+# This file is part of sbpiper.
 #
-# sbpipe is free software: you can redistribute it and/or modify
+# sbpiper is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# sbpipe is distributed in the hope that it will be useful,
+# sbpiper is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 #
 # You should have received a copy of the GNU Lesser General Public License
-# along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
+# along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
 #
@@ -35,6 +35,7 @@
 #' @param n number of data points
 #' @param p significance level
 #' @return the f-ratio threshold
+#' @export
 compute_fratio_threshold <- function(m, n, p=0.05) {
   if(n-m < 1) {
     warning("`data_point_num` is less than the number of estimated parameters. Skipping thresholds.")
@@ -54,6 +55,7 @@ compute_fratio_threshold <- function(m, n, p=0.05) {
 #' @param param_col_idx the index for the parameter column in the dataset
 #' @param objval_conf_level the objective function confidence level
 #' @return the left confidence interval
+#' @export
 leftCI <- function(cut_dataset, full_dataset, objval_col_idx, param_col_idx, objval_conf_level) {
   # retrieve the minimum parameter value for cut_dataset
   min_ci <- min(cut_dataset[,param_col_idx])
@@ -77,6 +79,7 @@ leftCI <- function(cut_dataset, full_dataset, objval_col_idx, param_col_idx, obj
 #' @param param_col_idx the index for the parameter column in the dataset
 #' @param objval_conf_level the objective function confidence level
 #' @return the right confidence interval
+#' @export
 rightCI <- function(cut_dataset, full_dataset, objval_col_idx, param_col_idx, objval_conf_level) {
   # retrieve the minimum parameter value for cut_dataset
   max_ci <- max(cut_dataset[,param_col_idx])
@@ -124,6 +127,7 @@ replace_colnames <- function(dfCols) {
 #' @param objval_col_idx the index of the column containing the objective value (default: 1)
 #' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_prefix, title="", objval_col_idx=1,
                                         logspace=TRUE, scientific_notation=TRUE) {
       fileout <- ""
@@ -160,6 +164,7 @@ plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_pre
 #' @param objval_array the array of objective function values.
 #' @param plots_dir the directory to save the generated plots
 #' @param model the model name
+#' @export
 plot_objval_vs_iters <- function(objval_array, plots_dir, model) {
     print('plotting objective value vs iteration')
     # save the objective value vs iteration
@@ -179,6 +184,7 @@ plot_objval_vs_iters <- function(objval_array, plots_dir, model) {
 #' @param model the model name
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 plot_sampled_ple <- function(df99, objval_col, cl66_objval, cl95_objval, cl99_objval, plots_dir, model,
                             logspace=TRUE, scientific_notation=TRUE) {
     dfCols <- colnames(df99)
@@ -212,6 +218,7 @@ plot_sampled_ple <- function(df99, objval_col, cl66_objval, cl95_objval, cl99_ob
 #' @param data_points the number of data points
 #' @param level the confidence level threshold (e.g. 0.1, 0.5)
 #' @return the confidence level based on minimum objective value
+#' @export
 compute_cl_objval <- function(min_objval, params, data_points, level=0.5) {
     min_objval * compute_fratio_threshold(params, data_points, level)
 }
@@ -231,6 +238,7 @@ compute_cl_objval <- function(min_objval, params, data_points, level=0.5) {
 #' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 plot_2d_cl_corr <- function(df66, df95, df99, objval_col, dfCols, plots_dir, model,
                             plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
                             logspace=TRUE, scientific_notation=TRUE) {
@@ -268,6 +276,7 @@ plot_2d_cl_corr <- function(df66, df95, df99, objval_col, dfCols, plots_dir, mod
 #' @param cl99_objval the 99\% confidence level objective value
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @return the list of parameter values with their confidence intervals
+#' @export
 compute_sampled_ple_stats <- function(df66, df95, df99, df, objval_col, objval_col_idx, param_col_idx,
                                         cl66_objval, cl95_objval, cl99_objval, logspace=TRUE) {
 
@@ -337,6 +346,7 @@ compute_sampled_ple_stats <- function(df66, df95, df99, df, objval_col, objval_c
 #' @param chi2 the Chi^2 for the model
 #' @param k the number of model parameters
 #' @return the AIC
+#' @export
 compute_aic <- function(chi2, k) {
     chi2 + 2*k
 }
@@ -349,6 +359,7 @@ compute_aic <- function(chi2, k) {
 #' @param k the number of model parameters
 #' @param n the number of data points
 #' @return the AICc
+#' @export
 compute_aicc <- function(chi2, k, n) {
     compute_aic(chi2, k) + (2*k*(k+1))/(n-k-1)
 }
@@ -361,6 +372,7 @@ compute_aicc <- function(chi2, k, n) {
 #' @param k the number of model parameters
 #' @param n the number of data points
 #' @return the BIC
+#' @export
 compute_bic <- function(chi2, k, n) {
     chi2 + k*log(n)
 }
@@ -380,6 +392,7 @@ compute_bic <- function(chi2, k, n) {
 #' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 all_fits_analysis <- function(model, df, plots_dir, data_point_num,
                               fileout_param_estim_details, fileout_param_estim_summary,
                               plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
@@ -481,6 +494,7 @@ all_fits_analysis <- function(model, df, plots_dir, data_point_num,
 #' @param best_fits_percent the percent of best fits to analyse.
 #' @param logspace true if parameters should be plotted in logspace.
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 final_fits_analysis <- function(model, df, plots_dir, best_fits_percent, logspace=TRUE, scientific_notation=TRUE) {
 
   best_fits_percent <- as.numeric(best_fits_percent)
@@ -532,6 +546,7 @@ final_fits_analysis <- function(model, df, plots_dir, best_fits_percent, logspac
 #' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
 fits_analysis <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, data_point_num,
                           fileout_param_estim_details, fileout_param_estim_summary, best_fits_percent,
                           plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
