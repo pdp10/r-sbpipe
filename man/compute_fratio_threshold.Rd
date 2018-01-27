@@ -19,3 +19,7 @@ the f-ratio threshold
 \description{
 Compute the fratio threshold for the confidence level.
 }
+\examples{
+compute_fratio_threshold(5, 100)
+compute_fratio_threshold(5, 100, p=0.01)
+}

@@ -17,3 +17,6 @@ the normalised vector
 \description{
 Normalise a vector within 0 and 1
 }
+\examples{
+normalise_vec(vec=c(-4,2,10,25,9,NA))
+}
