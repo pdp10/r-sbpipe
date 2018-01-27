@@ -30,6 +30,7 @@
 rm -f CODE_OF_CONDUCT.md
 rm -f CONTRIBUTING.md
 rm -f ISSUE_TEMPLATE.md
+rm -rf .git
 rm -f .travis.yml
 
 # remove files for conda
