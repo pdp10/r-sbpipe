@@ -27,14 +27,15 @@
 
 
 # remove files for github
-rm CODE_OF_CONDUCT.md
-rm CONTRIBUTING.md
-rm ISSUE_TEMPLATE.md
-rm .travis.yml
+rm -f CODE_OF_CONDUCT.md
+rm -f CONTRIBUTING.md
+rm -f ISSUE_TEMPLATE.md
+rm -f .travis.yml
 
 # remove files for conda
 rm -rf conda_recipe
-rm environment.yaml
+rm -f environment.yaml
+rm -f miniconda.sh
 
 # remove this script
-rm run_for_cran.sh
+rm -f run_for_cran.sh
