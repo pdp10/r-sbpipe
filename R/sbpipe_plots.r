@@ -44,6 +44,8 @@ require(graphics)
 #' @param vec the vector to normalise 
 #' @param na.rm TRUE if NA values should be discarded
 #' @return the normalised vector
+#' @examples 
+#' normalise_vec(vec=c(-4,2,10,25,9,NA))
 #' @export
 normalise_vec <- function(vec, na.rm = TRUE) {
   ranx <- range(vec, na.rm = na.rm)

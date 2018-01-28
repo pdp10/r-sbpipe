@@ -35,6 +35,9 @@
 #' @param n number of data points
 #' @param p significance level
 #' @return the f-ratio threshold
+#' @examples 
+#' compute_fratio_threshold(5, 100)
+#' compute_fratio_threshold(5, 100, p=0.01)
 #' @export
 compute_fratio_threshold <- function(m, n, p=0.05) {
   if(n-m < 1) {
