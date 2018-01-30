@@ -25,7 +25,6 @@
 #' @import ggplot2
 #' @importFrom stats density median qf qnorm quantile sd var
 #' @importFrom utils read.table tail write.table
-#' @import Hmisc
 #' @importFrom colorRamps matlab.like 
 
 

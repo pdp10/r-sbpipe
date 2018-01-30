@@ -40,11 +40,9 @@ build:
 requirements:
     build:
         - r-essentials
-        - r-hmisc
         - r-colorramps        
     run:
         - r-essentials
-        - r-hmisc
         - r-colorramps
 test:
     commands:

@@ -7,7 +7,6 @@ Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
 Depends: 
     R (>= 3.2.0)
 Imports:
-    Hmisc,
     colorRamps,
     data.table,
     ggplot2 (>= 2.2.0),
