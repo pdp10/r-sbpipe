@@ -47,7 +47,7 @@ $ anaconda login
 ```
 Build conda package:
 ```
-$ conda-build conda_recipe/meta.yaml
+$ conda-build conda_recipe/meta.yaml -c defaults -c r -c conda-forge
 ```
 
 
