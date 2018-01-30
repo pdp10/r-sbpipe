@@ -25,11 +25,9 @@
 #' @import ggplot2
 #' @importFrom stats density median qf qnorm quantile sd var
 #' @importFrom utils read.table tail write.table
+#' @import Hmisc
+#' @importFrom colorRamps matlab.like 
 
-# @import reshape2
-# @import data.table
-# As this package is small, instead of doing this we just use the operator :: . 
-# We only leave this for ggplot2
 
 #library(reshape2)
 #library(ggplot2)
@@ -277,6 +275,8 @@ plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_lab
 
 
 
+
+
 #' Plot time courses organised as data frame columns with a heatmap.
 #'
 #' @param df a data frame, with Time as first column
@@ -300,15 +300,20 @@ plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='
         # use geom_raster() for generating a heatmap    
         g <- g + geom_raster(data=mdf, aes_string(x="variable", y="Time", fill="value"))
     }
-    g <- g + scale_fill_gradient(low = "white", high = "steelblue") +
+    # remove gaps between axis and plot area
+    g <- g + scale_y_continuous(expand = c(0, 0)) 
+    g <- g + scale_fill_gradientn(colours = matlab.like(256)) +
+    #g <- g + scale_fill_gradient(low = "white", high = "steelblue") +      # OLD style 
              # NOTE we will flip the coordinates later.
              xlab(yaxis_label) + ylab(xaxis_label) + ggtitle(title) +
              # guides(fill = guide_legend(title=legend_label,
              #                            title.position='left',
              #                            title.theme = element_text(size = 25, angle = 90))) +
-             guides(fill = guide_legend(title=NULL,
-                                        label.theme = element_text(size=20, angle=0))) +
-             theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+             #guides(guide_legend(title=NULL,
+            #                             label.theme = element_text(size=20, angle=0))) +
+             theme(legend.title = element_blank(), legend.text=element_text(size=25),
+                   legend.key.size = unit(0.48, "in"),
+                   axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
              coord_flip()
     return(g)
 }

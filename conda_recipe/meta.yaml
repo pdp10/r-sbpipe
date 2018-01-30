@@ -40,8 +40,12 @@ build:
 requirements:
     build:
         - r-essentials
+        - r-hmisc
+        - r-colorramps        
     run:
-        - r-essentials      
+        - r-essentials
+        - r-hmisc
+        - r-colorramps
 test:
     commands:
         - $R -e "library('sbpiper')"

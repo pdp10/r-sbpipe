@@ -20,6 +20,9 @@ name:
   - sbpiper
 channels:
   - r
+  - conda-forge
   - defaults
 dependencies:
   - r-essentials
+  - r-hmisc
+  - r-colorramps
