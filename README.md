@@ -21,7 +21,7 @@ SBpiper can directly be installed via github:
 
 or via conda:
 ```
-$ conda install -c pdp10 sbpiper
+$ conda install sbpiper -c pdp10 -c r -c defaults -c conda-forge 
 ```
 
 The R package is loaded as usual:
@@ -33,7 +33,13 @@ Developers can check and build SBpiper using the following commands:
 ```
 > devtools::check("sbpiper")
 > devtools::build("sbpiper")
-````
+```
+
+or
+```
+$ R CMD build .
+$ R CMD check *tar.gz --as-cran
+```
 
 Finally, sbpiper is installed with the command: 
 ```
@@ -47,7 +53,7 @@ $ anaconda login
 ```
 Build conda package:
 ```
-$ conda-build conda_recipe/meta.yaml -c defaults -c r -c conda-forge
+$ conda-build conda_recipe/meta.yaml -c pdp10 -c r -c defaults -c conda-forge
 ```
 
 
