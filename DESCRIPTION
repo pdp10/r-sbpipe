@@ -27,7 +27,8 @@ Collate:
     'sbpipe_sim.r'
     'sbpipe_ps1.r'
     'sbpipe_ps2.r'
-    'sbpipe_pe.r'    
+    'sbpipe_pe.r'
+    'data.r'
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

@@ -1,6 +1,3 @@
-#!/bin/bash
-#
-#
 # This file is part of sbpiper.
 #
 # sbpiper is free software: you can redistribute it and/or modify
@@ -17,29 +14,33 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-#
-#
-# This script removes CRAN non-standard files/directories found at top level.
-# It should be executed before the following commands:
-# 
-# R CMD build .
-# R CMD check *tar.gz --as-cran
+# Object: data set generation. 
 
 
-# remove files for github
-rm -f CODE_OF_CONDUCT.md
-rm -f CONTRIBUTING.md
-rm -f ISSUE_TEMPLATE.md
-rm -rf .git
-rm -f .travis.yml
 
-# remove files for conda
-rm -rf conda_recipe
-rm -f environment.yaml
-rm -f miniconda.sh
 
-# remove data_raw
-rm -rf data-raw
 
-# remove this script
-rm -f run_for_cran.sh
+library(devtools)
+
+# model simulation
+# save
+insulin_receptor_sim <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
+#save(insulin_receptor_sim, file=file.path("..", "data", "insulin_receptor_sim.rda"))
+
+devtools::use_data(insulin_receptor_sim, overwrite = TRUE)
+
+# load
+#load(file=file.path(".", "insulin_receptor_sim.rda"))
+
+
+
+# model parameter estimation
+# save
+all_fits_pe <- read.delim("all_estim_collection.csv")
+best_fits_pe <- read.delim("final_estim_collection.csv")
+devtools::use_data(all_fits_pe, overwrite = TRUE)
+devtools::use_data(best_fits_pe, overwrite = TRUE)
+
+
+
+

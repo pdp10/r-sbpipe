@@ -7,10 +7,10 @@ This package contains a collection of R utility functions used by SBpipe
 for plotting and generating statistics. Originally, this source code was distributed within SBpipe. 
 SBpiper was conceived to improve modularity and enable the invokation of SBpipe functions for data analysis and plot generation directly as an R library.
 
-## Using SBpipe
+## How to use this package with SBpipe
 This dependency library is automatically installed by SBpipe via provided script or using conda, so no further step is needed. See the above link for instructions on how to install SBpipe. 
 
-## Using SBpiper as an R library
+## How to use this package as an R library
 The below information should be used by those users who intend to use this library directly in their 
 R source code and do NOT plan to install SBpipe.
 SBpiper can directly be installed via github:
@@ -46,7 +46,8 @@ Finally, sbpiper is installed with the command:
 $ R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
-Conda recipe for SBpiper retrieves the code from the `master` branch its the github repository. Therefore, before building the conda package, make sure that the `master` is updated with the new version. Anaconda client is needed and can be installed with the following commands:
+## How to build this package (for developers)
+Conda recipe for SBpiper retrieves the code from the github branch: `master`. Therefore, before building the conda package, make sure that this branch is updated with the new version. Anaconda client is needed and can be installed with the following commands:
 ```
 $ conda install anaconda-client
 $ anaconda login
@@ -55,6 +56,7 @@ Build conda package:
 ```
 $ conda-build conda_recipe/meta.yaml -c pdp10 -c r -c defaults -c conda-forge
 ```
+
 
 
 **How to cite SBpipe / SBpiper:**
