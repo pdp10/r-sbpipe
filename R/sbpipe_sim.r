@@ -420,7 +420,7 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
         }
         summary <- data.frame(summary)
         names(summary) <- c("Time", paste('X', seq(1, length(files), 1), sep=""))
-        write.table(summary, file=gsub('.csv', paste('_', column[i], '.csv', sep=""), outputfile), sep="\t", row.names=FALSE, quote=FALSE)
+        write.table(summary, file=outputfile, sep="\t", row.names=FALSE, quote=FALSE)
       }
   }
 }
@@ -431,8 +431,8 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
 #' @param model_noext the model name without extension
 #' @param inputdir the input directory
 #' @param outputdir the output directory
-#' @param outputfile the output file name containing the statistics
-#' @param repeats_file_template the output template file storing the summary of model simulation repeats
+#' @param outputfile_stats the output file containing the statistics
+#' @param outputfile_repeats the output file storing the model simulation repeats
 #' @param exp_dataset the file containing the experimental data.
 #' @param plot_exp_dataset TRUE if the experimental data should also be plotted
 #' @param exp_dataset_alpha the alpha level for the data set
@@ -440,7 +440,7 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
 #' @export
-sbpipe_sim <- function(model_noext, inputdir, outputdir, outputfile, repeats_file_template, 
+sbpipe_sim <- function(model_noext, inputdir, outputdir, outputfile_stats, outputfile_repeats, 
                             exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label, 
                             column_to_read) {
   
@@ -452,19 +452,19 @@ sbpipe_sim <- function(model_noext, inputdir, outputdir, outputfile, repeats_fil
   }
   
   print('generating a table of statistics')
-  gen_stats_table(inputdir, outputdir, model_noext, outputfile, xaxis_label, yaxis_label, column_to_read)
+  gen_stats_table(inputdir, outputdir, model_noext, outputfile_stats, xaxis_label, yaxis_label, column_to_read)
   
   print('summarising the time course repeats in tables')
-  summarise_data(inputdir, model_noext, repeats_file_template, column_to_read)
+  summarise_data(inputdir, model_noext, outputfile_repeats, column_to_read)
   
   files <- list.files( path=inputdir, pattern=model_noext )
   if(length(files) > 1) {
     print('plotting separate time courses')
-    plot_sep_sims(dirname(repeats_file_template), outputdir, model_noext, exp_dataset, plot_exp_dataset,
+    plot_sep_sims(dirname(outputfile_repeats), outputdir, model_noext, exp_dataset, plot_exp_dataset,
                   exp_dataset_alpha, xaxis_label, yaxis_label, column_to_read)
   }
   print('plotting combined time courses')
-  plot_comb_sims(dirname(repeats_file_template), outputdir, model_noext, exp_dataset, plot_exp_dataset,
+  plot_comb_sims(dirname(outputfile_repeats), outputdir, model_noext, exp_dataset, plot_exp_dataset,
                  exp_dataset_alpha, xaxis_label, yaxis_label, column_to_read)
 }
 

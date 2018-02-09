@@ -4,9 +4,9 @@
 \alias{sbpipe_sim}
 \title{Main R function for SBpipe pipeline: simulate().}
 \usage{
-sbpipe_sim(model_noext, inputdir, outputdir, outputfile, repeats_file_template,
-  exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label,
-  column_to_read)
+sbpipe_sim(model_noext, inputdir, outputdir, outputfile_stats,
+  outputfile_repeats, exp_dataset, plot_exp_dataset, exp_dataset_alpha,
+  xaxis_label, yaxis_label, column_to_read)
 }
 \arguments{
 \item{model_noext}{the model name without extension}
@@ -15,9 +15,9 @@ sbpipe_sim(model_noext, inputdir, outputdir, outputfile, repeats_file_template,
 
 \item{outputdir}{the output directory}
 
-\item{outputfile}{the output file name containing the statistics}
+\item{outputfile_stats}{the output file containing the statistics}
 
-\item{repeats_file_template}{the output template file storing the summary of model simulation repeats}
+\item{outputfile_repeats}{the output file storing the model simulation repeats}
 
 \item{exp_dataset}{the file containing the experimental data.}
 
