@@ -395,6 +395,7 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
 #' @param model the model name
 #' @param outputfile the name of the file to store the simulations
 #' @param column_to_read the name of the column to process
+#' @export
 summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
 
   # collect all files in the directory
