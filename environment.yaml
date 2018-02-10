@@ -23,10 +23,10 @@ channels:
   - defaults
   - conda-forge  
 dependencies:
-  - r-data.table,
-  - r-ggplot2 (>= 2.2.0),
-  - r-reshape2,
-  - r-scales,
+  - r-data.table
+  - r-ggplot2
+  - r-reshape2
+  - r-scales
 # - r-essentials
   - r-colorramps
   
