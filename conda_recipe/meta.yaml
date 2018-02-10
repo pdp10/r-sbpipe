@@ -39,11 +39,19 @@ build:
 
 requirements:
     build:
-        - r-essentials
-        - r-colorramps        
+        - r-data.table,
+        - r-ggplot2 (>= 2.2.0),
+        - r-reshape2,
+        - r-scales,
+        # - r-essentials
+        - r-colorramps      
     run:
-        - r-essentials
-        - r-colorramps
+        - r-data.table,
+        - r-ggplot2 (>= 2.2.0),
+        - r-reshape2,
+        - r-scales,
+        # - r-essentials
+        - r-colorramps  
 test:
     commands:
         - $R -e "library('sbpiper')"
