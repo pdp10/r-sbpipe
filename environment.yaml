@@ -29,4 +29,5 @@ dependencies:
   - r-scales
 # - r-essentials
   - r-colorramps
+  - libiconv  
   

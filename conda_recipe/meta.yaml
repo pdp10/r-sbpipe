@@ -44,14 +44,16 @@ requirements:
         - r-reshape2
         - r-scales
         # - r-essentials
-        - r-colorramps      
+        - r-colorramps
+        - libiconv        
     run:
         - r-data.table
         - r-ggplot2
         - r-reshape2
         - r-scales
         # - r-essentials
-        - r-colorramps  
+        - r-colorramps
+        - libiconv
 test:
     commands:
         - $R -e "library('sbpiper')"
