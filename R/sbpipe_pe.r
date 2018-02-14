@@ -148,7 +148,10 @@ plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_pre
             fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], "_", dfCols[j], ".png", sep=""))
             g <- scatterplot_w_colour(df, g, colnames(df)[i], colnames(df)[j], colnames(df)[objval_col_idx]) +
                  ggtitle(title) +
-                 theme(legend.key.height = unit(0.5, "in"))
+                 theme(legend.title=element_blank(), 
+                       legend.text=element_text(size=30),
+                       legend.key.width = unit(0.4, "in"), 
+                       legend.key.height = unit(0.5, "in"))
             if(logspace) {
                 g <- g + xlab(paste("log10(",dfCols[i],")",sep="")) + ylab(paste("log10(",dfCols[j],")",sep=""))
             }
