@@ -14,7 +14,7 @@
 # along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
 
 
-{% set version= '1.1.0' %}
+{% set version= '1.2.0' %}
 
 package:
   name: sbpiper
@@ -39,21 +39,21 @@ build:
 
 requirements:
     build:
+        - r-base=3.4.1
         - r-data.table
-        - r-ggplot2
+        - r-ggplot2=2.2.1
         - r-reshape2
         - r-scales
-        # - r-essentials
-        - r-colorramps
-        - libiconv        
+        - r-colorramps=2.3
+        #- r-essentials       
     run:
+        - r-base=3.4.1    
         - r-data.table
-        - r-ggplot2
+        - r-ggplot2=2.2.1
         - r-reshape2
         - r-scales
-        # - r-essentials
-        - r-colorramps
-        - libiconv
+        - r-colorramps=2.3
+        #- r-essentials       
 test:
     commands:
         - $R -e "library('sbpiper')"

@@ -23,11 +23,11 @@ channels:
   - defaults
   - conda-forge  
 dependencies:
+  - r-base=3.4.1
   - r-data.table
-  - r-ggplot2
+  - r-ggplot2=2.2.1
   - r-reshape2
   - r-scales
-# - r-essentials
-  - r-colorramps
-  - libiconv  
+  - r-colorramps=2.3
+  #- r-essentials
   
