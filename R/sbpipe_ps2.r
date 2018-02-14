@@ -27,8 +27,6 @@
 #source(file.path(SBPIPE_R, 'sbpipe_ggplot2_themes.r'))
 
 
-
-
 #' Plot model double parameter scan time courses.
 #'
 #' @param model the model name without extension
@@ -55,15 +53,8 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 
     # discard the first column (Time) and the columns of the two scanned parameters
     columns2discard <- c(colnames(df)[1], scanned_par1, scanned_par2)
-    # drop=FALSE is necessary because we don't want R converts 1 data frames into an array.
-    df.compact <- df[,!(colnames(df) %in% columns2discard), drop = FALSE]
-    # extract the tuples with minimum and maximum values. These are used for scaling the plot colours.
-    df.compact <- data.frame(df.compact)
-    min_values <- apply(df.compact, 2, min)
-    max_values <- apply(df.compact, 2, max)
-
-    # extract the columns
-    columns <- colnames(df.compact)
+    # columns to plot. drop=FALSE is necessary because we don't want R converts 1 data frames into an array.
+    columns <- colnames(df[,!(colnames(df) %in% columns2discard), drop = FALSE])
 
     # READ the files containing the time points. These will be plotted.
 
@@ -75,48 +66,24 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
         return
     }
 
-
-    df.coordinates <- data.frame()
-    # Extract the coordinates of the data frame to plot
-    if(length(files) > 0)
-        df.tp <- read.table(file.path(inputdir, files[1]), header=TRUE, na.strings="NA", dec=".", sep="\t")
-        df.coordinates <- subset(df.tp, select=c(scanned_par1, scanned_par2))
-    #print(df.coordinates)
-
-    # Construct a generic palette
-    colfunc <- grDevices::colorRampPalette(c("blue4", "blue", "cyan", "green", "yellow", "orange", "red", "red4"))
-    palette.generic <- colfunc(100)
-
     for(j in 1:length(files)) {
       print(paste('Processing file:', files[j], sep=" "))
       # Read variable
       df.tp <- read.table(file.path(inputdir, files[j]), header=TRUE, na.strings="NA", dec=".", sep="\t")
 
       for(k in 1:length(columns)) {
-        # add the column to plot (the colour) to the coordinate data in df.coordinates
-        df.plot <- data.frame(df.coordinates, subset(df.tp, select=c(columns[k])))
-
-        # Calculate the range of interest for this palette so that the colours are better represented.
-        # Therefore, scale the column min/max for this time point by column min/max of the whole time course
-        # so that the colour bar for each plot (time point) is consistent through the time course.
-        col.min <- min(df.plot[,c(columns[k])])
-        col.max <- max(df.plot[,c(columns[k])])
-        colour.minidx <- as.integer(col.min*100/max_values[k])
-        colour.maxidx <- as.integer(col.max*100/max_values[k])
-        if(colour.minidx == colour.maxidx) {
-            colour.maxidx <- colour.maxidx + 1
-        }
-        palette.plot <- palette.generic[colour.minidx:colour.maxidx]
-
-        g <- scatterplot_w_colour(df.plot, ggplot(), scanned_par1, scanned_par2, columns[k], colours=palette.plot) +
+        g <- scatterplot_w_colour(df.tp, ggplot(), scanned_par1, scanned_par2, columns[k]) +
             ggtitle(paste(columns[k], ", t=", j-1, sep="")) +
-            theme(legend.key.height = unit(0.5, "in"), plot.title = element_text(hjust = 0.5))
+            theme(legend.title=element_blank(), 
+                  legend.text=element_text(size=30),
+                  legend.key.width = unit(0.5, "in"), 
+                  legend.key.height = unit(0.65, "in"), 
+                  plot.title = element_text(hjust = 0.5))
         ggsave(file.path(outputdir, paste(model, "__eval_", columns[k], '__rep_', run, "__tp_", j-1, ".png", sep="" )),
             dpi=300,  width=8, height=6)
       }
   }
 }
-
 
 #' Main R function for SBpipe pipeline: parameter_scan2().
 #'

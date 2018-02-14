@@ -78,7 +78,14 @@ histogramplot <- function(dfCol, g=ggplot()) {
 #' @param limits the limits for the palette (NULL if no limit is used)
 #' @return the plot
 #' @export
-scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColor, dot_size=1.0, colours=grDevices::colorRampPalette(c("blue4", "blue", "cyan", "green", "yellow", "orange", "red", "red4"))(100), limits=NULL) {
+scatterplot_w_colour <- function(df, 
+                                 g=ggplot(), 
+                                 colNameX, 
+                                 colNameY, 
+                                 colNameColor, 
+                                 dot_size=1.0, 
+                                 colours=colorRamps::matlab.like(256), 
+                                 limits=NULL) {
 
 # If the third coordinate has equal values, then use the first value (default: red)
   colorCol <- df[,c(colNameColor)]
@@ -88,7 +95,7 @@ scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColo
   }
 
   g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY, color=colNameColor), size=dot_size) +
-       scale_colour_gradientn(colours=colours, limits) +
+      scale_colour_gradientn(colours=colours, limits) +
        #geom_rug(col="darkblue",alpha=.1) +    
        theme(axis.text.x=element_text(vjust = 1))  
   # #add marginal histograms
@@ -109,7 +116,14 @@ scatterplot_w_colour <- function(df, g=ggplot(), colNameX, colNameY, colNameColo
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
 #' @export
-scatterplot_ple <- function(df, g=ggplot(), colNameX, colNameY, conf_level_66, conf_level_95, conf_level_99, dot_size=0.1) {
+scatterplot_ple <- function(df, 
+                            g=ggplot(), 
+                            colNameX, 
+                            colNameY, 
+                            conf_level_66, 
+                            conf_level_95, 
+                            conf_level_99, 
+                            dot_size=0.1) {
   df.thresholds <- data.frame(conf_level_66, conf_level_95, conf_level_99)
   g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size)
 
@@ -236,7 +250,13 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 #' @param alpha the amount of alpha transparency
 #' @return the plot
 #' @export
-plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_label="", bar_type="mean", alpha=1) {
+plot_combined_tc <- function(df, 
+                             g=ggplot(), 
+                             title="", 
+                             xaxis_label="", 
+                             yaxis_label="", 
+                             bar_type="mean", 
+                             alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
         g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"),
@@ -264,7 +284,12 @@ plot_combined_tc <- function(df, g=ggplot(), title="", xaxis_label="", yaxis_lab
 #' @param alpha the amount of alpha transparency
 #' @return the plot
 #' @export
-plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_label="", alpha=1) {
+plot_repeated_tc <- function(df, 
+                             g=ggplot(), 
+                             title='', 
+                             xaxis_label="", 
+                             yaxis_label="", 
+                             alpha=1) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     g <- g + geom_line(data=mdf,aes_string(x="Time",y="value",color="variable"), size=1.0, alpha=alpha) +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title) +
@@ -286,7 +311,12 @@ plot_repeated_tc <- function(df, g=ggplot(), title='', xaxis_label="", yaxis_lab
 #' @param yaxis_label the yaxis label of the plot
 #' @return the plot
 #' @export
-plot_heatmap_tc <- function(df, g=ggplot(), scaled=TRUE, title='', xaxis_label='', yaxis_label='') {
+plot_heatmap_tc <- function(df, 
+                            g=ggplot(), 
+                            scaled=TRUE, 
+                            title='', 
+                            xaxis_label='', 
+                            yaxis_label='') {
     if(scaled) {
         # normalise within 0 and 1
         df.norm <- cbind(data.frame(df[1]), apply(df[-1], 2, normalise_vec))
