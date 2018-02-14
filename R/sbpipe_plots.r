@@ -32,8 +32,8 @@
 #library(ggplot2)
 #library(gridExtra)
 
-require(graphics)
 
+ret <- 0
 
 
 #' Normalise a vector within 0 and 1

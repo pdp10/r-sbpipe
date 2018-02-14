@@ -1,7 +1,8 @@
 
-v1.1.0
+v1.2.0
 
 - code optimisation
+- fixed versions for dependency packages installed via conda
 
 
 v1.0.0
