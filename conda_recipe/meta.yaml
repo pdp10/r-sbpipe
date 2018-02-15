@@ -14,7 +14,7 @@
 # along with sbpipe.  If not, see <http://www.gnu.org/licenses/>.
 
 
-{% set version= '1.2.0' %}
+{% set version= '1.3.0' %}
 
 package:
   name: sbpiper
@@ -39,23 +39,20 @@ build:
 
 requirements:
     build:
-        # r-colorramps is in conda-forge channel. Put this on top, so that 
-        # r-base will be reinstalled from the r channel when the following dependencies 
-        # will be parsed
-        - r-colorramps    
-        - r-base=3.4.1
+        - r-base=3.4.2
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
         - r-scales
+        - r-colorramps        
         #- r-essentials       
     run:
-        - r-colorramps    
-        - r-base=3.4.1    
+        - r-base=3.4.2    
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
         - r-scales
+        - r-colorramps        
         #- r-essentials       
 test:
     commands:
