@@ -20,6 +20,7 @@ name:
   - sbpiper
 channels:
   - r
+  - pdp10        # r-colorramps
   - defaults
 #  - conda-forge  
 dependencies:
