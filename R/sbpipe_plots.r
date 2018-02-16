@@ -23,6 +23,7 @@
 
 # Roxygen2 will import the functions of the following package in the namespace of this package
 #' @import ggplot2
+#' @import Hmisc
 #' @importFrom stats density median qf qnorm quantile sd var
 #' @importFrom utils read.table tail write.table
 #' @importFrom colorRamps matlab.like 
