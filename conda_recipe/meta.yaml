@@ -43,6 +43,7 @@ requirements:
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
+        - r-hmisc        
         - r-scales
         - r-colorramps        
         #- r-essentials       
@@ -51,6 +52,7 @@ requirements:
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
+        - r-hmisc
         - r-scales
         - r-colorramps        
         #- r-essentials       

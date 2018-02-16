@@ -11,6 +11,7 @@ Imports:
     data.table,
     ggplot2 (>= 2.2.0),
     grDevices,
+    Hmisc,
     reshape2,
     scales,
     stats,
