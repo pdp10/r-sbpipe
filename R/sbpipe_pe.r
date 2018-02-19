@@ -536,6 +536,28 @@ final_fits_analysis <- function(model, df, plots_dir, best_fits_percent, logspac
 }
 
 
+#' Parameter estimation pre-processing. It renames the data set columns, 
+#' and applies a log10 transformation if logspace is TRUE
+#'
+#' @param inputdir the directory containing the dataset
+#' @param filename the dataset filename containing the fits sequence
+#' @param param.names The list of estimated parameter names
+#' @param logspace true if the data set shoud be log10-transformed.
+#' @export
+pe.ds.preproc <- function(inputdir, filename, param.names=c(), logspace=TRUE) {
+  dt <- data.table::fread(file.path(inputdir, filename))
+  colnames(dt) <- replace_colnames(colnames(dt))
+  dt.log10 <- dt
+  data.table::fwrite(dt, file.path(inputdir, filename))
+  
+  if(logspace) {
+    dt.log10[, (param.names) := lapply(.SD, "log10"), .SDcols = param.names]
+    data.table::fwrite(dt.log10, file.path(inputdir, gsub('.csv', '_log10.csv', filename)))
+  }
+}
+#param.names <- c('k1', 'k2', 'k3')
+#dataset.preproc('.', 'all_estim_collection.csv', param.names)
+
 
 #' Run model parameter estimation analysis and plot results.
 #'
