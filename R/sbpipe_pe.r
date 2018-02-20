@@ -28,193 +28,6 @@ library(grDevices)
 require(graphics)
 
 
-#' Plot parameter correlations.
-#'
-#' @param df the data frame
-#' @param dfCols the columns of the data frame. Each column is a parameter. Only parameters to the left of objval_col_idx are plotted.
-#' @param plots_dir the directory for storing the plots
-#' @param plot_filename_prefix the prefix for the plot filename
-#' @param title the plot title (default: "")
-#' @param objval_col_idx the index of the column containing the objective value (default: 1)
-#' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
-#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
-#' @export
-plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_prefix, title="", objval_col_idx=1,
-                                        logspace=TRUE, scientific_notation=TRUE) {
-      fileout <- ""
-      for (i in seq(objval_col_idx+1,length(dfCols))) {
-        print(paste('sampled param corr (', title, ') for ', dfCols[i], sep=''))
-        for (j in seq(i, length(dfCols))) {
-          g <- ggplot()
-          if(i==j) {
-            fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], ".png", sep=""))
-            g <- histogramplot(df[i], g) + ggtitle(title)
-            if(logspace) {
-                g <- g + xlab(paste("log10(",dfCols[i],")",sep=""))
-            }
-          } else {
-            fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], "_", dfCols[j], ".png", sep=""))
-            g <- scatterplot_w_colour(df, g, colnames(df)[i], colnames(df)[j], colnames(df)[objval_col_idx]) +
-                 ggtitle(title) +
-                 theme(legend.title=element_blank(), 
-                       legend.text=element_text(size=30),
-                       legend.key.width = unit(0.4, "in"), 
-                       legend.key.height = unit(0.5, "in"))
-            if(logspace) {
-                g <- g + xlab(paste("log10(",dfCols[i],")",sep="")) + ylab(paste("log10(",dfCols[j],")",sep=""))
-            }
-          }
-          if(scientific_notation) {
-             g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
-          }
-          ggsave(fileout, dpi=300, width=8, height=6)
-        }
-    }
-}
-
-
-#' Plot parameter correlations using the 66\%, 95\%, or 99\% confidence level data sets
-#'
-#' @param df66 the data frame filtered at 66\%
-#' @param df95 the data frame filtered at 95\%
-#' @param df99 the data frame filtered at 95\%
-#' @param objval_col the objective value column name
-#' @param dfCols the column names of the dataset
-#' @param plots_dir the directory to save the generated plots
-#' @param model the model name
-#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
-#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
-#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
-#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
-#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
-#' @export
-plot_2d_cl_corr <- function(df66, df95, df99, objval_col, dfCols, plots_dir, model,
-                            plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
-                            logspace=TRUE, scientific_notation=TRUE) {
-  if(plot_2d_66cl_corr) {
-    plot_parameter_correlations(df66, dfCols, plots_dir, paste(model, "_cl66_fits_", sep=""),
-        expression("obj val"<="CL66%"), which(dfCols==objval_col), logspace, scientific_notation)
-  }
-  if(plot_2d_95cl_corr) {
-    plot_parameter_correlations(df95, dfCols, plots_dir, paste(model, "_cl95_fits_", sep=""),
-        expression("obj val"<="CL95%"), which(dfCols==objval_col), logspace, scientific_notation)
-  }
-  if(plot_2d_99cl_corr) {
-    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_cl99_fits_", sep=""),
-        expression("obj val"<="CL99%"), which(dfCols==objval_col), logspace, scientific_notation)
-  }
-  if(nrow(df66) == nrow(df95) && nrow(df95) == nrow(df99)) {
-    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_all_fits_", sep=""),
-        expression("all fits"), which(dfCols==objval_col), logspace, scientific_notation)
-  }
-}
-
-
-#' Run model parameter estimation analysis and plot results. This script analyses
-#' all fits.
-#'
-#' @param model the model name without extension
-#' @param df the dataset containing all the parameter estimation fits.
-#' @param plots_dir the directory to save the generated plots
-#' @param data_point_num the number of data points used for parameterise the model
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
-#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
-#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
-#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
-#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
-#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
-#' @export
-all_fits_analysis <- function(model, df, plots_dir, data_point_num,
-                              fileout_param_estim_details, fileout_param_estim_summary,
-                              plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
-                              logspace=TRUE, scientific_notation=TRUE) {
-
-  data_point_num <- as.numeric(data_point_num)
-  if(data_point_num < 0.0) {
-    warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
-    stop()
-  }
-
-  dfCols <- replace_colnames(colnames(df))
-  colnames(df) <- dfCols
-  objval_col_idx <- 1
-  objval_col <- dfCols[objval_col_idx]
-
-  if(logspace) {
-    # Transform the parameter space to a log10 parameter space.
-    # The column for the objective value score is maintained instead.
-    df[,-objval_col_idx] <- log10(df[,-objval_col_idx])
-  }
-
-  parameter_num = length(colnames(df)) - 1
-  # compute the confidence levels
-  cl99_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .01)
-  cl95_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .05)
-  cl66_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .33)
-
-  # select the rows with objective value smaller than our max threshold
-  if(cl99_objval > 0) { df99 <- df[df[,objval_col] <= cl99_objval, ] } else { df99 <- df }
-  if(cl95_objval > 0) { df95 <- df[df[,objval_col] <= cl95_objval, ] } else { df95 <- df }
-  if(cl66_objval > 0) { df66 <- df[df[,objval_col] <= cl66_objval, ] } else { df66 <- df }
-
-  min_objval <- min(df99[,objval_col])
-
-  # Set my ggplot theme here
-  theme_set(basic_theme(36))
-
-  # Plot the objective value vs Iterations
-  plot_objval_vs_iters(df[,objval_col], plots_dir, model)
-
-  # Write the summary for the parameter estimation analysis
-  fileoutPLE <- sink(fileout_param_estim_summary)
-  cat(paste("MinObjVal", "AIC", "AICc", "BIC", "ParamNum", "DataPointNum", "CL66ObjVal", "CL66FitsNum", "CL95ObjVal", "CL95FitsNum", "CL99ObjVal", "CL99FitsNum\n", sep="\t"))
-  cat(paste(min_objval, compute_aic(min_objval, parameter_num), compute_aicc(min_objval, parameter_num, data_point_num), compute_bic(min_objval, parameter_num, data_point_num), parameter_num, data_point_num, cl66_objval, nrow(df66), cl95_objval, nrow(df95), cl99_objval, nrow(df99), sep="\t"), append=TRUE)
-  cat("\n", append=TRUE)
-  sink()
-
-  # Plot the sampled profile likelihood estimations (PLE)
-  plot_sampled_ple(df99, objval_col, cl66_objval, cl95_objval, cl99_objval, plots_dir, model, logspace, scientific_notation)
-
-  # Write the table containing the parameter estimation details.
-  fileoutPLE <- sink(fileout_param_estim_details)
-  cat(paste("Parameter", "Value", "LeftCI66", "RightCI66", "LeftCI95", "RightCI95", "LeftCI99", "RightCI99", "Value_LeftCI66_ratio", "RightCI66_Value_ratio", "Value_LeftCI95_ratio", "RightCI95_Value_ratio", "Value_LeftCI99_ratio", "RightCI99_Value_ratio\n", sep="\t"), append=TRUE)
-  for (i in seq(2,length(dfCols))) {
-    # compute the confidence levels and the value for the best parameter
-    ci_obj <- compute_sampled_ple_stats(df66, df95, df99, df, objval_col, objval_col_idx, i,
-                                        cl66_objval, cl95_objval, cl99_objval, logspace)
-
-    # write on file
-    cat(paste(dfCols[i], ci_obj$par_value, ci_obj$min_ci_66, ci_obj$max_ci_66, ci_obj$min_ci_95, ci_obj$max_ci_95,
-    ci_obj$min_ci_99, ci_obj$max_ci_99, ci_obj$min_ci_66_par_value_ratio, ci_obj$max_ci_66_par_value_ratio,
-    ci_obj$min_ci_95_par_value_ratio, ci_obj$max_ci_95_par_value_ratio, ci_obj$min_ci_99_par_value_ratio,
-    ci_obj$max_ci_99_par_value_ratio, sep="\t"), append=TRUE)
-    cat("\n", append=TRUE)
-  }
-  sink()
-
-  # plot parameter correlations using the 66%, 95%, or 99% confidence level data sets
-  dfCols <- colnames(df99)
-  if(cl99_objval > 0) {
-      plot_2d_cl_corr(df66[order(-df66[,objval_col]),],
-                      df95[order(-df95[,objval_col]),],
-                      df99[order(-df99[,objval_col]),],
-                      objval_col,
-                      dfCols, plots_dir, model,
-                      plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
-                      logspace, scientific_notation)
-   } else {
-      plot_2d_cl_corr(df66[order(-df99[,objval_col]),],
-                      df95[order(-df99[,objval_col]),],
-                      df99[order(-df99[,objval_col]),],
-                      objval_col,
-                      dfCols, plots_dir, model,
-                      FALSE, FALSE, FALSE,
-                      logspace, scientific_notation)
-   }
-
-}
-
 
 
 #' Run model parameter estimation analysis and plot results. It analyses
@@ -602,7 +415,7 @@ compute_bic <- function(chi2, k, n) {
 #' If all.fits is true, it also computes the confidence levels.
 #'
 #' @param filename the dataset filename containing the fits sequence
-#' @param param.names The list of estimated parameter names
+#' @param param.names the list of estimated parameter names
 #' @param logspace true if the data set shoud be log10-transformed.
 #' @param all.fits true if filename contains all fits, false otherwise
 #' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
@@ -825,7 +638,7 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' Run the profile likelihood estimation analysis.
 #'
 #' @param model_name the model name without extension
-#' @param filename the dataset filename containing all the parameter estimation fits
+#' @param filename the filename containing the fits sequence
 #' @param parameter the parameter to compute the PLE analysis
 #' @param plots_dir the directory to save the generated plots
 #' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
@@ -890,6 +703,208 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 }
 
 
+#' Plot parameter density.
+#'
+#' @param df the data set containing the parameter estimates to plot.
+#' @param parameter the name of the parameter to plot the density
+#' @param fileout the output file
+#' @param title the plot title (default: "")
+#' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TRUE, scientific_notation=TRUE) {
+  g <- histogramplot(df[parameter], ggplot()) + ggtitle(title)
+  if(logspace) {
+    g <- g + xlab(paste("log10(",parameter,")",sep=""))
+  }
+  if(scientific_notation) {
+    g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
+  }
+  ggsave(fileout, dpi=300, width=8, height=6)
+}
+
+
+#' Plot parameter correlations.
+#'
+#' @param model_name the model name without extension
+#' @param filename the filename containing the fits sequence
+#' @param parameter the name of the parameter to plot the density
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
+#' @param plots_dir the directory for storing the plots
+#' @param thres the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".
+#' @param logspace true if the parameters should be plotted in logspace
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation
+#' @export
+parameter_density_analysis <- function(model_name, filename, parameter, fileout_param_estim_summary,  
+                              plots_dir, thres="BestFits", logspace=TRUE, scientific_notation=TRUE) {
+  
+  # load the fits for this parameter
+  df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
+  
+  # load the global statistics for the parameter estimation
+  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+  
+  if(thres != "BestFits") {
+    if(dt.stats$CL99ObjVal != 0) {
+      if(thres == "CL66") {
+        df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
+        fileout <- file.path(plots_dir, paste(model_name, "_cl66_fits_", parameter, ".png", sep=""))
+        title <- expression("fits"<="CL66%")
+      } else if(thres == "CL95") {
+        df <- df[df[ , objval.col] <= dt.stats$CL95ObjVal, ]
+        fileout <- file.path(plots_dir, paste(model_name, "_cl95_fits_", parameter, ".png", sep=""))
+        title <- expression("fits"<="CL95%")
+      } else if(thres == "CL99") {
+        df <- df[df[ , objval.col] <= dt.stats$CL99ObjVal, ]
+        fileout <- file.path(plots_dir, paste(model_name, "_cl99_fits_", parameter, ".png", sep=""))
+        title <- expression("fits"<="CL99%")
+      } else if(thres == "All") {
+        # no filtering, but we assume that filename contains all the fits
+        fileout <- file.path(plots_dir, paste(model_name, "_all_fits_", parameter, ".png", sep=""))
+        title <- expression("all fits")
+      } else {
+        warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
+        return
+      }
+    }
+  } else { 
+    fileout <- file.path(plots_dir, paste(model_name, "_best_fits_", parameter, ".png", sep=""))
+    title <- expression("best fits")
+  }
+  
+  print(paste('density analysis for', parameter, '(', thres, ')'))
+  plot_parameter_density(df, parameter, fileout, title, logspace, scientific_notation)
+}
+
+
+
+
+######## TODO ###########
+
+#' Plot parameter correlations.
+#'
+#' @param df the data frame
+#' @param dfCols the columns of the data frame. Each column is a parameter. Only parameters to the left of objval_col_idx are plotted.
+#' @param plots_dir the directory for storing the plots
+#' @param plot_filename_prefix the prefix for the plot filename
+#' @param title the plot title (default: "")
+#' @param objval_col_idx the index of the column containing the objective value (default: 1)
+#' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_prefix, title="", objval_col_idx=1,
+                                        logspace=TRUE, scientific_notation=TRUE) {
+  fileout <- ""
+  for (i in seq(objval_col_idx+1,length(dfCols))) {
+    print(paste('sampled param corr (', title, ') for ', dfCols[i], sep=''))
+    for (j in seq(i, length(dfCols))) {
+      g <- ggplot()
+      if(i==j) {
+        fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], ".png", sep=""))
+        g <- histogramplot(df[i], g) + ggtitle(title)
+        if(logspace) {
+          g <- g + xlab(paste("log10(",dfCols[i],")",sep=""))
+        }
+      } else {
+        fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], "_", dfCols[j], ".png", sep=""))
+        g <- scatterplot_w_colour(df, g, colnames(df)[i], colnames(df)[j], colnames(df)[objval_col_idx]) +
+          ggtitle(title) +
+          theme(legend.title=element_blank(), 
+                legend.text=element_text(size=30),
+                legend.key.width = unit(0.4, "in"), 
+                legend.key.height = unit(0.5, "in"))
+        if(logspace) {
+          g <- g + xlab(paste("log10(",dfCols[i],")",sep="")) + ylab(paste("log10(",dfCols[j],")",sep=""))
+        }
+      }
+      if(scientific_notation) {
+        g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
+      }
+      ggsave(fileout, dpi=300, width=8, height=6)
+    }
+  }
+}
+
+
+#' Plot parameter correlations using the 66\%, 95\%, or 99\% confidence level data sets
+#'
+#' @param df66 the data frame filtered at 66\%
+#' @param df95 the data frame filtered at 95\%
+#' @param df99 the data frame filtered at 95\%
+#' @param objval_col the objective value column name
+#' @param dfCols the column names of the dataset
+#' @param plots_dir the directory to save the generated plots
+#' @param model the model name
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+plot_2d_cl_corr <- function(df66, df95, df99, objval_col, dfCols, plots_dir, model,
+                            plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
+                            logspace=TRUE, scientific_notation=TRUE) {
+  if(plot_2d_66cl_corr) {
+    plot_parameter_correlations(df66, dfCols, plots_dir, paste(model, "_cl66_fits_", sep=""),
+                                expression("obj val"<="CL66%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(plot_2d_95cl_corr) {
+    plot_parameter_correlations(df95, dfCols, plots_dir, paste(model, "_cl95_fits_", sep=""),
+                                expression("obj val"<="CL95%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(plot_2d_99cl_corr) {
+    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_cl99_fits_", sep=""),
+                                expression("obj val"<="CL99%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(nrow(df66) == nrow(df95) && nrow(df95) == nrow(df99)) {
+    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_all_fits_", sep=""),
+                                expression("all fits"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+}
+
+
+#' Run model parameter estimation analysis and plot results. This script analyses
+#' all fits.
+#'
+#' @param model the model name without extension
+#' @param df the dataset containing all the parameter estimation fits.
+#' @param plots_dir the directory to save the generated plots
+#' @param data_point_num the number of data points used for parameterise the model
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+all_fits_analysis <- function(model, df, plots_dir, data_point_num,
+                              fileout_param_estim_details, fileout_param_estim_summary,
+                              plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
+                              logspace=TRUE, scientific_notation=TRUE) {
+  # plot parameter correlations using the 66%, 95%, or 99% confidence level data sets
+  dfCols <- colnames(df99)
+  if(cl99_objval > 0) {
+    plot_2d_cl_corr(df66[order(-df66[,objval_col]),],
+                    df95[order(-df95[,objval_col]),],
+                    df99[order(-df99[,objval_col]),],
+                    objval_col,
+                    dfCols, plots_dir, model,
+                    plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
+                    logspace, scientific_notation)
+  } else {
+    plot_2d_cl_corr(df66[order(-df99[,objval_col]),],
+                    df95[order(-df99[,objval_col]),],
+                    df99[order(-df99[,objval_col]),],
+                    objval_col,
+                    dfCols, plots_dir, model,
+                    FALSE, FALSE, FALSE,
+                    logspace, scientific_notation)
+  }
+  
+}
+
+
 ## TODO
 # - preprocessing (generic stats, log10) - DONE, TESTED
 # - PLE analysis - DONE, TESTED
@@ -898,29 +913,44 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 # - best fits analysis
 
 
+best_fits <- 'final_estim_collection.csv'
 all_fits <- 'all_estim_collection.csv'
 param.names <- c('k1', 'k2', 'k3')
 logspace <- TRUE
-all.fits <- TRUE
 data_point_num <- 33
 fileout_param_estim_summary <- "param_estim_summary.csv"
 
 model_name <- "insulin_receptor"
-filename <- 'all_estim_collection_log10.csv'
+filename.final <- 'final_estim_collection_log10.csv'
+filename.all <- 'all_estim_collection_log10.csv'
 parameter <- "k1"
 plots_dir <- "param_estim_plots"
 fileout_param_estim_details <- "param_estim_details.csv"
 
 # test 1:
 pe.ds.preproc(all_fits, param.names, 
-              logspace=logspace, all.fits=all.fits, data_point_num=data_point_num, 
+              logspace=logspace, all.fits=TRUE, data_point_num=data_point_num, 
               fileout_param_estim_summary=fileout_param_estim_summary)
+pe.ds.preproc(best_fits, param.names, logspace=logspace, all.fits=FALSE)
+
 # test 2:
-sampled_ple_analysis(model_name, filename, parameter=parameter, plots_dir, 
+sampled_ple_analysis(model_name, filename.all, parameter=parameter, plots_dir, 
                      fileout_param_estim_details, fileout_param_estim_summary,
                      logspace, scientific_notation=TRUE)
 # test 3:
 combine_param_ple_stats(plots_dir, fileout_param_estim_details)
+
+# test 4:
+parameter_density_analysis(model_name, filename.final, parameter, fileout_param_estim_summary,  
+                           plots_dir, thres="BestFits", logspace, scientific_notation=TRUE)
+parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
+                           plots_dir, thres="CL66", logspace, scientific_notation=TRUE)
+parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
+                           plots_dir, thres="CL95", logspace, scientific_notation=TRUE)
+parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
+                           plots_dir, thres="CL99", logspace, scientific_notation=TRUE)
+parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
+                           plots_dir, thres="All", logspace, scientific_notation=TRUE)
 
 
 
@@ -1136,4 +1166,191 @@ deprec_plot_sampled_ple <- function(df99, objval_col, cl66_objval, cl95_objval, 
   }
 }
 
+
+#' Plot parameter correlations.
+#'
+#' @param df the data frame
+#' @param dfCols the columns of the data frame. Each column is a parameter. Only parameters to the left of objval_col_idx are plotted.
+#' @param plots_dir the directory for storing the plots
+#' @param plot_filename_prefix the prefix for the plot filename
+#' @param title the plot title (default: "")
+#' @param objval_col_idx the index of the column containing the objective value (default: 1)
+#' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+deprec_plot_parameter_correlations <- function(df, dfCols, plots_dir, plot_filename_prefix, title="", objval_col_idx=1,
+                                        logspace=TRUE, scientific_notation=TRUE) {
+  fileout <- ""
+  for (i in seq(objval_col_idx+1,length(dfCols))) {
+    print(paste('sampled param corr (', title, ') for ', dfCols[i], sep=''))
+    for (j in seq(i, length(dfCols))) {
+      g <- ggplot()
+      if(i==j) {
+        fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], ".png", sep=""))
+        g <- histogramplot(df[i], g) + ggtitle(title)
+        if(logspace) {
+          g <- g + xlab(paste("log10(",dfCols[i],")",sep=""))
+        }
+      } else {
+        fileout <- file.path(plots_dir, paste(plot_filename_prefix, dfCols[i], "_", dfCols[j], ".png", sep=""))
+        g <- scatterplot_w_colour(df, g, colnames(df)[i], colnames(df)[j], colnames(df)[objval_col_idx]) +
+          ggtitle(title) +
+          theme(legend.title=element_blank(), 
+                legend.text=element_text(size=30),
+                legend.key.width = unit(0.4, "in"), 
+                legend.key.height = unit(0.5, "in"))
+        if(logspace) {
+          g <- g + xlab(paste("log10(",dfCols[i],")",sep="")) + ylab(paste("log10(",dfCols[j],")",sep=""))
+        }
+      }
+      if(scientific_notation) {
+        g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
+      }
+      ggsave(fileout, dpi=300, width=8, height=6)
+    }
+  }
+}
+
+
+#' Plot parameter correlations using the 66\%, 95\%, or 99\% confidence level data sets
+#'
+#' @param df66 the data frame filtered at 66\%
+#' @param df95 the data frame filtered at 95\%
+#' @param df99 the data frame filtered at 95\%
+#' @param objval_col the objective value column name
+#' @param dfCols the column names of the dataset
+#' @param plots_dir the directory to save the generated plots
+#' @param model the model name
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This is time consuming. (default: FALSE)
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+deprec_plot_2d_cl_corr <- function(df66, df95, df99, objval_col, dfCols, plots_dir, model,
+                            plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
+                            logspace=TRUE, scientific_notation=TRUE) {
+  if(plot_2d_66cl_corr) {
+    plot_parameter_correlations(df66, dfCols, plots_dir, paste(model, "_cl66_fits_", sep=""),
+                                expression("obj val"<="CL66%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(plot_2d_95cl_corr) {
+    plot_parameter_correlations(df95, dfCols, plots_dir, paste(model, "_cl95_fits_", sep=""),
+                                expression("obj val"<="CL95%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(plot_2d_99cl_corr) {
+    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_cl99_fits_", sep=""),
+                                expression("obj val"<="CL99%"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+  if(nrow(df66) == nrow(df95) && nrow(df95) == nrow(df99)) {
+    plot_parameter_correlations(df99, dfCols, plots_dir, paste(model, "_all_fits_", sep=""),
+                                expression("all fits"), which(dfCols==objval_col), logspace, scientific_notation)
+  }
+}
+
+
+#' Run model parameter estimation analysis and plot results. This script analyses
+#' all fits.
+#'
+#' @param model the model name without extension
+#' @param df the dataset containing all the parameter estimation fits.
+#' @param plots_dir the directory to save the generated plots
+#' @param data_point_num the number of data points used for parameterise the model
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted. This can be time consuming. (default: FALSE)
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+deprec_all_fits_analysis <- function(model, df, plots_dir, data_point_num,
+                              fileout_param_estim_details, fileout_param_estim_summary,
+                              plot_2d_66cl_corr=FALSE, plot_2d_95cl_corr=FALSE, plot_2d_99cl_corr=FALSE,
+                              logspace=TRUE, scientific_notation=TRUE) {
+  
+  data_point_num <- as.numeric(data_point_num)
+  if(data_point_num < 0.0) {
+    warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
+    stop()
+  }
+  
+  dfCols <- replace_colnames(colnames(df))
+  colnames(df) <- dfCols
+  objval_col_idx <- 1
+  objval_col <- dfCols[objval_col_idx]
+  
+  if(logspace) {
+    # Transform the parameter space to a log10 parameter space.
+    # The column for the objective value score is maintained instead.
+    df[,-objval_col_idx] <- log10(df[,-objval_col_idx])
+  }
+  
+  parameter_num = length(colnames(df)) - 1
+  # compute the confidence levels
+  cl99_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .01)
+  cl95_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .05)
+  cl66_objval <- compute_cl_objval(min(df[,objval_col]), parameter_num, data_point_num, .33)
+  
+  # select the rows with objective value smaller than our max threshold
+  if(cl99_objval > 0) { df99 <- df[df[,objval_col] <= cl99_objval, ] } else { df99 <- df }
+  if(cl95_objval > 0) { df95 <- df[df[,objval_col] <= cl95_objval, ] } else { df95 <- df }
+  if(cl66_objval > 0) { df66 <- df[df[,objval_col] <= cl66_objval, ] } else { df66 <- df }
+  
+  min_objval <- min(df99[,objval_col])
+  
+  # Set my ggplot theme here
+  theme_set(basic_theme(36))
+  
+  # Plot the objective value vs Iterations
+  plot_objval_vs_iters(df[,objval_col], plots_dir, model)
+  
+  # Write the summary for the parameter estimation analysis
+  fileoutPLE <- sink(fileout_param_estim_summary)
+  cat(paste("MinObjVal", "AIC", "AICc", "BIC", "ParamNum", "DataPointNum", "CL66ObjVal", "CL66FitsNum", "CL95ObjVal", "CL95FitsNum", "CL99ObjVal", "CL99FitsNum\n", sep="\t"))
+  cat(paste(min_objval, compute_aic(min_objval, parameter_num), compute_aicc(min_objval, parameter_num, data_point_num), compute_bic(min_objval, parameter_num, data_point_num), parameter_num, data_point_num, cl66_objval, nrow(df66), cl95_objval, nrow(df95), cl99_objval, nrow(df99), sep="\t"), append=TRUE)
+  cat("\n", append=TRUE)
+  sink()
+  
+  # Plot the sampled profile likelihood estimations (PLE)
+  plot_sampled_ple(df99, objval_col, cl66_objval, cl95_objval, cl99_objval, plots_dir, model, logspace, scientific_notation)
+  
+  # Write the table containing the parameter estimation details.
+  fileoutPLE <- sink(fileout_param_estim_details)
+  cat(paste("Parameter", "Value", "LeftCI66", "RightCI66", "LeftCI95", "RightCI95", "LeftCI99", "RightCI99", "Value_LeftCI66_ratio", "RightCI66_Value_ratio", "Value_LeftCI95_ratio", "RightCI95_Value_ratio", "Value_LeftCI99_ratio", "RightCI99_Value_ratio\n", sep="\t"), append=TRUE)
+  for (i in seq(2,length(dfCols))) {
+    # compute the confidence levels and the value for the best parameter
+    ci_obj <- compute_sampled_ple_stats(df66, df95, df99, df, objval_col, objval_col_idx, i,
+                                        cl66_objval, cl95_objval, cl99_objval, logspace)
+    
+    # write on file
+    cat(paste(dfCols[i], ci_obj$par_value, ci_obj$min_ci_66, ci_obj$max_ci_66, ci_obj$min_ci_95, ci_obj$max_ci_95,
+              ci_obj$min_ci_99, ci_obj$max_ci_99, ci_obj$min_ci_66_par_value_ratio, ci_obj$max_ci_66_par_value_ratio,
+              ci_obj$min_ci_95_par_value_ratio, ci_obj$max_ci_95_par_value_ratio, ci_obj$min_ci_99_par_value_ratio,
+              ci_obj$max_ci_99_par_value_ratio, sep="\t"), append=TRUE)
+    cat("\n", append=TRUE)
+  }
+  sink()
+  
+  # plot parameter correlations using the 66%, 95%, or 99% confidence level data sets
+  dfCols <- colnames(df99)
+  if(cl99_objval > 0) {
+    plot_2d_cl_corr(df66[order(-df66[,objval_col]),],
+                    df95[order(-df95[,objval_col]),],
+                    df99[order(-df99[,objval_col]),],
+                    objval_col,
+                    dfCols, plots_dir, model,
+                    plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
+                    logspace, scientific_notation)
+  } else {
+    plot_2d_cl_corr(df66[order(-df99[,objval_col]),],
+                    df95[order(-df99[,objval_col]),],
+                    df99[order(-df99[,objval_col]),],
+                    objval_col,
+                    dfCols, plots_dir, model,
+                    FALSE, FALSE, FALSE,
+                    logspace, scientific_notation)
+  }
+  
+}
 
