@@ -753,26 +753,333 @@ sbpipe_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir
 ######################### NEW CODE #############################
 
 
+##############################
+### KEEP THESE FUNCTIONS #####
+##############################
+# plot_objval_vs_iters <- function(objval_array, plots_dir, model)
 
-#' Parameter estimation pre-processing. It renames the data set columns, 
-#' and applies a log10 transformation if logspace is TRUE
+
+
+objval.col <- "ObjVal"
+
+
+#' Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
+#' removed.
 #'
-#' @param inputdir the directory containing the dataset
+#' @param df.cols The columns of a data frame.
+#' @return the renamed columns
+replace_colnames <- function(df.cols) {
+  df.cols <- gsub("ObjectiveValue", objval.col, df.cols)
+  # global variables
+  df.cols <- gsub("Values.", "", df.cols)
+  df.cols <- gsub("..InitialValue", "", df.cols)
+  # compartments
+  df.cols <- gsub("Compartments.", "", df.cols)
+  df.cols <- gsub("..InitialVolume", "", df.cols)
+  # species
+  df.cols <- gsub("X.", "", df.cols)
+  df.cols <- gsub("._0", "", df.cols)
+  df.cols <- gsub(".InitialParticleNumber", "", df.cols)
+}
+
+
+#' Parameter estimation pre-processing. It renames the data set columns, and applies a log10 transformation if logspace is TRUE. 
+#' If all.fits is true, it also computes the confidence levels.
+#'
 #' @param filename the dataset filename containing the fits sequence
 #' @param param.names The list of estimated parameter names
 #' @param logspace true if the data set shoud be log10-transformed.
+#' @param all.fits true if filename contains all fits
+#' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false
 #' @export
-pe.ds.preproc <- function(inputdir, filename, param.names=c(), logspace=TRUE) {
-  dt <- data.table::fread(file.path(inputdir, filename))
+pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=TRUE, data_point_num=0, fileout_param_estim_summary="") {
+  dt <- data.table::fread(filename)
   colnames(dt) <- replace_colnames(colnames(dt))
   dt.log10 <- dt
-  data.table::fwrite(dt, file.path(inputdir, filename))
+  data.table::fwrite(dt, filename)
   
   if(logspace) {
     dt.log10[, (param.names) := lapply(.SD, "log10"), .SDcols = param.names]
     data.table::fwrite(dt.log10, file.path(inputdir, gsub('.csv', '_log10.csv', filename)))
   }
+  
+  if(all.fits) {
+    
+    data_point_num <- as.numeric(data_point_num)
+    if(data_point_num < 0) {
+      warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
+      stop()
+    }
+    
+    param.num = length(param.names)
+    objval.min <- min(dt[,objval.col])
+    
+    # compute the confidence levels
+    cl99_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .01)
+    cl95_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .05)
+    cl66_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .33)
+ 
+    # Write global statistics for the parameter estimation, including the confidence levels
+    fileoutPLE <- sink(fileout_param_estim_summary)
+    cat(paste("MinObjVal", 
+              "AIC", 
+              "AICc", 
+              "BIC", 
+              "ParamNum", "DataPointNum", 
+              "CL66ObjVal", "CL66FitsNum", 
+              "CL95ObjVal", "CL95FitsNum", 
+              "CL99ObjVal", "CL99FitsNum\n", sep="\t"))
+    cat(paste(min_objval, 
+              compute_aic(min_objval, param.num), 
+              compute_aicc(min_objval, param.num, data_point_num), 
+              compute_bic(min_objval, param.num, data_point_num), 
+              param.num, data_point_num, 
+              cl66_objval, sum(dt[,objval.col] <= cl66_objval), 
+              cl95_objval, sum(dt[,objval.col] <= cl95_objval), 
+              cl99_objval, sum(dt[,objval.col] <= cl99_objval), sep="\t"), append=TRUE)
+    cat("\n", append=TRUE)
+    sink()
+  }
 }
-#param.names <- c('k1', 'k2', 'k3')
-#dataset.preproc('.', 'all_estim_collection.csv', param.names)
+
+
+# test:
+param.names <- c('k1', 'k2', 'k3')
+dataset.preproc('all_estim_collection.csv', param.names)
+
+
+
+
+#' Plot the sampled profile likelihood estimations (PLE). The table is made of two columns: ObjVal | Parameter
+#'
+#' @param df99 the 99\% confidence level data frame
+#' @param cl66_objval the 66\% confidence level objective value
+#' @param cl95_objval the 95\% confidence level objective value
+#' @param cl99_objval the 99\% confidence level objective value
+#' @param plots_dir the directory to save the generated plots
+#' @param model the model name
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_dir, model,
+                             logspace=TRUE, scientific_notation=TRUE) {
+  
+  parameter <- colnames(df99)[2]
+
+  print(paste('sampled PLE for', parameter))
+  fileout <- file.path(plots_dir, paste(model, "_approx_ple_", parameter, ".png", sep=""))
+
+  theme_set(basic_theme(36))
+  g <- scatterplot_ple(df99, ggplot(), parameter, objval_col, cl66_objval, cl95_objval, cl99_objval) +
+    theme(legend.key.height = unit(0.5, "in"))
+  if(logspace) {
+    g <- g + xlab(paste("log10(",parameter,")",sep=""))
+  }
+  if(scientific_notation) {
+    g <- g + scale_x_continuous(labels=scales::scientific) + scale_y_continuous(labels=scales::scientific)
+  }
+  g <- g + ggtitle("PLE (sampled)")
+  ggsave(fileout, dpi=300, width=8, height=6)
+  
+  # Add density information (removed as it was not showing much more..)
+  #g <- g + stat_density2d(color="green")
+  #fileout = gsub('.png', '_density.png', fileout)
+  #ggsave(fileout, dpi=300, width=8, height=6)
+}
+
+
+#' Return the left value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue
+#'
+#' @param smallest.param.value the smallest parameter value within the specified confidence level
+#' @param full_dataset the full dataset
+#' @param objval_conf_level the objective function confidence level
+#' @return the left confidence interval
+#' @export
+leftCI <- function(par_value.leq.conf_level, full_dataset, objval_conf_level) {
+  min_ci <- smallest.param.value
+  # retrieve the objective function values of the parameters with value smaller than the minimum value retrieved
+  # from the cut_dataset, within the full dataset.
+  # ...[min95, )  (we are retrieving those ...)
+  lt_min_objvals <- full_dataset[full_dataset[,2] < min_ci, objval.col]
+  if(length(lt_min_objvals) == 0 || min(lt_min_objvals) <= objval_conf_level) {
+    min_ci <- "-inf"
+  }
+  min_ci
+}
+
+
+#' Return the right value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue
+#'
+#' @param largest.param.value the largest parameter value within the specified confidence level
+#' @param full_dataset the full dataset
+#' @param objval_conf_level the objective function confidence level
+#' @return the right confidence interval
+#' @export
+rightCI <- function(cut_dataset, full_dataset, objval_conf_level) {
+  max_ci <- largest.param.value
+  # retrieve the objective function of the parameters with value greater than the maximum value retrieved from
+  # the cut_dataset, within the full dataset.
+  # (, max95]...  (we are retrieving those ...)
+  gt_max_objvals <- full_dataset[full_dataset[,2] > max_ci, objval.col]
+  if(length(gt_max_objvals) == 0 || min(gt_max_objvals) <= objval_conf_level) {
+    max_ci <- "+inf"
+  }
+  max_ci
+}
+
+
+#' Compute the table for the sampled PLE statistics.
+#'
+#' @param df the complete data frame
+#' @param min_objval the minimum objective value
+#' @param cl66_objval the 66\% confidence level objective value
+#' @param cl95_objval the 95\% confidence level objective value
+#' @param cl99_objval the 99\% confidence level objective value
+#' @param logspace true if parameters are plotted in logspace (default: TRUE)
+#' @return the list of parameter values with their confidence intervals
+#' @export
+get_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, cl99_objval, logspace=TRUE) {
+  
+  # load the global statistics for the parameter estimation
+  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+  
+  par_value <- min(df[df[,objval.col] <= dt.stats[, "MinObjVal"], 2])
+  cl66_objval <- dt.stats[, "CL66ObjVal"]
+  cl95_objval <- dt.stats[, "CL95ObjVal"]
+  cl99_objval <- dt.stats[, "CL99ObjVal"]
+  
+  df66 <- df[df[,objval.col] <= cl66_objval, ]
+  df95 <- df[df[,objval.col] <= cl95_objval, ]
+  df99 <- df[df[,objval.col] <= cl99_objval, ]
+  
+  min_ci_66 <- leftCI(min(par_values.leq.cl66[,2]), df95, cl66_objval)
+  max_ci_66 <- rightCI(max(par_values.leq.cl66[,2]), df95, cl66_objval)
+  min_ci_95 <- "-inf"
+  max_ci_95 <- "+inf"
+  min_ci_99 <- "-inf"
+  max_ci_99 <- "+inf"
+  if(is.numeric(min_ci_66)) { min_ci_95 <- leftCI(min(par_values.leq.cl95), df99, cl95_objval) }
+  if(is.numeric(max_ci_66)) { max_ci_95 <- rightCI(max(par_values.leq.cl95), df99, cl95_objval) }
+  if(is.numeric(min_ci_95)) { min_ci_99 <- leftCI(min(par_values.leq.cl99), df, cl99_objval) }
+  if(is.numeric(max_ci_95)) { max_ci_99 <- rightCI(max(par_values.leq.cl99), df, cl99_objval) }
+  
+  if(logspace) {
+    # log10 inverse
+    par_value <- 10^par_value
+    if(is.numeric(min_ci_99)) { min_ci_99 <- 10^min_ci_99 }
+    if(is.numeric(max_ci_99)) { max_ci_99 <- 10^max_ci_99 }
+    if(is.numeric(min_ci_95)) { min_ci_95 <- 10^min_ci_95 }
+    if(is.numeric(max_ci_95)) { max_ci_95 <- 10^max_ci_95 }
+    if(is.numeric(min_ci_66)) { min_ci_66 <- 10^min_ci_66 }
+    if(is.numeric(max_ci_66)) { max_ci_66 <- 10^max_ci_66 }
+  }
+  min_ci_99_par_value_ratio <- "-inf"
+  max_ci_99_par_value_ratio <- "+inf"
+  min_ci_95_par_value_ratio <- "-inf"
+  max_ci_95_par_value_ratio <- "+inf"
+  min_ci_66_par_value_ratio <- "-inf"
+  max_ci_66_par_value_ratio <- "+inf"
+  if(is.numeric(min_ci_99) && min_ci_99 != 0) {
+    min_ci_99_par_value_ratio <- round(par_value/min_ci_99, digits=6)
+  }
+  if(is.numeric(max_ci_99) && par_value != 0) {
+    max_ci_99_par_value_ratio <- round(max_ci_99/par_value, digits=6)
+  }
+  if(is.numeric(min_ci_95) && min_ci_95 != 0) {
+    min_ci_95_par_value_ratio <- round(par_value/min_ci_95, digits=6)
+  }
+  if(is.numeric(max_ci_95) && par_value != 0) {
+    max_ci_95_par_value_ratio <- round(max_ci_95/par_value, digits=6)
+  }
+  if(is.numeric(min_ci_66) && min_ci_66 != 0) {
+    min_ci_66_par_value_ratio <- round(par_value/min_ci_66, digits=6)
+  }
+  if(is.numeric(max_ci_66) && par_value != 0) {
+    max_ci_66_par_value_ratio <- round(max_ci_66/par_value, digits=6)
+  }
+  
+  ret_list <- list("par_value"=par_value,
+                   "min_ci_66"=min_ci_66, "max_ci_66"=max_ci_66,
+                   "min_ci_95"=min_ci_95, "max_ci_95"=max_ci_95,
+                   "min_ci_99"=min_ci_99, "max_ci_99"=max_ci_99,
+                   "min_ci_66_par_value_ratio"=min_ci_66_par_value_ratio, "max_ci_66_par_value_ratio"=max_ci_66_par_value_ratio,
+                   "min_ci_95_par_value_ratio"=min_ci_95_par_value_ratio, "max_ci_95_par_value_ratio"=max_ci_95_par_value_ratio,
+                   "min_ci_99_par_value_ratio"=min_ci_99_par_value_ratio, "max_ci_99_par_value_ratio"=max_ci_99_par_value_ratio)
+  return(ret_list)
+}
+
+
+#' Run the profile likelihood estimation analysis.
+#'
+#' @param model_name the model name without extension
+#' @param filename the dataset filename containing all the parameter estimation fits
+#' @param parameter the parameter to compute the PLE analysis
+#' @param plots_dir the directory to save the generated plots
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
+#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+sampled_ple_analysis <- function(model_name, filename, parameter, plots_dir, 
+                                 fileout_param_estim_details, fileout_param_estim_summary,
+                                 logspace=TRUE, scientific_notation=TRUE) {
+
+  # load the fits for this parameter
+  df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
+  
+  # load the global statistics for the parameter estimation
+  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+  
+  # Plot the sampled profile likelihood estimations (PLE)
+  theme_set(basic_theme(36))
+  plot_sampled_ple(df[df[ ,objval.col] <= dt.stats$CL99ObjVal, ], 
+                   dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
+                   plots_dir, model_name, logspace, scientific_notation)
+
+  # compute the confidence levels and the value for the best parameter
+  ci_obj <- compute_sampled_ple_stats(df, dt.stats$MinObjVal, dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal,logspace)
+  
+  # Save the sampled profile likelihood estimations (PLE) statistics
+  fileoutPLE <- sink(file.path(plots_dir, gsub(".csv", paste0("_", parameter,".csv"), fileout_param_estim_details)))
+  cat(paste("Parameter", "Value", "LeftCI66", "RightCI66", "LeftCI95", "RightCI95", "LeftCI99", "RightCI99", 
+            "Value_LeftCI66_ratio", "RightCI66_Value_ratio", "Value_LeftCI95_ratio", "RightCI95_Value_ratio", "Value_LeftCI99_ratio", "RightCI99_Value_ratio\n", sep="\t"), append=TRUE)
+
+  # write on file
+  cat(paste(parameter, ci_obj$par_value, ci_obj$min_ci_66, ci_obj$max_ci_66, ci_obj$min_ci_95, ci_obj$max_ci_95,
+            ci_obj$min_ci_99, ci_obj$max_ci_99, ci_obj$min_ci_66_par_value_ratio, ci_obj$max_ci_66_par_value_ratio,
+            ci_obj$min_ci_95_par_value_ratio, ci_obj$max_ci_95_par_value_ratio, ci_obj$min_ci_99_par_value_ratio,
+            ci_obj$max_ci_99_par_value_ratio, sep="\t"), append=TRUE)
+  cat("\n", append=TRUE)
+  sink()
+  
+}
+
+
+#' Combine the statistics for the parameter estimation details
+#'
+#' @param plots_dir the directory to save the generated plots
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+#' @export
+combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
+  
+  files <- list.files(plots_dir, pattern="\\.csv$")
+  
+  if(length(files) < 0) { return }
+    
+  dt <- data.table::fread(files[1])
+  for(i in 2:length(files)) {
+    dt <- rbind(dt, data.table::fread(files[i]))
+  }
+
+  data.table::fwrite(dt, fileout_param_estim_details)
+}
+
+
+## TODO
+# - PLE analysis - DONE
+# - save file of parameter PLEs (stats) - DONE
+# - 2D PLE
+# - best fits analysis
+
 
