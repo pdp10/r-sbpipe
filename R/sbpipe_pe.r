@@ -834,14 +834,14 @@ pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FAL
               "CL66ObjVal", "CL66FitsNum", 
               "CL95ObjVal", "CL95FitsNum", 
               "CL99ObjVal", "CL99FitsNum\n", sep="\t"))
-    cat(paste(min_objval, 
-              compute_aic(min_objval, param.num), 
-              compute_aicc(min_objval, param.num, data_point_num), 
-              compute_bic(min_objval, param.num, data_point_num), 
+    cat(paste(objval.min, 
+              compute_aic(objval.min, param.num), 
+              compute_aicc(objval.min, param.num, data_point_num), 
+              compute_bic(objval.min, param.num, data_point_num), 
               param.num, data_point_num, 
-              cl66_objval, sum(dt[,objval.col] <= cl66_objval), 
-              cl95_objval, sum(dt[,objval.col] <= cl95_objval), 
-              cl99_objval, sum(dt[,objval.col] <= cl99_objval), sep="\t"), append=TRUE)
+              cl66_objval, sum(dt[,objval.col, with=F] <= cl66_objval), 
+              cl95_objval, sum(dt[,objval.col, with=F] <= cl95_objval), 
+              cl99_objval, sum(dt[,objval.col, with=F] <= cl99_objval), sep="\t"), append=TRUE)
     cat("\n", append=TRUE)
     sink()
   }
@@ -851,7 +851,7 @@ pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FAL
 # test:
 param.names <- c('k1', 'k2', 'k3')
 fileout_param_estim_summary="param_estim_summary.csv"
-pe.ds.preproc('all_estim_collection.csv', param.names, logspace=TRUE, all.fits=TRUE, data_point_num=0, fileout_param_estim_summary)
+pe.ds.preproc('all_estim_collection.csv', param.names, logspace=TRUE, all.fits=TRUE, data_point_num=10, fileout_param_estim_summary)
 
 
 
