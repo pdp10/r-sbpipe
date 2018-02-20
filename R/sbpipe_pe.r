@@ -209,10 +209,10 @@ plot_sampled_ple <- function(df99, objval_col, cl66_objval, cl95_objval, cl99_ob
 #' @param min_objval the minimum objective value
 #' @param params the number of parameters
 #' @param data_points the number of data points
-#' @param level the confidence level threshold (e.g. 0.1, 0.5)
+#' @param level the confidence level threshold (e.g. 0.01, 0.05)
 #' @return the confidence level based on minimum objective value
 #' @export
-compute_cl_objval <- function(min_objval, params, data_points, level=0.5) {
+compute_cl_objval <- function(min_objval, params, data_points, level=0.05) {
     min_objval * compute_fratio_threshold(params, data_points, level)
 }
 
@@ -789,11 +789,11 @@ replace_colnames <- function(df.cols) {
 #' @param filename the dataset filename containing the fits sequence
 #' @param param.names The list of estimated parameter names
 #' @param logspace true if the data set shoud be log10-transformed.
-#' @param all.fits true if filename contains all fits
+#' @param all.fits true if filename contains all fits, false otherwise
 #' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false
 #' @export
-pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=TRUE, data_point_num=0, fileout_param_estim_summary="") {
+pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="") {
   dt <- data.table::fread(filename)
   colnames(dt) <- replace_colnames(colnames(dt))
   dt.log10 <- dt
@@ -801,24 +801,28 @@ pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=TRU
   
   if(logspace) {
     dt.log10[, (param.names) := lapply(.SD, "log10"), .SDcols = param.names]
-    data.table::fwrite(dt.log10, file.path(inputdir, gsub('.csv', '_log10.csv', filename)))
+    data.table::fwrite(dt.log10, gsub('.csv', '_log10.csv', filename))
   }
   
   if(all.fits) {
     
     data_point_num <- as.numeric(data_point_num)
     if(data_point_num < 0) {
-      warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
-      stop()
+      stop("`data_point_num` must be >= 0.")
     }
     
     param.num = length(param.names)
-    objval.min <- min(dt[,objval.col])
+    if(data_point_num < param.num) {
+      warning("To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
+    }
+    
+    # note: with=F is necessary, otherwise data.table interprets objval.col as a column name in dt. 
+    objval.min <- min(dt[,objval.col, with=F])  
     
     # compute the confidence levels
-    cl99_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .01)
-    cl95_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .05)
-    cl66_objval <- compute_cl_objval(objval.min, param.num, data_point_num, .33)
+    cl99_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.01)
+    cl95_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.05)
+    cl66_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.33)
  
     # Write global statistics for the parameter estimation, including the confidence levels
     fileoutPLE <- sink(fileout_param_estim_summary)
@@ -846,7 +850,8 @@ pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=TRU
 
 # test:
 param.names <- c('k1', 'k2', 'k3')
-dataset.preproc('all_estim_collection.csv', param.names)
+fileout_param_estim_summary="param_estim_summary.csv"
+pe.ds.preproc('all_estim_collection.csv', param.names, logspace=TRUE, all.fits=TRUE, data_point_num=0, fileout_param_estim_summary)
 
 
 
