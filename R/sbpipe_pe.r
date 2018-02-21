@@ -337,7 +337,7 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
 # #' @examples 
-# #' sbpipe_sampled_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
 sbpipe_sampled_ple_analysis <- function(model_name, filename, parameter, 
                                         plots_dir, fileout_param_estim_summary,
@@ -624,5 +624,130 @@ sbpipe_objval_vs_iters_analysis <- function(model_name, filename, plots_dir) {
   
   print('plotting objective value vs iteration')
   plot_objval_vs_iters(unlist(c(dt)), model_name, plots_dir)
+}
+
+
+#' Get parameter names
+#'
+#' @param filename the filename containing the best fits
+#' @return the parameter names
+#' @export
+get_param_names <- function(filename) {
+  # load the fits for this parameter
+  names <- colnames(data.table::fread(filename))
+  names <- replace_colnames(names)
+  remove <- c("Estimation", "ObjVal")
+  return(setdiff(names, remove))
+}
+
+
+#' Main R function for SBpipe pipeline: parameter_estimation(). 
+#'
+#' @param model_name the name of the model
+#' @param finalfits_filenamein the dataset containing the best parameter fits
+#' @param allfits_filenamein the dataset containing all the parameter fits
+#' @param plots_dir the directory to save the generated plots.
+#' @param data_point_num the number of data points used for parameterise the model.
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
+#' @param best_fits_percent the percent of best fits to analyse.
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted.
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted.
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
+#' @param logspace true if parameters should be plotted in logspace.
+#' @param scientific_notation true if axis labels should be plotted in scientific notation.
+#' @export
+sbpipe_pe <- function(model_name, finalfits_filenamein, allfits_filenamein, plots_dir, 
+                      data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
+                      best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
+                      logspace, scientific_notation) {
+  
+  ### ------------ ###
+  
+  # Run some controls first
+  
+  dim_final_fits = dim(read.table(finalfits_filenamein, sep="\t"))[1]
+  dim_all_fits = dim(read.table(allfits_filenamein, header=TRUE, sep="\t"))[1]
+  
+  if(dim_final_fits-1 <= 1) {
+    warning('Best fits analysis requires at least two parameter estimations. Skip.')
+    finalfits = FALSE
+  }
+  if(dim_all_fits-1 <= 0) {
+    warning('All fits analysis requires at least one parameter set. Cannot continue.')
+    stop()
+  }
+  
+  df_all_fits = read.table(allfits_filenamein, header=TRUE, dec=".", sep="\t")
+  
+  # non-positive entries test
+  # If so, logspace will be set to FALSE, otherwise SBpipe will fail due to NaN values.
+  # This is set once for all
+  nonpos_entries <- sum(df_all_fits <= 0)
+  if(nonpos_entries > 0) {
+    warning('Non-positive values found for one or more parameters. `logspace` option set to FALSE')
+    logspace = FALSE
+  }
+  
+  if(data_point_num < 0.0) {
+    warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
+    stop()
+  }
+  
+  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+    warning("best_fits_percent is not in (0, 100]. Now set to 100")
+    best_fits_percent = 100
+  }
+  
+  ### ------------ ###
+  
+  
+  # retrieve the list of parameter names
+  param.names <- get_param_names(finalfits_filenamein)
+  
+  # data preprocessing  
+  sbpipe_pe_ds_preproc(filename=allfits_filenamein, param.names=param.names, logspace=logspace, 
+                       all.fits=TRUE, data_point_num=data_point_num, fileout_param_estim_summary=fileout_param_estim_summary)
+  sbpipe_pe_ds_preproc(filename=finalfits_filenamein, param.names=param.names, logspace=logspace, all.fits=FALSE)
+
+  if(logspace) {
+    finalfits_filenamein <- gsub(".csv", "_log10.csv", finalfits_filenamein)
+    allfits_filenamein <- gsub(".csv", "_log10.csv", allfits_filenamein)
+  }
+  
+  # objective value vs iterations analysis
+  sbpipe_objval_vs_iters_analysis(model_name=model_name, filename=allfits_filenamein, plots_dir=plots_dir)
+  
+  for(i in seq_along(param.names)) {
+    # PLE analysis
+    sbpipe_sampled_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], 
+                                plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
+                                logspace=logspace, scientific_notation=scientific_notation)
+    
+    # parameter density analysis
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=finalfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL66", logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL95", logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL99", logspace=logspace, scientific_notation=scientific_notation)
+    # sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="All", logspace=logspace, scientific_notation=scientific_notation)
+  }
+  
+  # create summary file containing parameter PLE stats
+  sbpipe_combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
+  
+  # 2D PLE analysis
+  for(i in 1:(length(param.names)-1)) {
+    for(j in (i+1):length(param.names)) {
+      sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_66cl_corr) 
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL66", logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_95cl_corr)
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL95", logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_99cl_corr)
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL99", logspace=logspace, scientific_notation=scientific_notation)
+      # sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="All", logspace=logspace, scientific_notation=scientific_notation)
+    }
+  }
+ 
 }
 
