@@ -25,6 +25,7 @@ source('sbpipe_plots.r')
 library(ggplot2)
 library(colorspace)
 library(grDevices)
+library(stats)
 require(graphics)
 
 
@@ -855,31 +856,39 @@ sampled_2d_ple_analysis <- function(model_name, filename,
 }
 
 
+#' Plot the Objective values vs Iterations
+#'
+#' @param model_name the model name without extension
+#' @param filename the filename containing the fits sequence
+#' @param plots_dir the directory to save the generated plots
+#' @export
+plot_objval_vs_iters <- function(model_name, filename, plots_dir) {
+  # load the fits for this parameter
+  dt <- data.table::fread(filename, select=c(objval.col))
+  
+  print('plotting objective value vs iteration')
+  # save the objective value vs iteration
+  g <- plot_fits(unlist(c(dt)), ggplot())
+  ggsave(file.path(plots_dir, paste(model_name, "_objval_vs_iter.png", sep="")), dpi=300, width=8, height=6)
+}
+
+
+
 ## DONE
 # - preprocessing (generic stats, log10) - DONE, TESTED
 # - PLE analysis - DONE, TESTED
 # - save file of parameter PLEs (stats) - DONE, TESTED
 # - parameter density analysis - DONE, TESTED 
 # - 2D PLE - DONE, TESTED
+# - plot_objval_vs_iters  - DONE, TESTED
 
 ## TODO
 # - best fits analysis (% of best fits) => COMPLETE FUNCTIONS: parameter_density_analysis, sampled_2d_ple_analysis
 # to filter the data set of final fits using a percentage.
-# - plot_objval_vs_iters  (see below)
 
-#' Plot the Objective values vs Iterations
-#'
-#' @param objval_array the array of objective function values.
-#' @param plots_dir the directory to save the generated plots
-#' @param model the model name
-#' @export
-plot_objval_vs_iters <- function(objval_array, plots_dir, model) {
-  print('plotting objective value vs iteration')
-  # save the objective value vs iteration
-  g <- plot_fits(objval_array, ggplot())
-  ggsave(file.path(plots_dir, paste(model, "_objval_vs_iter.png", sep="")), dpi=300, width=8, height=6)
-}
 
+
+# THE FOLLOWING INVOCATIONS WILL BECOME EXAMPLES FOR THE ABOVE FUNCTIONS
 
 best_fits <- 'final_estim_collection.csv'
 all_fits <- 'all_estim_collection.csv'
@@ -933,7 +942,8 @@ sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout
 sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
                         plots_dir, thres="All", logspace, scientific_notation=TRUE)
 
-
+# test 6:
+plot_objval_vs_iters(model_name, filename.all, plots_dir)
 
 
 

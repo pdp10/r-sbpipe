@@ -213,7 +213,6 @@ plot_fits <- function(objval_array, g=ggplot()) {
   }
   df <- data.frame(Iter=iters, ObjVal=objval_array)
   g <- scatterplot_log10(df, g, "Iter", "ObjVal") +
-            # Re paint the y lab as we want to use the Greek letter chi.
             ylab("log10(ObjVal)")
   return(g)
 }
