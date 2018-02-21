@@ -188,30 +188,30 @@ scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 
 #' Plot the number of iterations vs objective values in log10 scale.
 #'
-#' @param objval_array the array of objective function values.
+#' @param objval.vec the array of objective function values.
 #' @param g the current ggplot to overlap
 #' @return the plot
 #' @export
-plot_fits <- function(objval_array, g=ggplot()) {
+plot_fits <- function(objval.vec, g=ggplot()) {
   iters <- c()
   j <- 0
   k <- 0
 
-  # We intentionally consider only the objective values below 100*median(objval_array).
+  # We intentionally consider only the objective values below 100*median(objval.vec).
   # Often the very first objective values can be extremely large (e^[hundreds]). When so,
   # ggsave() does not process correctly, potentially due to a bug.
-  med_objval <- median(objval_array[is.finite(objval_array)])
-  objval_array <- objval_array[objval_array < med_objval*100]
+  med_objval <- median(objval.vec[is.finite(objval.vec)])
+  objval.vec <- objval.vec[objval.vec < med_objval*100]
 
-  for(i in 1:length(objval_array)) {
-    if(k < objval_array[i]) {
+  for(i in 1:length(objval.vec)) {
+    if(k < objval.vec[i]) {
       j <- 0
     }
     iters <- c(iters, j)
     j <- j+1
-    k <- objval_array[i]
+    k <- objval.vec[i]
   }
-  df <- data.frame(Iter=iters, ObjVal=objval_array)
+  df <- data.frame(Iter=iters, ObjVal=objval.vec)
   g <- scatterplot_log10(df, g, "Iter", "ObjVal") +
             ylab("log10(ObjVal)")
   return(g)

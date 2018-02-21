@@ -30,52 +30,6 @@ require(graphics)
 
 
 
-
-#' Run model parameter estimation analysis and plot results. It analyses
-#' only the best fits using a percent threshold.
-#'
-#' @param model the model name without extension
-#' @param df the dataset containing the best parameter estimation fits.
-#' @param plots_dir the directory to save the generated plots
-#' @param best_fits_percent the percent of best fits to analyse.
-#' @param logspace true if parameters should be plotted in logspace.
-#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
-#' @export
-final_fits_analysis <- function(model, df, plots_dir, best_fits_percent, logspace=TRUE, scientific_notation=TRUE) {
-
-  best_fits_percent <- as.numeric(best_fits_percent)
-  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
-    warning("best_fits_percent is not in (0, 100]. Now set to 100")
-    best_fits_percent = 100
-  }
-
-  if(logspace) {
-    # Transform the parameter space to a log10 parameter space.
-    # The 2nd column containing the objective value is maintained
-    # as well as the 1st containing the parameter estimation name.
-    df[,c(-1,-2)] <- log10(df[,c(-1,-2)])
-  }
-
-  dfCols <- replace_colnames(colnames(df))
-  colnames(df) <- dfCols
-
-  # Calculate the number of rows to extract.
-  selected_rows <- nrow(df)*best_fits_percent/100
-  # sort by objective value (descending) so that the low objective value parameter tuples
-  # (which are the most important) are plotted in front.
-  # Then extract the tail from the data frame.
-  df <- df[order(-df[,2]),]
-  df <- tail(df, selected_rows)
-
-  # Set my ggplot theme here
-  theme_set(basic_theme(36))
-
-  plot_parameter_correlations(df, dfCols, plots_dir, paste(model, "_best_fits_", sep=""),
-    "best obj val", 2, logspace, scientific_notation)
-
-}
-
-
 #' Run model parameter estimation analysis and plot results.
 #'
 #' @param model the model name without extension
@@ -720,11 +674,13 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param plots_dir the directory for storing the plots
 #' @param thres the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".
+#' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 #' @export
 parameter_density_analysis <- function(model_name, filename, parameter, fileout_param_estim_summary,  
-                              plots_dir, thres="BestFits", logspace=TRUE, scientific_notation=TRUE) {
+                                       plots_dir, thres="BestFits", best_fits_percent=100,  
+                                       logspace=TRUE, scientific_notation=TRUE) {
   
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
@@ -756,10 +712,19 @@ parameter_density_analysis <- function(model_name, filename, parameter, fileout_
       }
     }
   } else { 
+    if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+      warning("best_fits_percent is not in (0, 100]. Now set to 100")
+      best_fits_percent = 100
+    }
+    # Calculate the number of rows to extract.
+    selected_rows <- nrow(df)*best_fits_percent/100
+    # sort by descending objective value so that the low objective values
+    # (which are the most important) are on top. Then extract the tail from the data frame.
+    df <- df[order(-df[,objval.col]),]
+    df <- tail(df, selected_rows)
+    
     fileout <- file.path(plots_dir, paste(model_name, "_best_fits_", parameter, ".png", sep=""))
     title <- expression("best fits")
-
-    ### ADD HERE FILTER FOR THE (%) of FINAL FITS      
   }
   
   print(paste('density analysis for', parameter, '(', thres, ')'))
@@ -805,13 +770,14 @@ plot_sampled_2d_ple <- function(df, parameter1, parameter2,
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param plots_dir the directory for storing the plots
 #' @param thres the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".
+#' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 #' @export
 sampled_2d_ple_analysis <- function(model_name, filename, 
                                     parameter1, parameter2, 
                                     fileout_param_estim_summary,  
-                                    plots_dir, thres="BestFits", 
+                                    plots_dir, thres="BestFits", best_fits_percent=100, 
                                     logspace=TRUE, scientific_notation=TRUE) {
   
   # load the fits for this parameter
@@ -843,11 +809,20 @@ sampled_2d_ple_analysis <- function(model_name, filename,
         return
       }
     }
-  } else { 
+  } else {
+    if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+      warning("best_fits_percent is not in (0, 100]. Now set to 100")
+      best_fits_percent = 100
+    }
+    # Calculate the number of rows to extract.
+    selected_rows <- nrow(df)*best_fits_percent/100
+    # sort by descending objective value so that the low objective values
+    # (which are the most important) are on top. Then extract the tail from the data frame.
+    df <- df[order(-df[,objval.col]),]
+    df <- tail(df, selected_rows)
+    
     fileout <- file.path(plots_dir, paste(model_name, "_best_fits_", parameter1, "_", parameter2, ".png", sep=""))
     title <- expression("best fits")
-    
-    ### ADD HERE FILTER FOR THE (%) of FINAL FITS  
   }
   
   print(paste('2D sampled PLE', parameter1, "-", parameter2, '(', thres, ')'))
@@ -858,33 +833,30 @@ sampled_2d_ple_analysis <- function(model_name, filename,
 
 #' Plot the Objective values vs Iterations
 #'
+#' @param objval.vec the vector containing the objective values
 #' @param model_name the model name without extension
-#' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
 #' @export
-plot_objval_vs_iters <- function(model_name, filename, plots_dir) {
-  # load the fits for this parameter
-  dt <- data.table::fread(filename, select=c(objval.col))
-  
-  print('plotting objective value vs iteration')
-  # save the objective value vs iteration
-  g <- plot_fits(unlist(c(dt)), ggplot())
+plot_objval_vs_iters <- function(objval.vec, model_name, plots_dir) {
+  g <- plot_fits(objval.vec, ggplot())
   ggsave(file.path(plots_dir, paste(model_name, "_objval_vs_iter.png", sep="")), dpi=300, width=8, height=6)
 }
 
 
+#' Analysis of the Objective values vs Iterations
+#'
+#' @param model_name the model name without extension
+#' @param filename the filename containing the fits sequence
+#' @param plots_dir the directory to save the generated plots
+#' @export
+objval_vs_iters_analysis <- function(model_name, filename, plots_dir) {
+  # load the fits for this parameter
+  dt <- data.table::fread(filename, select=c(objval.col))
+  
+  print('plotting objective value vs iteration')
+  plot_objval_vs_iters(unlist(c(dt)), model_name, plots_dir)
+}
 
-## DONE
-# - preprocessing (generic stats, log10) - DONE, TESTED
-# - PLE analysis - DONE, TESTED
-# - save file of parameter PLEs (stats) - DONE, TESTED
-# - parameter density analysis - DONE, TESTED 
-# - 2D PLE - DONE, TESTED
-# - plot_objval_vs_iters  - DONE, TESTED
-
-## TODO
-# - best fits analysis (% of best fits) => COMPLETE FUNCTIONS: parameter_density_analysis, sampled_2d_ple_analysis
-# to filter the data set of final fits using a percentage.
 
 
 
@@ -905,6 +877,8 @@ parameter2 <- "k2"
 plots_dir <- "param_estim_plots"
 fileout_param_estim_details <- "param_estim_details.csv"
 
+best_fits_percent <- 75
+
 # test 1:
 pe.ds.preproc(all_fits, param.names, 
               logspace=logspace, all.fits=TRUE, data_point_num=data_point_num, 
@@ -920,30 +894,30 @@ combine_param_ple_stats(plots_dir, fileout_param_estim_details)
 
 # test 4:
 parameter_density_analysis(model_name, filename.final, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="BestFits", logspace, scientific_notation=TRUE)
+                           plots_dir, thres="BestFits", best_fits_percent, logspace, scientific_notation=TRUE)
 parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL66", logspace, scientific_notation=TRUE)
+                           plots_dir, thres="CL66", best_fits_percent, logspace, scientific_notation=TRUE)
 parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL95", logspace, scientific_notation=TRUE)
+                           plots_dir, thres="CL95", best_fits_percent, logspace, scientific_notation=TRUE)
 parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL99", logspace, scientific_notation=TRUE)
+                           plots_dir, thres="CL99", best_fits_percent, logspace, scientific_notation=TRUE)
 parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="All", logspace, scientific_notation=TRUE)
+                           plots_dir, thres="All", best_fits_percent, logspace, scientific_notation=TRUE)
 
 # test 5:
 sampled_2d_ple_analysis(model_name, filename.final, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="BestFits", logspace, scientific_notation=TRUE)
+                        plots_dir, thres="BestFits", best_fits_percent, logspace, scientific_notation=TRUE)
 sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL66", logspace, scientific_notation=TRUE)
+                        plots_dir, thres="CL66", best_fits_percent, logspace, scientific_notation=TRUE)
 sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL95", logspace, scientific_notation=TRUE)
+                        plots_dir, thres="CL95", best_fits_percent, logspace, scientific_notation=TRUE)
 sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL99", logspace, scientific_notation=TRUE)
+                        plots_dir, thres="CL99", best_fits_percent, logspace, scientific_notation=TRUE)
 sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="All", logspace, scientific_notation=TRUE)
+                        plots_dir, thres="All", best_fits_percent, logspace, scientific_notation=TRUE)
 
 # test 6:
-plot_objval_vs_iters(model_name, filename.all, plots_dir)
+objval_vs_iters_analysis(model_name, filename.all, plots_dir)
 
 
 
@@ -1350,3 +1324,50 @@ deprec_all_fits_analysis <- function(model, df, plots_dir, data_point_num,
   
 }
 
+
+
+
+
+#' Run model parameter estimation analysis and plot results. It analyses
+#' only the best fits using a percent threshold.
+#'
+#' @param model the model name without extension
+#' @param df the dataset containing the best parameter estimation fits.
+#' @param plots_dir the directory to save the generated plots
+#' @param best_fits_percent the percent of best fits to analyse.
+#' @param logspace true if parameters should be plotted in logspace.
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @export
+deprec_final_fits_analysis <- function(model, df, plots_dir, best_fits_percent, logspace=TRUE, scientific_notation=TRUE) {
+  
+  best_fits_percent <- as.numeric(best_fits_percent)
+  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+    warning("best_fits_percent is not in (0, 100]. Now set to 100")
+    best_fits_percent = 100
+  }
+  
+  if(logspace) {
+    # Transform the parameter space to a log10 parameter space.
+    # The 2nd column containing the objective value is maintained
+    # as well as the 1st containing the parameter estimation name.
+    df[,c(-1,-2)] <- log10(df[,c(-1,-2)])
+  }
+  
+  dfCols <- replace_colnames(colnames(df))
+  colnames(df) <- dfCols
+  
+  # Calculate the number of rows to extract.
+  selected_rows <- nrow(df)*best_fits_percent/100
+  # sort by objective value (descending) so that the low objective value parameter tuples
+  # (which are the most important) are plotted in front.
+  # Then extract the tail from the data frame.
+  df <- df[order(-df[,2]),]
+  df <- tail(df, selected_rows)
+  
+  # Set my ggplot theme here
+  theme_set(basic_theme(36))
+  
+  plot_parameter_correlations(df, dfCols, plots_dir, paste(model, "_best_fits_", sep=""),
+                              "best obj val", 2, logspace, scientific_notation)
+  
+}
