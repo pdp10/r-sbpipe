@@ -14,19 +14,6 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
-
-# REMOVE THESE AFTER THIS TASK IS COMPLETED.
-source('sbpipe_ggplot2_themes.r')
-source('sbpipe_plots.r')
-library(ggplot2)
-library(colorspace)
-library(grDevices)
-library(stats)
-require(graphics)
-###############################################
-
-
 #' The name of the Objective Value column
 objval.col <- "ObjVal"
 
@@ -130,8 +117,11 @@ compute_bic <- function(chi2, k, n) {
 #' @param all.fits true if filename contains all fits, false otherwise
 #' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false
+# #' @examples 
+# #' sbpipe_pe_ds_preproc(filename="all_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=TRUE, data_point_num=33, fileout_param_estim_summary="param_estim_summary.csv")
+# #' sbpipe_pe_ds_preproc(filename="final_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=FALSE)
 #' @export
-pe.ds.preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="") {
+sbpipe_pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="param_estim_summary.csv") {
   dt <- data.table::fread(filename)
   colnames(dt) <- replace_colnames(colnames(dt))
   dt.log10 <- dt
@@ -355,8 +345,10 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+# #' @examples 
+# #' sbpipe_sampled_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sampled_ple_analysis <- function(model_name, filename, parameter, plots_dir, 
+sbpipe_sampled_ple_analysis <- function(model_name, filename, parameter, plots_dir, 
                                  fileout_param_estim_details, fileout_param_estim_summary,
                                  logspace=TRUE, scientific_notation=TRUE) {
 
@@ -395,8 +387,10 @@ sampled_ple_analysis <- function(model_name, filename, parameter, plots_dir,
 #'
 #' @param plots_dir the directory to save the generated plots
 #' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+# #' @examples 
+# #' sbpipe_combine_param_ple_stats(plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv")
 #' @export
-combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
+sbpipe_combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
   
   files <- list.files(plots_dir, pattern="\\.csv$")
   if(length(files) < 0) { return }
@@ -445,8 +439,14 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
+# #' @examples
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL66", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL95", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL99", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="All", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-parameter_density_analysis <- function(model_name, filename, parameter, fileout_param_estim_summary,  
+sbpipe_parameter_density_analysis <- function(model_name, filename, parameter, fileout_param_estim_summary,  
                                        plots_dir, thres="BestFits", best_fits_percent=100,  
                                        logspace=TRUE, scientific_notation=TRUE) {
   
@@ -541,8 +541,14 @@ plot_sampled_2d_ple <- function(df, parameter1, parameter2,
 #' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
+# #' @examples
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL66", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL95", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL99", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="All", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sampled_2d_ple_analysis <- function(model_name, filename, 
+sbpipe_sampled_2d_ple_analysis <- function(model_name, filename, 
                                     parameter1, parameter2, 
                                     fileout_param_estim_summary,  
                                     plots_dir, thres="BestFits", best_fits_percent=100, 
@@ -616,246 +622,14 @@ plot_objval_vs_iters <- function(objval.vec, model_name, plots_dir) {
 #' @param model_name the model name without extension
 #' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
+# #' @examples 
+# #' sbpipe_objval_vs_iters_analysis(model_name="insulin_receptor", filename="all_estim_collection.csv", plots_dir="param_estim_plots")
 #' @export
-objval_vs_iters_analysis <- function(model_name, filename, plots_dir) {
+sbpipe_objval_vs_iters_analysis <- function(model_name, filename, plots_dir) {
   # load the fits for this parameter
   dt <- data.table::fread(filename, select=c(objval.col))
   
   print('plotting objective value vs iteration')
   plot_objval_vs_iters(unlist(c(dt)), model_name, plots_dir)
 }
-
-
-
-
-# THE FOLLOWING INVOCATIONS WILL BECOME EXAMPLES FOR THE ABOVE FUNCTIONS
-
-best_fits <- 'final_estim_collection.csv'
-all_fits <- 'all_estim_collection.csv'
-param.names <- c('k1', 'k2', 'k3')
-logspace <- TRUE
-data_point_num <- 33
-fileout_param_estim_summary <- "param_estim_summary.csv"
-
-model_name <- "insulin_receptor"
-filename.final <- 'final_estim_collection_log10.csv'
-filename.all <- 'all_estim_collection_log10.csv'
-parameter <- "k1"
-parameter2 <- "k2"
-plots_dir <- "param_estim_plots"
-fileout_param_estim_details <- "param_estim_details.csv"
-
-best_fits_percent <- 75
-
-# test 1:
-pe.ds.preproc(all_fits, param.names, 
-              logspace=logspace, all.fits=TRUE, data_point_num=data_point_num, 
-              fileout_param_estim_summary=fileout_param_estim_summary)
-pe.ds.preproc(best_fits, param.names, logspace=logspace, all.fits=FALSE)
-
-# test 2:
-sampled_ple_analysis(model_name, filename.all, parameter=parameter, plots_dir, 
-                     fileout_param_estim_details, fileout_param_estim_summary,
-                     logspace, scientific_notation=TRUE)
-# test 3:
-combine_param_ple_stats(plots_dir, fileout_param_estim_details)
-
-# test 4:
-parameter_density_analysis(model_name, filename.final, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="BestFits", best_fits_percent, logspace, scientific_notation=TRUE)
-parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL66", best_fits_percent, logspace, scientific_notation=TRUE)
-parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL95", best_fits_percent, logspace, scientific_notation=TRUE)
-parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="CL99", best_fits_percent, logspace, scientific_notation=TRUE)
-parameter_density_analysis(model_name, filename.all, parameter, fileout_param_estim_summary,  
-                           plots_dir, thres="All", best_fits_percent, logspace, scientific_notation=TRUE)
-
-# test 5:
-sampled_2d_ple_analysis(model_name, filename.final, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="BestFits", best_fits_percent, logspace, scientific_notation=TRUE)
-sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL66", best_fits_percent, logspace, scientific_notation=TRUE)
-sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL95", best_fits_percent, logspace, scientific_notation=TRUE)
-sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="CL99", best_fits_percent, logspace, scientific_notation=TRUE)
-sampled_2d_ple_analysis(model_name, filename.all, parameter, parameter2, fileout_param_estim_summary,  
-                        plots_dir, thres="All", best_fits_percent, logspace, scientific_notation=TRUE)
-
-# test 6:
-objval_vs_iters_analysis(model_name, filename.all, plots_dir)
-
-
-
-
-
-#' Run model parameter estimation analysis and plot results for the best fits.
-#'
-#' @param model the model name without extension.
-#' @param finalfits_filenamein the dataset containing the best parameter fits
-#' @param plots_dir the directory to save the generated plots.
-#' @param best_fits_percent the percent of best fits to analyse.
-#' @param logspace true if parameters should be plotted in logspace.
-#' @param scientific_notation true if axis labels should be plotted in scientific notation.
-#' @export
-sbpipe_pe_final_fits <- function(model, finalfits_filenamein, plots_dir, best_fits_percent, 
-                                 logspace, scientific_notation) {
-  
-  if(logspace == 'True' || logspace == 'TRUE' || logspace == 'true') {
-    logspace = TRUE
-  } else {
-    logspace = FALSE
-  }
-  
-  if(scientific_notation == 'True' || scientific_notation == 'TRUE' || scientific_notation == 'true') {
-    scientific_notation = TRUE
-  } else {
-    scientific_notation = FALSE
-  }  
-  
-  
-  dim_final_fits = dim(read.table(finalfits_filenamein, sep="\t"))[1]
-  if(dim_final_fits-1 <= 1) {
-    warning('Best fits analysis requires at least two parameter estimations. Skip.')
-    stop()
-  }
-  
-  df_final_fits = read.table(finalfits_filenamein, header=TRUE, dec=".", sep="\t")
-  final_fits_analysis(model, df_final_fits, plots_dir, best_fits_percent, logspace, scientific_notation)
-  
-}
-
-
-#' Run model parameter estimation analysis and plot results for all fits.
-#'
-#' @param model the model name without extension.
-#' @param allfits_filenamein the dataset containing all the parameter fits
-#' @param plots_dir the directory to save the generated plots.
-#' @param data_point_num the number of data points used for parameterise the model.
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
-#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted.
-#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted.
-#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
-#' @param logspace true if parameters should be plotted in logspace.
-#' @param scientific_notation true if axis labels should be plotted in scientific notation.
-#' @export
-sbpipe_pe_all_fits <- function(model, allfits_filenamein, plots_dir, data_point_num, 
-                               fileout_param_estim_details, fileout_param_estim_summary, 
-                               plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
-                               logspace, scientific_notation) {
-  
-  if(plot_2d_66cl_corr == 'True' || plot_2d_66cl_corr == 'TRUE' || plot_2d_66cl_corr == 'true') {
-    plot_2d_66cl_corr = TRUE
-  } else {
-    plot_2d_66cl_corr = FALSE
-  }
-  
-  if(plot_2d_95cl_corr == 'True' || plot_2d_95cl_corr == 'TRUE' || plot_2d_95cl_corr == 'true') {
-    plot_2d_95cl_corr = TRUE
-  } else {
-    plot_2d_95cl_corr = FALSE
-  }
-  
-  if(plot_2d_99cl_corr == 'True' || plot_2d_99cl_corr == 'TRUE' || plot_2d_99cl_corr == 'true') {
-    plot_2d_99cl_corr = TRUE
-  } else {
-    plot_2d_99cl_corr = FALSE
-  }  
-  
-  if(logspace == 'True' || logspace == 'TRUE' || logspace == 'true') {
-    logspace = TRUE
-  } else {
-    logspace = FALSE
-  }
-  
-  if(scientific_notation == 'True' || scientific_notation == 'TRUE' || scientific_notation == 'true') {
-    scientific_notation = TRUE
-  } else {
-    scientific_notation = FALSE
-  }  
-  
-  dim_all_fits = dim(read.table(allfits_filenamein, header=TRUE, sep="\t"))[1]
-  
-  if(dim_all_fits-1 <= 0) {
-    warning('All fits analysis requires at least one parameter set. Cannot continue.')
-    stop()
-  }
-  
-  df_all_fits = read.table(allfits_filenamein, header=TRUE, dec=".", sep="\t")
-  
-  # non-positive entries test
-  # If so, logspace will be set to FALSE, otherwise SBpipe will fail due to NaN values.
-  # This is set once for all
-  nonpos_entries <- sum(df_all_fits <= 0)
-  if(nonpos_entries > 0) {
-    warning('Non-positive values found for one or more parameters. `logspace` option set to FALSE')
-    logspace = FALSE
-  }
-  
-  all_fits_analysis(model, df_all_fits, plots_dir, data_point_num, fileout_param_estim_details,
-                    fileout_param_estim_summary, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
-                    logspace, scientific_notation)
-  
-}
-
-
-#' Main R function for SBpipe pipeline: parameter_estimation(). 
-#'
-#' @param model the model name without extension.
-#' @param finalfits_filenamein the dataset containing the best parameter fits
-#' @param allfits_filenamein the dataset containing all the parameter fits
-#' @param plots_dir the directory to save the generated plots.
-#' @param data_point_num the number of data points used for parameterise the model.
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
-#' @param best_fits_percent the percent of best fits to analyse.
-#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted.
-#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted.
-#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
-#' @param logspace true if parameters should be plotted in logspace.
-#' @param scientific_notation true if axis labels should be plotted in scientific notation.
-#' @export
-sbpipe_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
-                      data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
-                      best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
-                      logspace, scientific_notation) {
-  
-  if(plot_2d_66cl_corr == 'True' || plot_2d_66cl_corr == 'TRUE' || plot_2d_66cl_corr == 'true') {
-    plot_2d_66cl_corr = TRUE
-  } else {
-    plot_2d_66cl_corr = FALSE
-  }
-  
-  if(plot_2d_95cl_corr == 'True' || plot_2d_95cl_corr == 'TRUE' || plot_2d_95cl_corr == 'true') {
-    plot_2d_95cl_corr = TRUE
-  } else {
-    plot_2d_95cl_corr = FALSE
-  }
-  
-  if(plot_2d_99cl_corr == 'True' || plot_2d_99cl_corr == 'TRUE' || plot_2d_99cl_corr == 'true') {
-    plot_2d_99cl_corr = TRUE
-  } else {
-    plot_2d_99cl_corr = FALSE
-  }  
-  
-  if(logspace == 'True' || logspace == 'TRUE' || logspace == 'true') {
-    logspace = TRUE
-  } else {
-    logspace = FALSE
-  }
-  
-  if(scientific_notation == 'True' || scientific_notation == 'TRUE' || scientific_notation == 'true') {
-    scientific_notation = TRUE
-  } else {
-    scientific_notation = FALSE
-  }  
-  
-  fits_analysis(model, finalfits_filenamein, allfits_filenamein, plots_dir, data_point_num, fileout_param_estim_details,
-                fileout_param_estim_summary, best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
-                logspace, scientific_notation)
-}
-
 

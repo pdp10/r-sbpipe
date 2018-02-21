@@ -2,15 +2,13 @@
 % Please edit documentation in R/sbpipe_pe.r
 \name{plot_sampled_ple}
 \alias{plot_sampled_ple}
-\title{Plot the sampled profile likelihood estimations (PLE)}
+\title{Plot the sampled profile likelihood estimations (PLE). The table is made of two columns: ObjVal | Parameter}
 \usage{
-plot_sampled_ple(df99, objval_col, cl66_objval, cl95_objval, cl99_objval,
-  plots_dir, model, logspace = TRUE, scientific_notation = TRUE)
+plot_sampled_ple(df99, cl66_objval, cl95_objval, cl99_objval, plots_dir, model,
+  logspace = TRUE, scientific_notation = TRUE)
 }
 \arguments{
 \item{df99}{the 99\% confidence level data frame}
-
-\item{objval_col}{the objective value column name}
 
 \item{cl66_objval}{the 66\% confidence level objective value}
 
@@ -27,5 +25,5 @@ plot_sampled_ple(df99, objval_col, cl66_objval, cl95_objval, cl99_objval,
 \item{scientific_notation}{true if the axis labels should be plotted in scientific notation (default: TRUE)}
 }
 \description{
-Plot the sampled profile likelihood estimations (PLE)
+Plot the sampled profile likelihood estimations (PLE). The table is made of two columns: ObjVal | Parameter
 }

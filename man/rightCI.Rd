@@ -2,19 +2,14 @@
 % Please edit documentation in R/sbpipe_pe.r
 \name{rightCI}
 \alias{rightCI}
-\title{Return the right value confidence interval.}
+\title{Return the right value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue}
 \usage{
-rightCI(cut_dataset, full_dataset, objval_col_idx, param_col_idx,
-  objval_conf_level)
+rightCI(largest.param.value, full_dataset, objval_conf_level)
 }
 \arguments{
-\item{cut_dataset}{a subset of the full dataset (e.g. the best 66\%, the best 95\%)}
+\item{largest.param.value}{the largest parameter value within the specified confidence level}
 
 \item{full_dataset}{the full dataset}
-
-\item{objval_col_idx}{the index for the objective function column in the dataset}
-
-\item{param_col_idx}{the index for the parameter column in the dataset}
 
 \item{objval_conf_level}{the objective function confidence level}
 }
@@ -22,5 +17,5 @@ rightCI(cut_dataset, full_dataset, objval_col_idx, param_col_idx,
 the right confidence interval
 }
 \description{
-Return the right value confidence interval.
+Return the right value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue
 }
