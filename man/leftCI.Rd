@@ -2,19 +2,14 @@
 % Please edit documentation in R/sbpipe_pe.r
 \name{leftCI}
 \alias{leftCI}
-\title{Return the left value confidence interval.}
+\title{Return the left value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue}
 \usage{
-leftCI(cut_dataset, full_dataset, objval_col_idx, param_col_idx,
-  objval_conf_level)
+leftCI(smallest.param.value, full_dataset, objval_conf_level)
 }
 \arguments{
-\item{cut_dataset}{a subset of the full dataset (e.g. the best 66\%, the best 95\%)}
+\item{smallest.param.value}{the smallest parameter value within the specified confidence level}
 
 \item{full_dataset}{the full dataset}
-
-\item{objval_col_idx}{the index for the objective function column in the dataset}
-
-\item{param_col_idx}{the index for the parameter column in the dataset}
 
 \item{objval_conf_level}{the objective function confidence level}
 }
@@ -22,5 +17,5 @@ leftCI(cut_dataset, full_dataset, objval_col_idx, param_col_idx,
 the left confidence interval
 }
 \description{
-Return the left value confidence interval.
+Return the left value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue
 }

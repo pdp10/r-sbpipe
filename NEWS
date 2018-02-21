@@ -1,6 +1,7 @@
 
-v1.3.0
+v1.4.0
 
+- parameter estimation refactory. Substantial modularity improvements.
 - code optimisation
 - fixed versions for dependency packages installed via conda
 - r-colorramps is now distributed in the conda channel pdp10 and depends on r-base in r channel. 

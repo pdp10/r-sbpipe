@@ -4,10 +4,10 @@
 \alias{plot_fits}
 \title{Plot the number of iterations vs objective values in log10 scale.}
 \usage{
-plot_fits(objval_array, g = ggplot())
+plot_fits(objval.vec, g = ggplot())
 }
 \arguments{
-\item{objval_array}{the array of objective function values.}
+\item{objval.vec}{the array of objective function values.}
 
 \item{g}{the current ggplot to overlap}
 }

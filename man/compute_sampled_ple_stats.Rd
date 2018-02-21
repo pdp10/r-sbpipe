@@ -4,23 +4,13 @@
 \alias{compute_sampled_ple_stats}
 \title{Compute the table for the sampled PLE statistics.}
 \usage{
-compute_sampled_ple_stats(df66, df95, df99, df, objval_col, objval_col_idx,
-  param_col_idx, cl66_objval, cl95_objval, cl99_objval, logspace = TRUE)
+compute_sampled_ple_stats(df, min_objval, cl66_objval, cl95_objval, cl99_objval,
+  logspace = TRUE)
 }
 \arguments{
-\item{df66}{the data frame filtered at 66\%}
-
-\item{df95}{the data frame filtered at 95\%}
-
-\item{df99}{the data frame filtered at 95\%}
-
 \item{df}{the complete data frame}
 
-\item{objval_col}{the objective value column name}
-
-\item{objval_col_idx}{the objective value column index}
-
-\item{param_col_idx}{the param column index}
+\item{min_objval}{the minimum objective value}
 
 \item{cl66_objval}{the 66\% confidence level objective value}
 
@@ -28,7 +18,7 @@ compute_sampled_ple_stats(df66, df95, df99, df, objval_col, objval_col_idx,
 
 \item{cl99_objval}{the 99\% confidence level objective value}
 
-\item{logspace}{true if parameters should be plotted in logspace. (default: TRUE)}
+\item{logspace}{true if parameters are plotted in logspace (default: TRUE)}
 }
 \value{
 the list of parameter values with their confidence intervals

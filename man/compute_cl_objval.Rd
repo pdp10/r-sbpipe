@@ -4,7 +4,7 @@
 \alias{compute_cl_objval}
 \title{Compute the confidence level based on the minimum objective value.}
 \usage{
-compute_cl_objval(min_objval, params, data_points, level = 0.5)
+compute_cl_objval(min_objval, params, data_points, level = 0.05)
 }
 \arguments{
 \item{min_objval}{the minimum objective value}
@@ -13,7 +13,7 @@ compute_cl_objval(min_objval, params, data_points, level = 0.5)
 
 \item{data_points}{the number of data points}
 
-\item{level}{the confidence level threshold (e.g. 0.1, 0.5)}
+\item{level}{the confidence level threshold (e.g. 0.01, 0.05)}
 }
 \value{
 the confidence level based on minimum objective value
