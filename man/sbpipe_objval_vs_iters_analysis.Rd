@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_pe.r
 \name{sbpipe_objval_vs_iters_analysis}
 \alias{sbpipe_objval_vs_iters_analysis}
-\title{Analysis of the Objective values vs Iterations}
+\title{Analysis of the Objective values vs Iterations.}
 \usage{
 sbpipe_objval_vs_iters_analysis(model_name, filename, plots_dir)
 }
@@ -14,5 +14,5 @@ sbpipe_objval_vs_iters_analysis(model_name, filename, plots_dir)
 \item{plots_dir}{the directory to save the generated plots}
 }
 \description{
-Analysis of the Objective values vs Iterations
+Analysis of the Objective values vs Iterations.
 }

@@ -5,8 +5,7 @@
 \title{Run the profile likelihood estimation analysis.}
 \usage{
 sbpipe_sampled_ple_analysis(model_name, filename, parameter, plots_dir,
-  fileout_param_estim_details, fileout_param_estim_summary, logspace = TRUE,
-  scientific_notation = TRUE)
+  fileout_param_estim_summary, logspace = TRUE, scientific_notation = TRUE)
 }
 \arguments{
 \item{model_name}{the model name without extension}
@@ -16,8 +15,6 @@ sbpipe_sampled_ple_analysis(model_name, filename, parameter, plots_dir,
 \item{parameter}{the parameter to compute the PLE analysis}
 
 \item{plots_dir}{the directory to save the generated plots}
-
-\item{fileout_param_estim_details}{the name of the file containing the detailed statistics for the estimated parameters}
 
 \item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation}
 

@@ -17,7 +17,6 @@
 #' The name of the Objective Value column
 objval.col <- "ObjVal"
 
-
 #' Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
 #' removed.
 #'
@@ -128,7 +127,7 @@ sbpipe_pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.f
   data.table::fwrite(dt, filename)
   
   if(logspace) {
-    dt.log10[, (param.names) := lapply(.SD, "log10"), .SDcols = param.names]
+    dt.log10[, param.names] <- log10(dt.log10[, param.names])
     data.table::fwrite(dt.log10, gsub('.csv', '_log10.csv', filename))
   }
   
@@ -264,15 +263,8 @@ rightCI <- function(largest.param.value, full_dataset, objval_conf_level) {
 #' @export
 compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, cl99_objval, logspace=TRUE) {
   
-  # load the global statistics for the parameter estimation
-  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
-  
   # extract the optimum value for the parameter (the parameter set giving the minimum objective value)
-  par_value <- min(df[df[, objval.col] <= as.numeric(dt.stats[1, "MinObjVal"]), 2])
-  
-  cl66_objval <- as.numeric(dt.stats[, "CL66ObjVal"])
-  cl95_objval <- as.numeric(dt.stats[, "CL95ObjVal"])
-  cl99_objval <- as.numeric(dt.stats[, "CL99ObjVal"])
+  par_value <- min(df[df[, objval.col] <= min_objval, 2])
   
   df66 <- df[df[,objval.col] <= cl66_objval, ]
   df95 <- df[df[,objval.col] <= cl95_objval, ]
@@ -341,16 +333,15 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' @param filename the filename containing the fits sequence
 #' @param parameter the parameter to compute the PLE analysis
 #' @param plots_dir the directory to save the generated plots
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
 # #' @examples 
 # #' sbpipe_sampled_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sbpipe_sampled_ple_analysis <- function(model_name, filename, parameter, plots_dir, 
-                                 fileout_param_estim_details, fileout_param_estim_summary,
-                                 logspace=TRUE, scientific_notation=TRUE) {
+sbpipe_sampled_ple_analysis <- function(model_name, filename, parameter, 
+                                        plots_dir, fileout_param_estim_summary,
+                                        logspace=TRUE, scientific_notation=TRUE) {
 
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
@@ -359,7 +350,6 @@ sbpipe_sampled_ple_analysis <- function(model_name, filename, parameter, plots_d
   dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
   
   # Plot the sampled profile likelihood estimations (PLE)
-  theme_set(basic_theme(36))
   plot_sampled_ple(df[df[ ,objval.col] <= dt.stats$CL99ObjVal, ], 
                    dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
                    plots_dir, model_name, logspace, scientific_notation)
@@ -417,6 +407,7 @@ sbpipe_combine_param_ple_stats <- function(plots_dir, fileout_param_estim_detail
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
 #' @export
 plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TRUE, scientific_notation=TRUE) {
+  theme_set(basic_theme(36))
   g <- histogramplot(df[parameter], ggplot()) + ggtitle(title)
   if(logspace) {
     g <- g + xlab(paste("log10(",parameter,")",sep=""))
@@ -513,6 +504,7 @@ sbpipe_parameter_density_analysis <- function(model_name, filename, parameter, f
 plot_sampled_2d_ple <- function(df, parameter1, parameter2, 
                                 fileout, title="", 
                                 logspace=TRUE, scientific_notation=TRUE) {
+  theme_set(basic_theme(36))
   g <- scatterplot_w_colour(df, ggplot(), parameter1, parameter2, objval.col) +
     ggtitle(title) +
     theme(legend.title=element_blank(), 
@@ -564,19 +556,19 @@ sbpipe_sampled_2d_ple_analysis <- function(model_name, filename,
     if(dt.stats$CL99ObjVal != 0) {
       if(thres == "CL66") {
         df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model_name, "_cl66_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model_name, "_ple_2d_cl66_fits_", parameter1, "_", parameter2, ".png", sep=""))
         title <- expression("fits"<="CL66%")
       } else if(thres == "CL95") {
         df <- df[df[ , objval.col] <= dt.stats$CL95ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model_name, "_cl95_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model_name, "_ple_2d_cl95_fits_", parameter1, "_", parameter2, ".png", sep=""))
         title <- expression("fits"<="CL95%")
       } else if(thres == "CL99") {
         df <- df[df[ , objval.col] <= dt.stats$CL99ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model_name, "_cl99_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model_name, "_ple_2d_cl99_fits_", parameter1, "_", parameter2, ".png", sep=""))
         title <- expression("fits"<="CL99%")
       } else if(thres == "All") {
         # no filtering, but we assume that filename contains all the fits
-        fileout <- file.path(plots_dir, paste(model_name, "_all_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model_name, "_ple_2d_all_fits_", parameter1, "_", parameter2, ".png", sep=""))
         title <- expression("all fits")
       } else {
         warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
@@ -595,7 +587,7 @@ sbpipe_sampled_2d_ple_analysis <- function(model_name, filename,
     df <- df[order(-df[,objval.col]),]
     df <- tail(df, selected_rows)
     
-    fileout <- file.path(plots_dir, paste(model_name, "_best_fits_", parameter1, "_", parameter2, ".png", sep=""))
+    fileout <- file.path(plots_dir, paste(model_name, "_ple_2d_best_fits_", parameter1, "_", parameter2, ".png", sep=""))
     title <- expression("best fits")
   }
   
@@ -612,12 +604,13 @@ sbpipe_sampled_2d_ple_analysis <- function(model_name, filename,
 #' @param plots_dir the directory to save the generated plots
 #' @export
 plot_objval_vs_iters <- function(objval.vec, model_name, plots_dir) {
+  theme_set(basic_theme(36))
   g <- plot_fits(objval.vec, ggplot())
   ggsave(file.path(plots_dir, paste(model_name, "_objval_vs_iter.png", sep="")), dpi=300, width=8, height=6)
 }
 
 
-#' Analysis of the Objective values vs Iterations
+#' Analysis of the Objective values vs Iterations.
 #'
 #' @param model_name the model name without extension
 #' @param filename the filename containing the fits sequence
