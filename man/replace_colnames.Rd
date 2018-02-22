@@ -5,10 +5,10 @@
 \title{Rename data frame columns. \code{ObjectiveValue} is renamed as \code{ObjVal}. Substrings \code{Values.} and \code{..InitialValue} are
 removed.}
 \usage{
-replace_colnames(dfCols)
+replace_colnames(df.cols)
 }
 \arguments{
-\item{dfCols}{The columns of a data frame.}
+\item{df.cols}{The columns of a data frame.}
 }
 \value{
 the renamed columns

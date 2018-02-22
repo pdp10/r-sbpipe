@@ -4,13 +4,13 @@
 \alias{sbpipe_pe}
 \title{Main R function for SBpipe pipeline: parameter_estimation().}
 \usage{
-sbpipe_pe(model, finalfits_filenamein, allfits_filenamein, plots_dir,
+sbpipe_pe(model_name, finalfits_filenamein, allfits_filenamein, plots_dir,
   data_point_num, fileout_param_estim_details, fileout_param_estim_summary,
   best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
   logspace, scientific_notation)
 }
 \arguments{
-\item{model}{the model name without extension.}
+\item{model_name}{the name of the model}
 
 \item{finalfits_filenamein}{the dataset containing the best parameter fits}
 

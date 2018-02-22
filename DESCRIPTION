@@ -1,6 +1,6 @@
 Package: sbpiper
-Version: 1.3.0
-Date: 2018-02-15
+Version: 1.4.0
+Date: 2018-02-21
 Title: Data Analysis Functions for SBpipe Package
 Author: Piero Dalle Pezze
 Maintainer: Piero Dalle Pezze <piero.dallepezze@gmail.com>
