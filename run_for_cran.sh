@@ -37,6 +37,7 @@ rm -f .travis.yml
 rm -rf conda_recipe
 rm -f environment.yaml
 rm -f miniconda.sh
+rm -f config.yml
 
 # remove data_raw
 rm -rf data-raw
