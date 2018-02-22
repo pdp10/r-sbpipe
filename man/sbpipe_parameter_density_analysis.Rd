@@ -4,9 +4,10 @@
 \alias{sbpipe_parameter_density_analysis}
 \title{Parameter density analysis.}
 \usage{
-sbpipe_parameter_density_analysis(model_name, filename, parameter,
-  fileout_param_estim_summary, plots_dir, thres = "BestFits",
-  best_fits_percent = 100, logspace = TRUE, scientific_notation = TRUE)
+sbpipe_parameter_density_analysis(model_name, filename, parameter, plots_dir,
+  thres = "BestFits", best_fits_percent = 100,
+  fileout_param_estim_summary = "", logspace = TRUE,
+  scientific_notation = TRUE)
 }
 \arguments{
 \item{model_name}{the model name without extension}
@@ -15,13 +16,13 @@ sbpipe_parameter_density_analysis(model_name, filename, parameter,
 
 \item{parameter}{the name of the parameter to plot the density}
 
-\item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation}
-
 \item{plots_dir}{the directory for storing the plots}
 
 \item{thres}{the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".}
 
 \item{best_fits_percent}{the percent of best fits to analyse. Only used if thres="BestFits".}
+
+\item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".}
 
 \item{logspace}{true if the parameters should be plotted in logspace}
 

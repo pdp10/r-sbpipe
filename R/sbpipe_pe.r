@@ -424,30 +424,32 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #' @param model_name the model name without extension
 #' @param filename the filename containing the fits sequence
 #' @param parameter the name of the parameter to plot the density
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param plots_dir the directory for storing the plots
 #' @param thres the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".
 #' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 # #' @examples
-# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL66", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL95", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL99", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", "param_estim_summary.csv", plots_dir="param_estim_plots", thres="All", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_parameter_density_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sbpipe_parameter_density_analysis <- function(model_name, filename, parameter, fileout_param_estim_summary,  
-                                       plots_dir, thres="BestFits", best_fits_percent=100,  
+sbpipe_parameter_density_analysis <- function(model_name, filename, parameter,  
+                                       plots_dir, thres="BestFits", best_fits_percent=100,
+                                       fileout_param_estim_summary="",
                                        logspace=TRUE, scientific_notation=TRUE) {
   
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
   
-  # load the global statistics for the parameter estimation
-  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
-  
   if(thres != "BestFits") {
+    
+    # load the global statistics for the parameter estimation
+    dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+    
     if(dt.stats$CL99ObjVal != 0) {
       if(thres == "CL66") {
         df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
@@ -527,32 +529,33 @@ plot_sampled_2d_ple <- function(df, parameter1, parameter2,
 #' @param filename the filename containing the fits sequence
 #' @param parameter1 the name of the first parameter
 #' @param parameter2 the name of the second parameter
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param plots_dir the directory for storing the plots
 #' @param thres the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".
 #' @param best_fits_percent the percent of best fits to analyse. Only used if thres="BestFits".
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 # #' @examples
-# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL66", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL95", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="CL99", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", fileout_param_estim_summary="param_estim_summary.csv", plots_dir="param_estim_plots", thres="All", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sbpipe_sampled_2d_ple_analysis(model_name="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
 sbpipe_sampled_2d_ple_analysis <- function(model_name, filename, 
                                     parameter1, parameter2, 
-                                    fileout_param_estim_summary,  
                                     plots_dir, thres="BestFits", best_fits_percent=100, 
+                                    fileout_param_estim_summary="",  
                                     logspace=TRUE, scientific_notation=TRUE) {
   
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter1, parameter2)))
   
-  # load the global statistics for the parameter estimation
-  dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
-  
   if(thres != "BestFits") {
+    
+    # load the global statistics for the parameter estimation
+    dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+    
     if(dt.stats$CL99ObjVal != 0) {
       if(thres == "CL66") {
         df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
@@ -725,11 +728,11 @@ sbpipe_pe <- function(model_name, finalfits_filenamein, allfits_filenamein, plot
                                 logspace=logspace, scientific_notation=scientific_notation)
     
     # parameter density analysis
-    sbpipe_parameter_density_analysis(model_name=model_name, filename=finalfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL66", logspace=logspace, scientific_notation=scientific_notation)
-    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL95", logspace=logspace, scientific_notation=scientific_notation)
-    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL99", logspace=logspace, scientific_notation=scientific_notation)
-    # sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], fileout_param_estim_summary, plots_dir=plots_dir, thres="All", logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    # sbpipe_parameter_density_analysis(model_name=model_name, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
   }
   
   # create summary file containing parameter PLE stats
@@ -738,14 +741,14 @@ sbpipe_pe <- function(model_name, finalfits_filenamein, allfits_filenamein, plot
   # 2D PLE analysis
   for(i in 1:(length(param.names)-1)) {
     for(j in (i+1):length(param.names)) {
-      sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+      sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_66cl_corr) 
-        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL66", logspace=logspace, scientific_notation=scientific_notation)
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_95cl_corr)
-        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL95", logspace=logspace, scientific_notation=scientific_notation)
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_99cl_corr)
-        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="CL99", logspace=logspace, scientific_notation=scientific_notation)
-      # sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], fileout_param_estim_summary, plots_dir=plots_dir, thres="All", logspace=logspace, scientific_notation=scientific_notation)
+        sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      # sbpipe_sampled_2d_ple_analysis(model_name=model_name, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
     }
   }
  

@@ -5,8 +5,9 @@
 \title{2D profile likelihood estimation analysis.}
 \usage{
 sbpipe_sampled_2d_ple_analysis(model_name, filename, parameter1, parameter2,
-  fileout_param_estim_summary, plots_dir, thres = "BestFits",
-  best_fits_percent = 100, logspace = TRUE, scientific_notation = TRUE)
+  plots_dir, thres = "BestFits", best_fits_percent = 100,
+  fileout_param_estim_summary = "", logspace = TRUE,
+  scientific_notation = TRUE)
 }
 \arguments{
 \item{model_name}{the model name without extension}
@@ -17,13 +18,13 @@ sbpipe_sampled_2d_ple_analysis(model_name, filename, parameter1, parameter2,
 
 \item{parameter2}{the name of the second parameter}
 
-\item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation}
-
 \item{plots_dir}{the directory for storing the plots}
 
 \item{thres}{the threshold used to filter the dataset. Values: "BestFits", "CL66", "CL95", "CL99", "All".}
 
 \item{best_fits_percent}{the percent of best fits to analyse. Only used if thres="BestFits".}
+
+\item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".}
 
 \item{logspace}{true if the parameters should be plotted in logspace}
 
