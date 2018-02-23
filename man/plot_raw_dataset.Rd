@@ -5,7 +5,7 @@
 \title{Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).}
 \usage{
 plot_raw_dataset(df_exp_dataset, g = ggplot(), readout = "time",
-  max_sim_tp = 0, alpha = 1)
+  max_sim_tp = 0, alpha = 1, yaxis.min = NULL, yaxis.max = NULL)
 }
 \arguments{
 \item{df_exp_dataset}{the experimental data set}
@@ -17,6 +17,10 @@ plot_raw_dataset(df_exp_dataset, g = ggplot(), readout = "time",
 \item{max_sim_tp}{the maximum simulated time point}
 
 \item{alpha}{the amount of alpha transparency}
+
+\item{yaxis.min}{the lower limit for the y axis}
+
+\item{yaxis.max}{the upper limit for the y axis}
 }
 \value{
 the plot

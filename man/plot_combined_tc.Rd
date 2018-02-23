@@ -5,7 +5,8 @@
 \title{Plot repeated time courses in the same plot with mean, 1 standard deviation, and 95\% confidence intervals.}
 \usage{
 plot_combined_tc(df, g = ggplot(), title = "", xaxis_label = "",
-  yaxis_label = "", bar_type = "mean", alpha = 1)
+  yaxis_label = "", bar_type = "mean", alpha = 1, yaxis.min = NULL,
+  yaxis.max = NULL)
 }
 \arguments{
 \item{df}{a data frame}
@@ -21,6 +22,10 @@ plot_combined_tc(df, g = ggplot(), title = "", xaxis_label = "",
 \item{bar_type}{the type of bar ("mean", "mean_sd", "mean_sd_ci95")}
 
 \item{alpha}{the amount of alpha transparency}
+
+\item{yaxis.min}{the lower limit for the y axis}
+
+\item{yaxis.max}{the upper limit for the y axis}
 }
 \value{
 the plot

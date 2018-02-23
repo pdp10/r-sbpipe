@@ -226,14 +226,25 @@ plot_fits <- function(objval.vec, g=ggplot()) {
 #' @param readout the name of the readout
 #' @param max_sim_tp the maximum simulated time point
 #' @param alpha the amount of alpha transparency
+#' @param yaxis.min the lower limit for the y axis
+#' @param yaxis.max the upper limit for the y axis
 #' @return the plot
 #' @export
-plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim_tp=0, alpha=1) {
+plot_raw_dataset <- function(df_exp_dataset, 
+                             g=ggplot(), 
+                             readout="time", 
+                             max_sim_tp=0, 
+                             alpha=1,
+                             yaxis.min=NULL, 
+                             yaxis.max=NULL) {
     # Let's add the experimental data set to the plot
     time <- colnames(df_exp_dataset)[1]
     df_exp_dataset <- df_exp_dataset[df_exp_dataset[1] <= max_sim_tp,]
     g <- g + geom_point(data=df_exp_dataset, aes_string(x=time, y=readout),
                         shape=1, size=2, stroke=1, colour='red2', alpha=alpha)
+    if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
+      g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
+    }
     return(g)
 }
 
@@ -248,6 +259,8 @@ plot_raw_dataset <- function(df_exp_dataset, g=ggplot(), readout="time", max_sim
 #' @param yaxis_label the yaxis label
 #' @param bar_type the type of bar ("mean", "mean_sd", "mean_sd_ci95")
 #' @param alpha the amount of alpha transparency
+#' @param yaxis.min the lower limit for the y axis
+#' @param yaxis.max the upper limit for the y axis
 #' @return the plot
 #' @export
 plot_combined_tc <- function(df, 
@@ -256,7 +269,9 @@ plot_combined_tc <- function(df,
                              xaxis_label="", 
                              yaxis_label="", 
                              bar_type="mean", 
-                             alpha=1) {
+                             alpha=1,
+                             yaxis.min=NULL, 
+                             yaxis.max=NULL) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     if(bar_type == "mean_sd" || bar_type == "mean_sd_ci95") {
         g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"),
@@ -266,6 +281,9 @@ plot_combined_tc <- function(df,
                                   geom="ribbon", fun.data=mean_cl_normal,
                                   fun.args=list(conf.int=0.95), fill="#5588CC", alpha=alpha)   # #CCFFFF
         }
+    }
+    if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
+      g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
     }
     g <- g + stat_summary(data=mdf, aes_string(x="Time", y="value"), geom="line", fun.y=mean, size=1.0, color="black") +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title)
@@ -282,6 +300,8 @@ plot_combined_tc <- function(df,
 #' @param xaxis_label the xaxis label of the plot
 #' @param yaxis_label the yaxis label of the plot
 #' @param alpha the amount of alpha transparency
+#' @param yaxis.min the lower limit for the y axis
+#' @param yaxis.max the upper limit for the y axis
 #' @return the plot
 #' @export
 plot_repeated_tc <- function(df, 
@@ -289,11 +309,16 @@ plot_repeated_tc <- function(df,
                              title='', 
                              xaxis_label="", 
                              yaxis_label="", 
-                             alpha=1) {
+                             alpha=1,
+                             yaxis.min=NULL, 
+                             yaxis.max=NULL) {
     mdf <- reshape2::melt(df,id.vars="Time",variable.name="variable",value.name="value")
     g <- g + geom_line(data=mdf,aes_string(x="Time",y="value",color="variable"), size=1.0, alpha=alpha) +
          xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(title) +
          theme(legend.position="none")
+    if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
+      g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
+    }
     return(g)
 }
 

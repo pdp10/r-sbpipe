@@ -272,9 +272,12 @@ load_exp_dataset <- function(exp_dataset, plot_exp_dataset=FALSE) {
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
+#' @param yaxis.min the lower limit for the y axis
+#' @param yaxis.max the upper limit for the y axis
 #' @export
 plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
-                           exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
+                           exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1',
+                           yaxis.min=NULL, yaxis.max=NULL) {
 
   theme_set(tc_theme(36)) #28
 
@@ -296,19 +299,19 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
     # mean
     fileoutM <- gsub('.png', '_mean.png', template_filename)
     gM <- ggplot()
-    gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean')
+    gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
     ggsave(fileoutM, dpi=300, width=8, height=6)#, bg = "transparent")
 
     # mean_sd
     fileoutMSD <- gsub('.png', '_mean_sd.png', template_filename)
     gMSD <- ggplot()
-    gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd')
+    gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
     ggsave(fileoutMSD, dpi=300, width=8, height=6)#, bg = "transparent")
 
     # mean_sd_ci95
     fileoutMSDCI <- gsub('.png', '_mean_sd_ci95.png', template_filename)
     gMSDCI <- ggplot()
-    gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95')
+    gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
     ggsave(fileoutMSDCI, dpi=300, width=8, height=6)#, bg = "transparent")
 
     if(readout %in% colnames(df_exp_dataset)) {
@@ -316,19 +319,19 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
         # we make this plot again because we want the line in front.
         gM <- ggplot()
         gM <- plot_raw_dataset(df_exp_dataset, gM, readout, max(df$Time), alpha=exp_dataset_alpha)
-        gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean')
+        gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
         ggsave(gsub('.png', '_w_exp_data.png', fileoutM), dpi=300, width=8, height=6)#, bg = "transparent")
 
         # mean_sd
         gMSD <- ggplot()
         gMSD <- plot_raw_dataset(df_exp_dataset, gMSD, readout, max(df$Time), alpha=exp_dataset_alpha)
-        gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd', alpha=0.6)
+        gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
         ggsave(gsub('.png', '_w_exp_data.png', fileoutMSD), dpi=300, width=8, height=6)#, bg = "transparent")
 
         # mean_sd_ci95
         gMSDCI <- ggplot()
         gMSDCI <- plot_raw_dataset(df_exp_dataset, gMSDCI, readout, max(df$Time), alpha=exp_dataset_alpha)
-        gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95', alpha=0.6)
+        gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
         ggsave(gsub('.png', '_w_exp_data.png', fileoutMSDCI), dpi=300, width=8, height=6)#, bg = "transparent")
     }
   }
@@ -348,9 +351,12 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @param column_to_read the name of the column to process
+#' @param yaxis.min the lower limit for the y axis
+#' @param yaxis.max the upper limit for the y axis
 #' @export
 plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dataset=FALSE,
-                          exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1') {
+                          exp_dataset_alpha=1.0, xaxis_label='', yaxis_label='', column_to_read='X1',
+                          yaxis.min=NULL, yaxis.max=NULL) {
 
   theme_set(tc_theme(36)) #28
 
@@ -370,12 +376,12 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
     readout <- gsub(paste(model, '_', sep=''), '', gsub('.csv', '', basename(files[i])))
     fileout <- file.path(outputdir, gsub('.csv', '.png', basename(files[i])))
 
-    g <- plot_repeated_tc(df, ggplot(), readout, xaxis_label, yaxis_label)
+    g <- plot_repeated_tc(df, ggplot(), readout, xaxis_label, yaxis_label, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
     ggsave(fileout, dpi=300,  width=8, height=6)#, bg = "transparent")
 
     if(readout %in% colnames(df_exp_dataset)) {
-        g <- plot_raw_dataset(df_exp_dataset, g, readout, max(df$Time), alpha=exp_dataset_alpha)
-        g <- plot_repeated_tc(df, g, readout, xaxis_label, yaxis_label, alpha=0.2)
+        g <- plot_raw_dataset(df_exp_dataset, g, readout, max(df$Time), alpha=exp_dataset_alpha, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+        g <- plot_repeated_tc(df, g, readout, xaxis_label, yaxis_label, alpha=0.2, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
         ggsave(gsub('.png', '_w_exp_data.png', fileout), dpi=300, width=8, height=6)#, bg = "transparent")
     }
 

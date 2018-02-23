@@ -5,7 +5,7 @@
 \title{Plot repeated time courses in the same plot separately. First column is Time.}
 \usage{
 plot_repeated_tc(df, g = ggplot(), title = "", xaxis_label = "",
-  yaxis_label = "", alpha = 1)
+  yaxis_label = "", alpha = 1, yaxis.min = NULL, yaxis.max = NULL)
 }
 \arguments{
 \item{df}{a data frame}
@@ -19,6 +19,10 @@ plot_repeated_tc(df, g = ggplot(), title = "", xaxis_label = "",
 \item{yaxis_label}{the yaxis label of the plot}
 
 \item{alpha}{the amount of alpha transparency}
+
+\item{yaxis.min}{the lower limit for the y axis}
+
+\item{yaxis.max}{the upper limit for the y axis}
 }
 \value{
 the plot

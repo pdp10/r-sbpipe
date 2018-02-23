@@ -6,7 +6,8 @@
 \usage{
 plot_sep_sims(inputdir, outputdir, model, exp_dataset,
   plot_exp_dataset = FALSE, exp_dataset_alpha = 1, xaxis_label = "",
-  yaxis_label = "", column_to_read = "X1")
+  yaxis_label = "", column_to_read = "X1", yaxis.min = NULL,
+  yaxis.max = NULL)
 }
 \arguments{
 \item{inputdir}{the input directory containing the time course files}
@@ -26,6 +27,10 @@ plot_sep_sims(inputdir, outputdir, model, exp_dataset,
 \item{yaxis_label}{the label for the y axis (e.g. Level (a.u.))}
 
 \item{column_to_read}{the name of the column to process}
+
+\item{yaxis.min}{the lower limit for the y axis}
+
+\item{yaxis.max}{the upper limit for the y axis}
 }
 \description{
 Plots the simulations time course separately.
