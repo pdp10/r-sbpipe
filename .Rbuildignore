@@ -1,1 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^/\.gitattributes$
+^\.directory$
+^conda_recipe$
+^cran-comments.md$
 ^data-raw$
+^config\.yml$
+^environment\.yaml$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^ISSUE_TEMPLATE\.md$
+^NEWS$
+^revdep$
+^README\.Rmd$
+^README-.*\.png$
