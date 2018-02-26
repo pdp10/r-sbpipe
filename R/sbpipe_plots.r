@@ -244,7 +244,7 @@ plot_raw_dataset <- function(df_exp_dataset,
                         shape=1, size=2, stroke=1, colour='red2', alpha=alpha)
     if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
       if(as.numeric(yaxis.max) > as.numeric(yaxis.min)) {
-        g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
+        g <- g + coord_cartesian(ylim = c(yaxis.min, yaxis.max)) 
       } else {
         warning('yaxis.max and yaxis.min must be numbers and yaxis.max > yaxis.min. Skipping limits.')
       }
@@ -288,7 +288,7 @@ plot_combined_tc <- function(df,
     }
     if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
       if(as.numeric(yaxis.max) > as.numeric(yaxis.min)) {
-        g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
+        g <- g + coord_cartesian(ylim = c(yaxis.min, yaxis.max)) 
       } else {
         warning('yaxis.max and yaxis.min must be numbers and yaxis.max > yaxis.min. Skipping limits.')
       }
@@ -326,7 +326,7 @@ plot_repeated_tc <- function(df,
          theme(legend.position="none")
     if(!is.null(yaxis.min) && !is.null(yaxis.max)) {
       if(as.numeric(yaxis.max) > as.numeric(yaxis.min)) {
-        g <- g + coord_cartesian(xlim = c(yaxis.min, yaxis.max)) 
+        g <- g + coord_cartesian(ylim = c(yaxis.min, yaxis.max)) 
       } else {
         warning('yaxis.max and yaxis.min must be numbers and yaxis.max > yaxis.min. Skipping limits.')
       }
