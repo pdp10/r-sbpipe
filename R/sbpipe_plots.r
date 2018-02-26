@@ -21,21 +21,6 @@
 # $Date: 2016-07-01 14:14:32 $
 
 
-# Roxygen2 will import the functions of the following package in the namespace of this package
-#' @import ggplot2
-#' @import Hmisc
-#' @importFrom stats density median qf qnorm quantile sd var
-#' @importFrom utils read.table tail write.table
-#' @importFrom colorRamps matlab.like 
-
-
-#library(reshape2)
-#library(ggplot2)
-#library(gridExtra)
-
-
-ret <- 0
-
 
 #' Normalise a vector within 0 and 1
 #'

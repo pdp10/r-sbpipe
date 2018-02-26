@@ -18,13 +18,14 @@ Imports:
     scales,
     stats,
     utils
-Description: Data analysis functions for model simulation, 
-    parameter estimation, and parameter scanning.
+Description: Data analysis functions for mathematical 
+    model simulation, parameter estimation, and parameter scan.
 License: LGPL-3 | file LICENSE
 URL: https://github.com/pdp10/sbpiper
 BugReports: https://github.com/pdp10/sbpiper/issues
 LazyLoad: true
 Collate:
+    'sbpiper.r'
     'sbpipe_ggplot2_themes.r'
     'sbpipe_plots.r'    
     'sbpipe_sim.r'
