@@ -60,6 +60,5 @@ install:
   
 # command to run tests
 script:
-  - sh run_for_cran.sh
   - R CMD build .
   - R CMD check *tar.gz --as-cran
