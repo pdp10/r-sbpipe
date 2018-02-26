@@ -29,13 +29,14 @@ The R package is loaded as usual:
 > library(sbpiper)
 ```
 
+## How to build this package (for developers)
 Developers can check and build SBpiper using the following commands: 
 ```
 > devtools::check("sbpiper")
 > devtools::build("sbpiper")
 ```
 
-or
+or outside R with the commands:
 ```
 $ R CMD build .
 $ R CMD check *tar.gz --as-cran
@@ -46,7 +47,6 @@ Finally, sbpiper is installed with the command:
 $ R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
-## How to build this package (for developers)
 Conda recipe for SBpiper retrieves the code from the github branch: `develop`. 
 Anaconda client is needed and can be installed with the following commands:
 ```
@@ -64,4 +64,4 @@ $ conda-build conda_recipe/meta.yaml -c pdp10 -c r -c defaults
 
 Dalle Pezze, P and Le Novère, N. (2017) BMC Systems Biology 11:46. SBpipe: a collection of pipelines for automating repetitive simulation and analysis tasks. DOI:10.1186/s12918-017-0423-3
 
-Thanks for using SBpipe!
+Thanks for using sbpiper!

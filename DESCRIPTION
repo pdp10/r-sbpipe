@@ -3,8 +3,8 @@ Version: 1.4.0
 Date: 2018-02-21
 Title: Data Analysis Functions for SBpipe Package
 Authors@R: c(
-    person("Piero", "Dalle Pezze", email = "piero.dallepezze@gmail.com", role = c("aut", "cre")),
-    person("Nicolas", "Le Novère", email = "nicolas.lenovere@babraham.ac.uk", role = c("cph"))
+    person("Piero", "Dalle Pezze", email = "piero.dallepezze@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-1695-6763")),
+    person("Nicolas", "Le Novère", email = "nicolas.lenovere@babraham.ac.uk", role = c("cph"), comment = c(ORCID = "0000-0002-6309-7327"))
     )
 Depends: 
     R (>= 3.2.0)
