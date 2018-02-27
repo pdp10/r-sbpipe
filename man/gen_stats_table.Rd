@@ -26,7 +26,6 @@ gen_stats_table(inputdir, outputdir, model, outputfile, xaxis_label = "",
 Plot model readouts with statistics for each time point.
 }
 \examples{
-\donttest{
 data(insulin_receptor_1)
 data(insulin_receptor_2)
 data(insulin_receptor_3)
@@ -47,5 +46,4 @@ gen_stats_table(inputdir="sim_datasets",
                 xaxis_label="Time [m]", 
                 yaxis_label="Level [a. u.]", 
                 column_to_read="IR_beta_pY1146")
-}
 }

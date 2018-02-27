@@ -36,7 +36,6 @@ plot_comb_sims(inputdir, outputdir, model, exp_dataset,
 Plots the simulation time courses in a combined representation
 }
 \examples{
-\donttest{
 data(insulin_receptor_IR_beta_pY1146)
 data(insulin_receptor_exp_dataset)
 dir.create(file.path("sim_datasets_sum"))
@@ -57,5 +56,4 @@ plot_comb_sims(inputdir="sim_datasets_sum",
                column_to_read='IR_beta_pY1146', 
                yaxis.min=NULL, 
                yaxis.max=NULL)
-}
 }

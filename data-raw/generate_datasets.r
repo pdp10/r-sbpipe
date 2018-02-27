@@ -12,12 +12,6 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
-#
-#
-# Object: data set generation. 
-
-
-
 
 
 library(devtools)
@@ -26,9 +20,11 @@ library(devtools)
 insulin_receptor_exp_dataset <- read.delim("insulin_receptor_dataset.csv")
 devtools::use_data(insulin_receptor_exp_dataset, overwrite = TRUE)
 
+
 # model simulation (40 repeats). Summarised data set.
 insulin_receptor_IR_beta_pY1146 <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
 devtools::use_data(insulin_receptor_IR_beta_pY1146, overwrite = TRUE)
+
 
 # model simulation (3 independent repeats). 
 insulin_receptor_1 <- read.delim("insulin_receptor_stoch_1.csv")
@@ -37,6 +33,7 @@ insulin_receptor_3 <- read.delim("insulin_receptor_stoch_3.csv")
 devtools::use_data(insulin_receptor_1, overwrite = TRUE)
 devtools::use_data(insulin_receptor_2, overwrite = TRUE)
 devtools::use_data(insulin_receptor_3, overwrite = TRUE)
+
 
 # model parameter estimation
 insulin_receptor_all_fits <- read.delim("all_estim_collection.csv")
