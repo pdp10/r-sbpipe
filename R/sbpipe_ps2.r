@@ -40,21 +40,21 @@
 #' dir.create(file.path("ps2_datasets"))
 #' write.table(insulin_receptor_ps2_tp2, 
 #'             file=file.path("ps2_datasets", 
-#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp2.csv"), 
+#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv"), 
 #'             row.names=FALSE)
 #' plot_double_param_scan_data(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
 #'                             scanned_par1="InsulinPercent", 
 #'                             scanned_par2="IRbetaPercent", 
 #'                             inputdir="ps2_datasets", 
-#'                             outputdir="plots", 
+#'                             outputdir="ps2_plots", 
 #'                             run=1)
 #' @export
 plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
     theme_set(basic_theme(36))
 
-    writeLines(paste("1st var: ", scanned_par1, sep=""))
-    writeLines(paste("2st var: ", scanned_par2, sep=""))
+    writeLines(paste0("1st var: ", scanned_par1))
+    writeLines(paste0("2st var: ", scanned_par2))
     # create the directory of output
     if (!file.exists(outputdir)){
         dir.create(outputdir)
@@ -63,15 +63,15 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
     # READ the files containing the time points. These will be plotted.
 
     # Iterate for each file representing time point data
-    files <- list.files(path=inputdir, pattern=paste(model, '__rep_', run, '__tp_', sep=""))
+    files <- list.files(path=inputdir, pattern=paste0(model, '__rep_', run, '__tp_'))
     files <- sort(files)
-
+    
     if(length(files) < 1) {
         return
     }
 
     for(j in 1:length(files)) {
-      print(paste('Processing file:', files[j], sep=" "))
+      print(paste('Processing file:', files[j]))
       # Read variable
       df.tp <- as.data.frame(data.table::fread(file.path(inputdir, files[j])))
       
@@ -81,18 +81,18 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
       # columns to plot. drop=FALSE is necessary because we don't want R converts 1 data frames into an array.
       columns <- colnames(df.tp[,!(colnames(df.tp) %in% columns2discard), drop = FALSE])
 
-      tp <- regmatches(files[j],regexec("__tp_ (.*?) .csv",files[j]))[[1]][2]
-      print(files[j])
-      print(tp)
+      # Extract the time point from the file name
+      tp <- stringr::str_match(files[j], "__tp_(.*?).csv")[, 2]
+      
       for(k in 1:length(columns)) {
         g <- scatterplot_w_colour(df.tp, ggplot(), scanned_par1, scanned_par2, columns[k]) +
-            ggtitle(paste(columns[k], ", t=", tp, sep="")) +
+            ggtitle(paste0(columns[k], ", t=", tp)) +
             theme(legend.title=element_blank(), 
                   legend.text=element_text(size=30),
                   legend.key.width = unit(0.5, "in"), 
                   legend.key.height = unit(0.65, "in"), 
                   plot.title = element_text(hjust = 0.5))
-        ggsave(file.path(outputdir, paste(model, "__eval_", columns[k], '__rep_', run, "__tp_", j-1, ".png", sep="" )),
+        ggsave(file.path(outputdir, paste0(model, "__eval_", columns[k], '__rep_', run, "__tp_", tp, ".png")),
             dpi=300,  width=8, height=6)
       }
   }
@@ -111,15 +111,14 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 #' dir.create(file.path("ps2_datasets"))
 #' write.table(insulin_receptor_ps2_tp2, 
 #'             file=file.path("ps2_datasets", 
-#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp2.csv"), 
+#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv"), 
 #'             row.names=FALSE)
 #' sbpipe_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
 #'            scanned_par1="InsulinPercent", 
 #'            scanned_par2="IRbetaPercent", 
 #'            inputdir="ps2_datasets", 
-#'            outputdir="plots", 
+#'            outputdir="ps2_plots", 
 #'            run=1)
-#' @export
 #' @export
 sbpipe_ps2 <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
