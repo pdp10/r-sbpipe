@@ -4,13 +4,13 @@
 \alias{sbpipe_sampled_2d_ple_analysis}
 \title{2D profile likelihood estimation analysis.}
 \usage{
-sbpipe_sampled_2d_ple_analysis(model_name, filename, parameter1, parameter2,
+sbpipe_sampled_2d_ple_analysis(model, filename, parameter1, parameter2,
   plots_dir, thres = "BestFits", best_fits_percent = 100,
   fileout_param_estim_summary = "", logspace = TRUE,
   scientific_notation = TRUE)
 }
 \arguments{
-\item{model_name}{the model name without extension}
+\item{model}{the model name}
 
 \item{filename}{the filename containing the fits sequence}
 

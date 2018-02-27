@@ -4,12 +4,12 @@
 \alias{sbpipe_ps1}
 \title{Main R function for SBpipe pipeline: parameter_scan1().}
 \usage{
-sbpipe_ps1(model_noext, inhibition_only, outputdir, sim_data_folder,
-  sim_plots_folder, run, percent_levels, min_level, max_level, levels_number,
-  homogeneous_lines, xaxis_label, yaxis_label)
+sbpipe_ps1(model, inhibition_only, outputdir, sim_data_folder, sim_plots_folder,
+  run, percent_levels, min_level, max_level, levels_number, homogeneous_lines,
+  xaxis_label, yaxis_label)
 }
 \arguments{
-\item{model_noext}{the model name without extension}
+\item{model}{the model name}
 
 \item{inhibition_only}{true if the scanning only decreases the variable amount (inhibition only)}
 

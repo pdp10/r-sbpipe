@@ -4,10 +4,10 @@
 \alias{sbpipe_objval_vs_iters_analysis}
 \title{Analysis of the Objective values vs Iterations.}
 \usage{
-sbpipe_objval_vs_iters_analysis(model_name, filename, plots_dir)
+sbpipe_objval_vs_iters_analysis(model, filename, plots_dir)
 }
 \arguments{
-\item{model_name}{the model name without extension}
+\item{model}{the model name}
 
 \item{filename}{the filename containing the fits sequence}
 

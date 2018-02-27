@@ -55,7 +55,7 @@ write.table(insulin_receptor_exp_dataset,
             row.names=FALSE)
 sbpipe_sim(model="insulin_receptor", 
            inputdir="sim_datasets", 
-           outputdir="plots", 
+           outputdir="sim_plots", 
            outputfile_stats="insulin_receptor_IR_beta_pY1146_stats.csv", 
            outputfile_repeats=file.path("sim_datasets_sum", 
                                         "insulin_receptor_IR_beta_pY1146.csv"), 

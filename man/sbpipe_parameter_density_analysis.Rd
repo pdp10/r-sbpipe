@@ -4,13 +4,13 @@
 \alias{sbpipe_parameter_density_analysis}
 \title{Parameter density analysis.}
 \usage{
-sbpipe_parameter_density_analysis(model_name, filename, parameter, plots_dir,
+sbpipe_parameter_density_analysis(model, filename, parameter, plots_dir,
   thres = "BestFits", best_fits_percent = 100,
   fileout_param_estim_summary = "", logspace = TRUE,
   scientific_notation = TRUE)
 }
 \arguments{
-\item{model_name}{the model name without extension}
+\item{model}{the model name}
 
 \item{filename}{the filename containing the fits sequence}
 

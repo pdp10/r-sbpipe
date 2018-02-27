@@ -4,10 +4,10 @@
 \alias{sbpipe_ps2}
 \title{Main R function for SBpipe pipeline: parameter_scan2().}
 \usage{
-sbpipe_ps2(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run)
+sbpipe_ps2(model, scanned_par1, scanned_par2, inputdir, outputdir, run)
 }
 \arguments{
-\item{model_noext}{the model name without extension}
+\item{model}{the model name}
 
 \item{scanned_par1}{the 1st scanned parameter}
 
@@ -21,4 +21,18 @@ sbpipe_ps2(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run)
 }
 \description{
 Main R function for SBpipe pipeline: parameter_scan2().
+}
+\examples{
+data(insulin_receptor_ps2_tp2)
+dir.create(file.path("ps2_datasets"))
+write.table(insulin_receptor_ps2_tp2, 
+            file=file.path("ps2_datasets", 
+                           "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv"), 
+            row.names=FALSE)
+sbpipe_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
+           scanned_par1="InsulinPercent", 
+           scanned_par2="IRbetaPercent", 
+           inputdir="ps2_datasets", 
+           outputdir="ps2_plots", 
+           run=1)
 }

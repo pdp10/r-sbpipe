@@ -4,12 +4,12 @@
 \alias{plot_objval_vs_iters}
 \title{Plot the Objective values vs Iterations}
 \usage{
-plot_objval_vs_iters(objval.vec, model_name, plots_dir)
+plot_objval_vs_iters(objval.vec, model, plots_dir)
 }
 \arguments{
 \item{objval.vec}{the vector containing the objective values}
 
-\item{model_name}{the model name without extension}
+\item{model}{the model name}
 
 \item{plots_dir}{the directory to save the generated plots}
 }

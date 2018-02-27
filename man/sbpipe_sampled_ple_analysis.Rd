@@ -4,11 +4,11 @@
 \alias{sbpipe_sampled_ple_analysis}
 \title{Run the profile likelihood estimation analysis.}
 \usage{
-sbpipe_sampled_ple_analysis(model_name, filename, parameter, plots_dir,
+sbpipe_sampled_ple_analysis(model, filename, parameter, plots_dir,
   fileout_param_estim_summary, logspace = TRUE, scientific_notation = TRUE)
 }
 \arguments{
-\item{model_name}{the model name without extension}
+\item{model}{the model name}
 
 \item{filename}{the filename containing the fits sequence}
 

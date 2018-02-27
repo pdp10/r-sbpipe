@@ -40,7 +40,7 @@ write.table(insulin_receptor_3,
             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
             row.names=FALSE)
 gen_stats_table(inputdir="sim_datasets", 
-                outputdir="plots", 
+                outputdir="sim_plots", 
                 model="insulin_receptor",
                 outputfile="insulin_receptor_IR_beta_pY1146_stats.csv", 
                 xaxis_label="Time [m]", 

@@ -46,7 +46,7 @@ write.table(insulin_receptor_exp_dataset,
             file="insulin_receptor_exp_dataset.csv", 
             row.names=FALSE)
 plot_comb_sims(inputdir="sim_datasets_sum", 
-               outputdir="plots",
+               outputdir="sim_plots",
                model="insulin_receptor",
                exp_dataset="insulin_receptor_exp_dataset.csv",
                plot_exp_dataset=TRUE, 
