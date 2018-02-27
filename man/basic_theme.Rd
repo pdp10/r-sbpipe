@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_ggplot2_themes.r
 \name{basic_theme}
 \alias{basic_theme}
-\title{A generic basic theme for time courses. It extends ggplot2 theme_classic.}
+\title{A generic basic theme for time courses. It extends ggplot2 theme_classic().}
 \usage{
 basic_theme(base_size = 12, base_family = "")
 }
@@ -12,5 +12,9 @@ basic_theme(base_size = 12, base_family = "")
 \item{base_family}{the font family}
 }
 \description{
-A generic basic theme for time courses. It extends ggplot2 theme_classic.
+A generic basic theme for time courses. It extends ggplot2 theme_classic().
+}
+\examples{
+library(ggplot2)
+theme_set(basic_theme(36))
 }

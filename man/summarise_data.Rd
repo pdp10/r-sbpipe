@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{summarise_data}
 \alias{summarise_data}
-\title{Summarise the simulations.}
+\title{Summarise the model simulation repeats in a single file.}
 \usage{
 summarise_data(inputdir, model, outputfile, column_to_read = "X1")
 }
@@ -16,7 +16,7 @@ summarise_data(inputdir, model, outputfile, column_to_read = "X1")
 \item{column_to_read}{the name of the column to process}
 }
 \description{
-Summarise the simulations.
+Summarise the model simulation repeats in a single file.
 }
 \examples{
 data(insulin_receptor_1)

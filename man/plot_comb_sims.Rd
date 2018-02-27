@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{plot_comb_sims}
 \alias{plot_comb_sims}
-\title{Plots the simulation time courses in a combined representation}
+\title{Plot the simulation time courses using a heatmap representation.}
 \usage{
 plot_comb_sims(inputdir, outputdir, model, exp_dataset,
   plot_exp_dataset = FALSE, exp_dataset_alpha = 1, xaxis_label = "",
@@ -33,7 +33,7 @@ plot_comb_sims(inputdir, outputdir, model, exp_dataset,
 \item{yaxis.max}{the upper limit for the y axis}
 }
 \description{
-Plots the simulation time courses in a combined representation
+Plot the simulation time courses using a heatmap representation.
 }
 \examples{
 data(insulin_receptor_IR_beta_pY1146)

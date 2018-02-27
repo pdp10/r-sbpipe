@@ -240,27 +240,7 @@ plot_single_param_scan_data_homogen <- function(model,
 sbpipe_ps1 <- function(model_noext, inhibition_only, outputdir, sim_data_folder, sim_plots_folder, 
                             run, percent_levels, min_level, max_level, levels_number, homogeneous_lines, 
                             xaxis_label, yaxis_label) {
-  
-  # Add controls here if any
-  if(homogeneous_lines=="true" || homogeneous_lines=="True" || homogeneous_lines=="TRUE") {
-    homogeneous_lines <- TRUE
-  } else {
-    homogeneous_lines <- FALSE
-  }
-  
-  if(inhibition_only=="true" || inhibition_only=="True" || inhibition_only=="TRUE") {
-    inhibition_only <- TRUE
-  } else {
-    inhibition_only <- FALSE
-  }
-  
-  if(percent_levels=="true" || percent_levels=="True" || percent_levels=="TRUE") {
-    percent_levels <- TRUE
-  } else {
-    percent_levels <- FALSE
-  }
-  
-  
+
   if(homogeneous_lines) {
     plot_single_param_scan_data_homogen(model_noext,
                                         outputdir, sim_data_folder,

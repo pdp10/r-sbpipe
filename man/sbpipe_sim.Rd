@@ -4,12 +4,12 @@
 \alias{sbpipe_sim}
 \title{Main R function for SBpipe pipeline: simulate().}
 \usage{
-sbpipe_sim(model_noext, inputdir, outputdir, outputfile_stats,
-  outputfile_repeats, exp_dataset, plot_exp_dataset, exp_dataset_alpha,
-  xaxis_label, yaxis_label, column_to_read)
+sbpipe_sim(model, inputdir, outputdir, outputfile_stats, outputfile_repeats,
+  exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label,
+  column_to_read)
 }
 \arguments{
-\item{model_noext}{the model name}
+\item{model}{the model name}
 
 \item{inputdir}{the input directory}
 
@@ -53,7 +53,7 @@ write.table(insulin_receptor_3,
 write.table(insulin_receptor_exp_dataset, 
             file="insulin_receptor_exp_dataset.csv", 
             row.names=FALSE)
-sbpipe_sim(model_noext="insulin_receptor", 
+sbpipe_sim(model="insulin_receptor", 
            inputdir="sim_datasets", 
            outputdir="plots", 
            outputfile_stats="insulin_receptor_IR_beta_pY1146_stats.csv", 

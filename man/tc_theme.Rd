@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_ggplot2_themes.r
 \name{tc_theme}
 \alias{tc_theme}
-\title{A theme for time courses. It extends ggplot2 theme_classic.}
+\title{A theme for time courses. It extends ggplot2 theme_classic().}
 \usage{
 tc_theme(base_size = 12, base_family = "")
 }
@@ -12,5 +12,9 @@ tc_theme(base_size = 12, base_family = "")
 \item{base_family}{the font family}
 }
 \description{
-A theme for time courses. It extends ggplot2 theme_classic.
+A theme for time courses. It extends ggplot2 theme_classic().
+}
+\examples{
+library(ggplot2)
+theme_set(tc_theme(36))
 }

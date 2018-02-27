@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{check_exp_dataset}
 \alias{check_exp_dataset}
-\title{Check the experimental data set.}
+\title{Check that the experimental data set exists.}
 \usage{
 check_exp_dataset(exp_dataset, plot_exp_dataset = FALSE)
 }
@@ -15,5 +15,5 @@ check_exp_dataset(exp_dataset, plot_exp_dataset = FALSE)
 TRUE if the file exists.
 }
 \description{
-Check the experimental data set.
+Check that the experimental data set exists.
 }

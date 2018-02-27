@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{plot_sep_sims}
 \alias{plot_sep_sims}
-\title{Plots the simulations time course separately.}
+\title{Plot the simulations time course separately.}
 \usage{
 plot_sep_sims(inputdir, outputdir, model, exp_dataset,
   plot_exp_dataset = FALSE, exp_dataset_alpha = 1, xaxis_label = "",
@@ -33,7 +33,7 @@ plot_sep_sims(inputdir, outputdir, model, exp_dataset,
 \item{yaxis.max}{the upper limit for the y axis}
 }
 \description{
-Plots the simulations time course separately.
+Plot the simulations time course separately.
 }
 \examples{
 data(insulin_receptor_IR_beta_pY1146)

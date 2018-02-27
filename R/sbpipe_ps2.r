@@ -95,9 +95,7 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 #' @param run the simulation run
 #' @export
 sbpipe_ps2 <- function(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run) {
-  
-  # Add controls here if any
-  
+
   plot_double_param_scan_data(model_noext, scanned_par1, scanned_par2, 
                               inputdir, outputdir, run)
 }

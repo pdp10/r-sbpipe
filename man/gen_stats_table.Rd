@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{gen_stats_table}
 \alias{gen_stats_table}
-\title{Plot model readouts with statistics for each time point.}
+\title{Generate a table of statistics for each model readout.}
 \usage{
 gen_stats_table(inputdir, outputdir, model, outputfile, xaxis_label = "",
   yaxis_label = "", column_to_read = "X1")
@@ -23,7 +23,7 @@ gen_stats_table(inputdir, outputdir, model, outputfile, xaxis_label = "",
 \item{column_to_read}{the name of the column to process}
 }
 \description{
-Plot model readouts with statistics for each time point.
+Generate a table of statistics for each model readout.
 }
 \examples{
 data(insulin_receptor_1)

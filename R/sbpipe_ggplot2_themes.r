@@ -32,6 +32,7 @@
 #' @param base_size the font size
 #' @param base_family the font family
 #' @examples
+#' library(ggplot2)
 #' theme_set(tc_theme(36))
 #' @export
 tc_theme <- function (base_size=12, base_family="") {
@@ -53,6 +54,7 @@ tc_theme <- function (base_size=12, base_family="") {
 #' @param base_size the font size
 #' @param base_family the font family
 #' @examples
+#' library(ggplot2)
 #' theme_set(basic_theme(36))
 #' @export
 basic_theme <- function (base_size=12, base_family="") {

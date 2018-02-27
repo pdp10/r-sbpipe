@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpipe_sim.r
 \name{get_column_names_statistics}
 \alias{get_column_names_statistics}
-\title{Return the column names of the statitics to calculate}
+\title{Return the column names of the statitics to calculate.}
 \usage{
 get_column_names_statistics(column.names, readout)
 }
@@ -15,5 +15,5 @@ get_column_names_statistics(column.names, readout)
 the column names including the readout name
 }
 \description{
-Return the column names of the statitics to calculate
+Return the column names of the statitics to calculate.
 }
