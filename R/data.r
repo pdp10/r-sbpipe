@@ -114,6 +114,7 @@
 #' }
 "insulin_receptor_1"
 
+
 #' A stochastic model simulation
 #'
 #' @format A data frame with 2 variables:
@@ -123,6 +124,7 @@
 #' }
 "insulin_receptor_2"
 
+
 #' A stochastic model simulation
 #'
 #' @format A data frame with 2 variables:
@@ -131,4 +133,17 @@
 #'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
 #' }
 "insulin_receptor_3"
+
+
+#' A deterministic simulation of the insulin receptor model upon scanning of 
+#' 2 model parameters.
+#'
+#' @format A data frame with 4 variables:
+#' \describe{
+#'   \item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#'   \item{IRbetaPercent}{The percent of available IR_beta amount.}
+#'   \item{InsulinPercent}{The percent of available insulin amount.}
+#' }
+"insulin_receptor_ps2_tp2"
 

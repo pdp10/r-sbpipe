@@ -29,6 +29,7 @@ dependencies:
   - r-reshape2
   - r-hmisc  
   - r-scales
+  - r-stringr
   - r-colorramps  
   #- r-essentials
   

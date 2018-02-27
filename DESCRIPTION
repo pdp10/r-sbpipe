@@ -17,6 +17,7 @@ Imports:
     reshape2,
     scales,
     stats,
+    stringr,
     utils
 Description: 'sbpiper' contains the functions used by the software 'SBpipe' for analysing 
     repetitive parameter estimations and simulations of mathematical models. Examples 

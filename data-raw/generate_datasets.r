@@ -35,6 +35,12 @@ devtools::use_data(insulin_receptor_2, overwrite = TRUE)
 devtools::use_data(insulin_receptor_3, overwrite = TRUE)
 
 
+# model double parameter scan
+insulin_receptor_ps2_tp2 <- 
+  read.delim("insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv")
+devtools::use_data(insulin_receptor_ps2_tp2, overwrite = TRUE)
+
+
 # model parameter estimation
 insulin_receptor_all_fits <- read.delim("all_estim_collection.csv")
 insulin_receptor_best_fits <- read.delim("final_estim_collection.csv")

@@ -35,6 +35,19 @@
 #' @param inputdir the input directory
 #' @param outputdir the output directory
 #' @param run the simulation run
+#' @examples
+#' data(insulin_receptor_ps2_tp2)
+#' dir.create(file.path("ps2_datasets"))
+#' write.table(insulin_receptor_ps2_tp2, 
+#'             file=file.path("ps2_datasets", 
+#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp2.csv"), 
+#'             row.names=FALSE)
+#' plot_double_param_scan_data(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
+#'                             scanned_par1="InsulinPercent", 
+#'                             scanned_par2="IRbetaPercent", 
+#'                             inputdir="ps2_datasets", 
+#'                             outputdir="plots", 
+#'                             run=1)
 #' @export
 plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
@@ -46,15 +59,6 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
     if (!file.exists(outputdir)){
         dir.create(outputdir)
     }
-
-    # EXTRACT the tuples of min and max values FROM the complete dataset. Doing so, we don't need to iterate.
-    df <- read.table(file.path(inputdir, paste(model, "_", run, ".csv", sep="")), header=TRUE,
-                     na.strings="NA", dec=".", sep="\t")
-
-    # discard the first column (Time) and the columns of the two scanned parameters
-    columns2discard <- c(colnames(df)[1], scanned_par1, scanned_par2)
-    # columns to plot. drop=FALSE is necessary because we don't want R converts 1 data frames into an array.
-    columns <- colnames(df[,!(colnames(df) %in% columns2discard), drop = FALSE])
 
     # READ the files containing the time points. These will be plotted.
 
@@ -69,11 +73,20 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
     for(j in 1:length(files)) {
       print(paste('Processing file:', files[j], sep=" "))
       # Read variable
-      df.tp <- read.table(file.path(inputdir, files[j]), header=TRUE, na.strings="NA", dec=".", sep="\t")
+      df.tp <- as.data.frame(data.table::fread(file.path(inputdir, files[j])))
+      
+      # Extract the column names (except for time)
+      # discard the first column (Time) and the columns of the two scanned parameters
+      columns2discard <- c(colnames(df.tp)[1], scanned_par1, scanned_par2)
+      # columns to plot. drop=FALSE is necessary because we don't want R converts 1 data frames into an array.
+      columns <- colnames(df.tp[,!(colnames(df.tp) %in% columns2discard), drop = FALSE])
 
+      tp <- regmatches(files[j],regexec("__tp_ (.*?) .csv",files[j]))[[1]][2]
+      print(files[j])
+      print(tp)
       for(k in 1:length(columns)) {
         g <- scatterplot_w_colour(df.tp, ggplot(), scanned_par1, scanned_par2, columns[k]) +
-            ggtitle(paste(columns[k], ", t=", j-1, sep="")) +
+            ggtitle(paste(columns[k], ", t=", tp, sep="")) +
             theme(legend.title=element_blank(), 
                   legend.text=element_text(size=30),
                   legend.key.width = unit(0.5, "in"), 

@@ -45,6 +45,7 @@ requirements:
         - r-reshape2
         - r-hmisc        
         - r-scales
+        - r-stringr
         - r-colorramps        
         #- r-essentials       
     run:
@@ -54,6 +55,7 @@ requirements:
         - r-reshape2
         - r-hmisc
         - r-scales
+        - r-stringr
         - r-colorramps        
         #- r-essentials       
 test:
