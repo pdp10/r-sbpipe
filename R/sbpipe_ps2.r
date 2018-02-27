@@ -20,11 +20,11 @@
 # $Date: 2016-07-6 12:14:32 $
 
 
-## retrieve SBpipe folder containing R scripts
-#args <- commandArgs(trailingOnly = FALSE)
-#SBPIPE_R <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-#source(file.path(SBPIPE_R, 'sbpipe_plots.r'))
-#source(file.path(SBPIPE_R, 'sbpipe_ggplot2_themes.r'))
+
+######################
+# EXPORTED FUNCTIONS #
+######################
+
 
 
 #' Plot model double parameter scan time courses.
@@ -101,9 +101,4 @@ sbpipe_ps2 <- function(model_noext, scanned_par1, scanned_par2, inputdir, output
   plot_double_param_scan_data(model_noext, scanned_par1, scanned_par2, 
                               inputdir, outputdir, run)
 }
-
-
-#main(commandArgs(TRUE))
-## Clean the environment
-#rm ( list=ls ( ) )
 

@@ -14,11 +14,25 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-# Object: Plots
 #
 # $Revision: 3.0 $
 # $Author: Piero Dalle Pezze $
 # $Date: 2016-07-01 14:14:32 $
+
+
+
+######################
+# EXPORTED FUNCTIONS #
+######################
+
+
+
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
+
+
 
 
 

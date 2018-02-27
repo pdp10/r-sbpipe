@@ -14,6 +14,22 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
+######################
+# EXPORTED FUNCTIONS #
+######################
+
+
+
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
+
+
+
+
+
 #' The name of the Objective Value column
 objval.col <- "ObjVal"
 
