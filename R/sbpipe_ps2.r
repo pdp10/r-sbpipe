@@ -106,6 +106,20 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 #' @param inputdir the input directory
 #' @param outputdir the output directory
 #' @param run the simulation run
+#' @examples
+#' data(insulin_receptor_ps2_tp2)
+#' dir.create(file.path("ps2_datasets"))
+#' write.table(insulin_receptor_ps2_tp2, 
+#'             file=file.path("ps2_datasets", 
+#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp2.csv"), 
+#'             row.names=FALSE)
+#' sbpipe_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
+#'            scanned_par1="InsulinPercent", 
+#'            scanned_par2="IRbetaPercent", 
+#'            inputdir="ps2_datasets", 
+#'            outputdir="plots", 
+#'            run=1)
+#' @export
 #' @export
 sbpipe_ps2 <- function(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
