@@ -4,10 +4,18 @@
 \name{sbpiper-package}
 \alias{sbpiper}
 \alias{sbpiper-package}
-\title{sbpiper: Data Analysis Functions for SBpipe Package}
+\title{sbpiper: Data Analysis Functions for 'SBpipe' Package}
 \description{
-Data analysis functions for mathematical
-model simulation, parameter estimation, and parameter scan.
+This package contains the functions used by the software 'SBpipe' for analysing
+repetitive parameter estimations and simulations of mathematical models. Examples
+of mathematical models are Ordinary Differential equations (ODEs) or
+Stochastic Differential Equations (SDEs) models. Among the analyses for parameter
+estimation 'sbpiper' calculates statistics and generates plots for parameter density,
+parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These results can
+be generated using all or a subset of the best computed parameter sets. Among the analyses
+for model simulation 'sbpiper' calculates statistics and generates plots for deterministic
+and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model
+parameters can also be generated.
 }
 \seealso{
 Useful links:
@@ -18,11 +26,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Piero Dalle Pezze \email{piero.dallepezze@gmail.com}
+\strong{Maintainer}: Piero Dalle Pezze \email{piero.dallepezze@gmail.com} (0000-0003-1695-6763) [copyright holder]
 
 Other contributors:
 \itemize{
-  \item Nicolas Le Novère \email{nicolas.lenovere@babraham.ac.uk} [copyright holder]
+  \item Nicolas Le Novère \email{nicolas.lenovere@babraham.ac.uk} (0000-0002-6309-7327) [copyright holder]
 }
 
 }
