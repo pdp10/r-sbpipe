@@ -35,6 +35,15 @@ devtools::use_data(insulin_receptor_2, overwrite = TRUE)
 devtools::use_data(insulin_receptor_3, overwrite = TRUE)
 
 
+# model single parameter scan
+insulin_receptor_ps1_l4 <- read.delim("insulin_receptor_scan_IR_beta__rep_1__level_4.96821.csv")
+insulin_receptor_ps1_l8 <- read.delim("insulin_receptor_scan_IR_beta__rep_1__level_8.28035.csv")
+insulin_receptor_ps1_l16 <- read.delim("insulin_receptor_scan_IR_beta__rep_1__level_16.5607.csv")
+devtools::use_data(insulin_receptor_ps1_l4, overwrite = TRUE)
+devtools::use_data(insulin_receptor_ps1_l8, overwrite = TRUE)
+devtools::use_data(insulin_receptor_ps1_l16, overwrite = TRUE)
+
+
 # model double parameter scan
 insulin_receptor_ps2_tp2 <- 
   read.delim("insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv")

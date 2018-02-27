@@ -136,6 +136,42 @@
 
 
 #' A deterministic simulation of the insulin receptor model upon scanning of 
+#' 1 model parameter. The initial amount of IR-beta is half the control.
+#'
+#' @format A data frame with 3 variables:
+#' \describe{
+#'   \item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
+#'   \item{IRbeta}{The unphosphorylated state of the insulin receptor beta. The scanned variable.}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_ps1_l4"
+
+
+#' A deterministic simulation of the insulin receptor model upon scanning of 
+#' 1 model parameter. This is the control.
+#'
+#' @format A data frame with 3 variables:
+#' \describe{
+#'   \item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
+#'   \item{IRbeta}{The unphosphorylated state of the insulin receptor beta. The scanned variable.}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_ps1_l8"
+
+
+#' A deterministic simulation of the insulin receptor model upon scanning of 
+#' 1 model parameter. The initial amount of IR-beta is twice the control.
+#'
+#' @format A data frame with 3 variables:
+#' \describe{
+#'   \item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
+#'   \item{IRbeta}{The unphosphorylated state of the insulin receptor beta. The scanned variable.}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_ps1_l16"
+
+
+#' A deterministic simulation of the insulin receptor model upon scanning of 
 #' 2 model parameters.
 #'
 #' @format A data frame with 4 variables:
