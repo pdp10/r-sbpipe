@@ -42,22 +42,38 @@
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @export
-sbpipe_ps1 <- function(model, inhibition_only, inputdir, outputdir, 
-                       run, percent_levels, min_level, max_level, 
-                       levels_number, homogeneous_lines, 
-                       xaxis_label, yaxis_label) {
+sbpipe_ps1 <- function(model, 
+                       inhibition_only, 
+                       inputdir, 
+                       outputdir, 
+                       run, 
+                       percent_levels, 
+                       min_level, 
+                       max_level, 
+                       levels_number, 
+                       homogeneous_lines, 
+                       xaxis_label, 
+                       yaxis_label) {
   
   if(homogeneous_lines) {
     plot_single_param_scan_data_homogen(model,
                                         inputdir, 
-                                        outputdir, run,
-                                        xaxis_label, yaxis_label)
+                                        outputdir, 
+                                        run,
+                                        xaxis_label, 
+                                        yaxis_label)
   } else {    
-    plot_single_param_scan_data(model, inhibition_only,
-                                inputdir, outputdir, run,
-                                percent_levels, min_level,
-                                max_level, levels_number,
-                                xaxis_label, yaxis_label)
+    plot_single_param_scan_data(model, 
+                                inhibition_only,
+                                inputdir, 
+                                outputdir, 
+                                run,
+                                percent_levels, 
+                                min_level,
+                                max_level, 
+                                levels_number,
+                                xaxis_label, 
+                                yaxis_label)
   }
 }
 
@@ -75,22 +91,106 @@ sbpipe_ps1 <- function(model, inhibition_only, inputdir, outputdir,
 #' @param levels_number the number of levels (default: 10)
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @examples 
+#' data(insulin_receptor_ps1_l0)
+#' data(insulin_receptor_ps1_l1)
+#' data(insulin_receptor_ps1_l3)
+#' data(insulin_receptor_ps1_l4)
+#' data(insulin_receptor_ps1_l6)
+#' data(insulin_receptor_ps1_l8)
+#' data(insulin_receptor_ps1_l9)
+#' data(insulin_receptor_ps1_l11)
+#' data(insulin_receptor_ps1_l13)
+#' data(insulin_receptor_ps1_l14)
+#' data(insulin_receptor_ps1_l16)
+#' dir.create(file.path("ps1_datasets"))
+#' write.table(insulin_receptor_ps1_l0, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_0.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l1, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_1.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l3, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_3.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l4, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_4.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l6, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_6.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l8, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_8.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l9, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_9.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l11, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_11.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l13, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_13.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l14, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_14.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_ps1_l16, 
+#'             file=file.path("ps1_datasets",
+#'                            "insulin_receptor_scan_IR_beta__rep_1__level_16.csv"), 
+#'             row.names=FALSE)
+#' plot_single_param_scan_data(
+#'        model="insulin_receptor_scan_IR_beta", 
+#'        inhibition_only=FALSE,
+#'        inputdir="ps1_datasets", 
+#'        outputdir="ps1_plots",
+#'        run=1,
+#'        percent_levels=TRUE, 
+#'        min_level=0, 
+#'        max_level=250, 
+#'        levels_number=10, 
+#'        xaxis_label="Time [m]", 
+#'        yaxis_label="Level [a.u.]")
 #' @export
 plot_single_param_scan_data <- function(model, 
                                         inhibition_only,
                                         inputdir,
                                         outputdir, 
                                         run,
-                                        percent_levels=TRUE, min_level=0, 
-                                        max_level=100, levels_number=10, 
-                                        xaxis_label="", yaxis_label="") {
+                                        percent_levels=TRUE, 
+                                        min_level=0, 
+                                        max_level=100, 
+                                        levels_number=10, 
+                                        xaxis_label="", 
+                                        yaxis_label="") {
+  
+  writeLines(paste0("Model: ", model, ".cps"))
+  #writeLines(outputdir)
+  
+  # create the directory of output
+  if (!file.exists(outputdir)){ dir.create(outputdir) }
+  
+  files <- list.files( path=inputdir, pattern=paste0(model, '__rep_', run, '__level_'))
+  #print(files)
+  levels.index <- get_sorted_level_indexes(files)
+  #print(levels.index)
+  
   
   # Set the labels for the plot legend
   labels <- seq(as.numeric(min_level), as.numeric(max_level), (as.numeric(max_level)-as.numeric(min_level))/(as.numeric(levels_number)))
   labels <- round(labels, digits = 0)
   # Add percentages to the labels
   if(percent_levels) {
-    labels <- paste(labels, " %", sep="")
+    labels <- paste0(labels, " %")
   }
   
   # Set the color and linetype for the plot
@@ -117,24 +217,13 @@ plot_single_param_scan_data <- function(model,
     colors <- c(colors1, "black", colors2)
   }
   
-  writeLines(paste("Model: ", model, ".cps", sep=""))
-  #writeLines(outputdir)
-
-  # create the directory of output
-  if (!file.exists(outputdir)){ dir.create(outputdir) }
-  
-  theme_set(tc_theme(36)) #28
-  
-  files <- list.files( path=inputdir, pattern=paste(model, '__rep_', run, '__level_', sep=""))
-  #print(files)
-  levels.index <- get_sorted_level_indexes(files)
-  #print(levels.index)
-  
   # Read variable
   timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
   column <- names(timecourses)
   my_time <- timecourses[,c('Time')]
   # let's plot now! :)
+  
+  theme_set(tc_theme(36)) #28
   
   for(j in 2:length(column)) {
     print(column[j])
@@ -156,7 +245,7 @@ plot_single_param_scan_data <- function(model,
       # scale_linetype_manual("Levels", values=linetype, labels=labels) +
       xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
       theme(legend.title=element_blank(), legend.position="bottom", legend.key.height=unit(0.5, "in")) +
-      ggsave(file.path(outputdir, paste(model, "__rep_", run, "__eval_", column[j], ".png", sep="" )),
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".png")),
              dpi=300,  width=8, height=8)
   }
 }
@@ -173,10 +262,12 @@ plot_single_param_scan_data <- function(model,
 #' @export
 plot_single_param_scan_data_homogen <- function(model,
                                                 inputdir,
-                                                outputdir, run,
-                                                xaxis_label="", yaxis_label="") {
+                                                outputdir, 
+                                                run,
+                                                xaxis_label="", 
+                                                yaxis_label="") {
   
-  writeLines(paste("Model: ", model, ".cps", sep=""))
+  writeLines(paste0("Model: ", model, ".cps"))
   #writeLines(outputdir)
 
   # create the directory of output
@@ -184,7 +275,7 @@ plot_single_param_scan_data_homogen <- function(model,
   
   theme_set(tc_theme(36)) #28
   
-  files <- list.files( path=inputdir, pattern=paste(model, '__rep_', run, '__level_', sep=""))
+  files <- list.files( path=inputdir, pattern=paste0(model, '__rep_', run, '__level_'))
   # Read variable
   timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
   column <- names(timecourses)
@@ -207,7 +298,7 @@ plot_single_param_scan_data_homogen <- function(model,
     g <- ggplot() + 
       geom_line(data=df.melt, aes_string(x="time", y="value", group="variable"), color='blue', size=1.0) +
       xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
-      ggsave(file.path(outputdir, paste(model, "__rep_", run, "__eval_", column[j], ".png", sep="" )),
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".png")),
              dpi=300,  width=8, height=8)
   }
 }

@@ -4,20 +4,18 @@
 \alias{sbpipe_ps1}
 \title{Main R function for SBpipe pipeline: parameter_scan1().}
 \usage{
-sbpipe_ps1(model, inhibition_only, outputdir, sim_data_folder, sim_plots_folder,
-  run, percent_levels, min_level, max_level, levels_number, homogeneous_lines,
-  xaxis_label, yaxis_label)
+sbpipe_ps1(model, inhibition_only, inputdir, outputdir, run, percent_levels,
+  min_level, max_level, levels_number, homogeneous_lines, xaxis_label,
+  yaxis_label)
 }
 \arguments{
 \item{model}{the model name}
 
 \item{inhibition_only}{true if the scanning only decreases the variable amount (inhibition only)}
 
-\item{outputdir}{the output directory}
+\item{inputdir}{the input directory containing the simulated data}
 
-\item{sim_data_folder}{the name of the folder containing the simulated data}
-
-\item{sim_plots_folder}{the name of the folder containing the simulated plots}
+\item{outputdir}{the output directory that will contain the simulated plots}
 
 \item{run}{the simulation number}
 

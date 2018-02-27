@@ -4,17 +4,15 @@
 \alias{plot_single_param_scan_data_homogen}
 \title{Plot model single parameter scan time courses using homogeneous lines.}
 \usage{
-plot_single_param_scan_data_homogen(model, outputdir, sim_data_folder,
-  sim_plots_folder, run, xaxis_label = "", yaxis_label = "")
+plot_single_param_scan_data_homogen(model, inputdir, outputdir, run,
+  xaxis_label = "", yaxis_label = "")
 }
 \arguments{
 \item{model}{The model name}
 
-\item{outputdir}{the output directory}
+\item{inputdir}{the input directory containing the simulated data}
 
-\item{sim_data_folder}{the name of the folder containing the simulated data}
-
-\item{sim_plots_folder}{the name of the folder containing the simulated plots}
+\item{outputdir}{the output directory that will contain the simulated plots}
 
 \item{run}{the simulation number}
 
