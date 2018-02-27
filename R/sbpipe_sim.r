@@ -61,7 +61,7 @@
 #'             row.names=FALSE)
 #' sbpipe_sim(model="insulin_receptor", 
 #'            inputdir="sim_datasets", 
-#'            outputdir="plots", 
+#'            outputdir="sim_plots", 
 #'            outputfile_stats="insulin_receptor_IR_beta_pY1146_stats.csv", 
 #'            outputfile_repeats=file.path("sim_datasets_sum", 
 #'                                         "insulin_receptor_IR_beta_pY1146.csv"), 
@@ -125,7 +125,7 @@ sbpipe_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile_
 #'             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
 #'             row.names=FALSE)
 #' gen_stats_table(inputdir="sim_datasets", 
-#'                 outputdir="plots", 
+#'                 outputdir="sim_plots", 
 #'                 model="insulin_receptor",
 #'                 outputfile="insulin_receptor_IR_beta_pY1146_stats.csv", 
 #'                 xaxis_label="Time [m]", 
@@ -244,7 +244,7 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
 #'             file="insulin_receptor_exp_dataset.csv", 
 #'             row.names=FALSE)
 #' plot_comb_sims(inputdir="sim_datasets_sum", 
-#'                outputdir="plots",
+#'                outputdir="sim_plots",
 #'                model="insulin_receptor",
 #'                exp_dataset="insulin_receptor_exp_dataset.csv",
 #'                plot_exp_dataset=TRUE, 
@@ -342,7 +342,7 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
 #'             file="insulin_receptor_exp_dataset.csv", 
 #'             row.names=FALSE)
 #' plot_sep_sims(inputdir="sim_datasets_sum", 
-#'               outputdir="plots",
+#'               outputdir="sim_plots",
 #'               model="insulin_receptor",
 #'               exp_dataset="insulin_receptor_exp_dataset.csv",
 #'               plot_exp_dataset=TRUE, 
