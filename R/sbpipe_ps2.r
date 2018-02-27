@@ -100,7 +100,7 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 
 #' Main R function for SBpipe pipeline: parameter_scan2().
 #'
-#' @param model_noext the model name without extension
+#' @param model the model name
 #' @param scanned_par1 the 1st scanned parameter
 #' @param scanned_par2 the 2nd scanned parameter
 #' @param inputdir the input directory
@@ -121,9 +121,9 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
 #'            run=1)
 #' @export
 #' @export
-sbpipe_ps2 <- function(model_noext, scanned_par1, scanned_par2, inputdir, outputdir, run) {
+sbpipe_ps2 <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
 
-  plot_double_param_scan_data(model_noext, scanned_par1, scanned_par2, 
+  plot_double_param_scan_data(model, scanned_par1, scanned_par2, 
                               inputdir, outputdir, run)
 }
 

@@ -223,7 +223,7 @@ plot_single_param_scan_data_homogen <- function(model,
 
 #' Main R function for SBpipe pipeline: parameter_scan1(). 
 #'
-#' @param model_noext the model name without extension
+#' @param model the model name
 #' @param inhibition_only true if the scanning only decreases the variable amount (inhibition only)
 #' @param outputdir the output directory
 #' @param sim_data_folder the name of the folder containing the simulated data
@@ -237,17 +237,17 @@ plot_single_param_scan_data_homogen <- function(model,
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @export
-sbpipe_ps1 <- function(model_noext, inhibition_only, outputdir, sim_data_folder, sim_plots_folder, 
+sbpipe_ps1 <- function(model, inhibition_only, outputdir, sim_data_folder, sim_plots_folder, 
                             run, percent_levels, min_level, max_level, levels_number, homogeneous_lines, 
                             xaxis_label, yaxis_label) {
 
   if(homogeneous_lines) {
-    plot_single_param_scan_data_homogen(model_noext,
+    plot_single_param_scan_data_homogen(model,
                                         outputdir, sim_data_folder,
                                         sim_plots_folder, run,
                                         xaxis_label, yaxis_label)
   } else {    
-    plot_single_param_scan_data(model_noext, inhibition_only,
+    plot_single_param_scan_data(model, inhibition_only,
                                 outputdir, sim_data_folder,
                                 sim_plots_folder, run,
                                 percent_levels, min_level,
