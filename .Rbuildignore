@@ -4,6 +4,10 @@
 ^/\.gitattributes$
 ^\.directory$
 ^conda_recipe$
+^plots$
+^sim_datasets$
+^sim_datasets_sum$
+^\.csv$
 ^cran-comments.md$
 ^data-raw$
 ^config\.yml$

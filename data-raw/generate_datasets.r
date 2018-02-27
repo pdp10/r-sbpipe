@@ -22,21 +22,25 @@
 
 library(devtools)
 
-# model simulation
-# save
-IRbeta_pY1146 <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
-devtools::use_data(IRbeta_pY1146, overwrite = TRUE)
+# experimental data set
+insulin_receptor_exp_dataset <- read.delim("insulin_receptor_dataset.csv")
+devtools::use_data(insulin_receptor_exp_dataset, overwrite = TRUE)
 
-# save/load
-#save(IRbeta_pY1146, file=file.path("..", "data", "IRbeta_pY1146.rda"))
-#load(file=file.path(".", "IRbeta_pY1146.rda"))
+# model simulation (40 repeats). Summarised data set.
+insulin_receptor_IR_beta_pY1146 <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
+devtools::use_data(insulin_receptor_IR_beta_pY1146, overwrite = TRUE)
 
-
+# model simulation (3 independent repeats). 
+insulin_receptor_1 <- read.delim("insulin_receptor_stoch_1.csv")
+insulin_receptor_2 <- read.delim("insulin_receptor_stoch_2.csv")
+insulin_receptor_3 <- read.delim("insulin_receptor_stoch_3.csv")
+devtools::use_data(insulin_receptor_1, overwrite = TRUE)
+devtools::use_data(insulin_receptor_2, overwrite = TRUE)
+devtools::use_data(insulin_receptor_3, overwrite = TRUE)
 
 # model parameter estimation
-# save
-IRbeta_all_fits <- read.delim("all_estim_collection.csv")
-IRbeta_best_fits <- read.delim("final_estim_collection.csv")
-devtools::use_data(IRbeta_all_fits, overwrite = TRUE)
-devtools::use_data(IRbeta_best_fits, overwrite = TRUE)
+insulin_receptor_all_fits <- read.delim("all_estim_collection.csv")
+insulin_receptor_best_fits <- read.delim("final_estim_collection.csv")
+devtools::use_data(insulin_receptor_all_fits, overwrite = TRUE)
+devtools::use_data(insulin_receptor_best_fits, overwrite = TRUE)
 

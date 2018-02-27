@@ -6,7 +6,7 @@
 \alias{sbpiper-package}
 \title{sbpiper: Data Analysis Functions for 'SBpipe' Package}
 \description{
-This package contains the functions used by the software 'SBpipe' for analysing
+'sbpiper' contains the functions used by the software 'SBpipe' for analysing
 repetitive parameter estimations and simulations of mathematical models. Examples
 of mathematical models are Ordinary Differential equations (ODEs) or
 Stochastic Differential Equations (SDEs) models. Among the analyses for parameter

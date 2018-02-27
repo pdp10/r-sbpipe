@@ -25,7 +25,7 @@
 #'   \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
 #'   \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 #' }
-"IRbeta_all_fits"
+"insulin_receptor_all_fits"
 
 
 #' A parameter estimation data set including only the best evaluated fits.
@@ -40,12 +40,12 @@
 #'   \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
 #'   \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 #' }
-"IRbeta_best_fits"
+"insulin_receptor_best_fits"
 
 
 #' A stochastic simulation data set for the insulin receptor beta phosphorylated at pY1146.
 #'
-#' Independent stochastic simulation time courses for the phosphorylated insulin receptor upon insulin stimulation.
+#' Independent stochastic simulation time courses for the phosphorylated insulin receptor upon insulin stimulation. This data set is summarised.
 #'
 #' @format A data frame with 41 variables:
 #' \describe{
@@ -91,4 +91,44 @@
 #'   \item{X39}{A stochastic simulation}
 #'   \item{X40}{A stochastic simulation}
 #' }
-"IRbeta_pY1146"
+"insulin_receptor_IR_beta_pY1146"
+
+
+#' Experimental data set for the insulin receptor beta phosphorylated at pY1146 as published in 
+#' Dalle Pezze et al. Science Signaling 2012.
+#'
+#' @format A data frame with 2 variables:
+#' \describe{
+#'   \item{Time}{The time variable}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_exp_dataset"
+
+
+#' A stochastic model simulation
+#'
+#' @format A data frame with 2 variables:
+#' \describe{
+#'   \item{Time}{The time variable}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_1"
+
+#' A stochastic model simulation
+#'
+#' @format A data frame with 2 variables:
+#' \describe{
+#'   \item{Time}{The time variable}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_2"
+
+#' A stochastic model simulation
+#'
+#' @format A data frame with 2 variables:
+#' \describe{
+#'   \item{Time}{The time variable}
+#'   \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+#' }
+"insulin_receptor_3"
+
