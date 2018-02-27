@@ -24,23 +24,19 @@ library(devtools)
 
 # model simulation
 # save
-insulin_receptor_sim <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
-#save(insulin_receptor_sim, file=file.path("..", "data", "insulin_receptor_sim.rda"))
+IRbeta_pY1146 <- read.delim("sge_insulin_receptor_stoch_IR_beta_pY1146.csv")
+devtools::use_data(IRbeta_pY1146, overwrite = TRUE)
 
-devtools::use_data(insulin_receptor_sim, overwrite = TRUE)
-
-# load
-#load(file=file.path(".", "insulin_receptor_sim.rda"))
+# save/load
+#save(IRbeta_pY1146, file=file.path("..", "data", "IRbeta_pY1146.rda"))
+#load(file=file.path(".", "IRbeta_pY1146.rda"))
 
 
 
 # model parameter estimation
 # save
-all_fits_pe <- read.delim("all_estim_collection.csv")
-best_fits_pe <- read.delim("final_estim_collection.csv")
-devtools::use_data(all_fits_pe, overwrite = TRUE)
-devtools::use_data(best_fits_pe, overwrite = TRUE)
-
-
-
+IRbeta_all_fits <- read.delim("all_estim_collection.csv")
+IRbeta_best_fits <- read.delim("final_estim_collection.csv")
+devtools::use_data(IRbeta_all_fits, overwrite = TRUE)
+devtools::use_data(IRbeta_best_fits, overwrite = TRUE)
 

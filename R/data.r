@@ -16,36 +16,36 @@
 
 #' A parameter estimation data set including all the evaluated fits.
 #' 
-#' Estimated parameters for a mini model of the insulin receptor.
+#' Estimated parameters for a mini model of the insulin receptor (IRbeta).
 #'
 #' @format A data frame with 4 variables:
 #' \describe{
 #'   \item{ObjectiveValue}{the objective value for this parameter set}
-#'   \item{k1}{The first estimated parameter}
-#'   \item{k2}{The second estimated parameter}
-#'   \item{k3}{The third estimated parameter}
+#'   \item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
+#'   \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
+#'   \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 #' }
-"all_fits_pe"
+"IRbeta_all_fits"
 
 
 #' A parameter estimation data set including only the best evaluated fits.
 #' 
-#' Estimated parameters for a mini model of the insulin receptor.
+#' Estimated parameters for a mini model of the insulin receptor (IRbeta).
 #'
 #' @format A data frame with 4 variables:
 #' \describe{
 #'   \item{Estimation}{the number of estimated parameter sets}
 #'   \item{ObjectiveValue}{the best objective value for this parameter estimation}
-#'   \item{k1}{The first estimated parameter}
-#'   \item{k2}{The second estimated parameter}
-#'   \item{k3}{The third estimated parameter}
+#'   \item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
+#'   \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
+#'   \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 #' }
-"best_fits_pe"
+"IRbeta_best_fits"
 
 
 #' A stochastic simulation data set for the insulin receptor beta phosphorylated at pY1146.
 #'
-#' Independent stochastic simulation time courses for the insulin receptor phosphorylated by insulin growth factor.
+#' Independent stochastic simulation time courses for the phosphorylated insulin receptor upon insulin stimulation.
 #'
 #' @format A data frame with 41 variables:
 #' \describe{
@@ -91,4 +91,4 @@
 #'   \item{X39}{A stochastic simulation}
 #'   \item{X40}{A stochastic simulation}
 #' }
-"insulin_receptor_sim"
+"IRbeta_pY1146"
