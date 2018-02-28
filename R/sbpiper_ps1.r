@@ -42,7 +42,7 @@
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
 #' @export
-sbpipe_ps1 <- function(model, 
+sbpiper_ps1 <- function(model, 
                        inhibition_only, 
                        inputdir, 
                        outputdir, 

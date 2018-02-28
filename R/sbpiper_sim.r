@@ -59,7 +59,7 @@
 #' write.table(insulin_receptor_exp_dataset, 
 #'             file="insulin_receptor_exp_dataset.csv", 
 #'             row.names=FALSE)
-#' sbpipe_sim(model="insulin_receptor", 
+#' sbpiper_sim(model="insulin_receptor", 
 #'            inputdir="sim_datasets", 
 #'            outputdir="sim_plots", 
 #'            outputfile_stats="insulin_receptor_IR_beta_pY1146_stats.csv", 
@@ -72,7 +72,7 @@
 #'            yaxis_label=NULL, 
 #'            column_to_read="IR_beta_pY1146")
 #' @export
-sbpipe_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile_repeats, 
+sbpiper_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile_repeats, 
                        exp_dataset, plot_exp_dataset, exp_dataset_alpha, xaxis_label, yaxis_label, 
                        column_to_read) {
   
