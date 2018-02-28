@@ -49,16 +49,8 @@ install:
   - conda env create --name sbpiper --file environment.yaml
   - source activate sbpiper
 
-
-  ## install conda build in order to build the conda package for SBpiper
-  #- conda install conda-build
-  #- conda config --set anaconda_upload no
-  
-  ## install sbpiper using conda build  
-  #- conda build conda_recipe/meta.yaml
-  #- conda install sbpipe --use-local
-  
 # command to run tests
 script:
+  - rm miniconda.sh
   - R CMD build .
   - R CMD check *tar.gz --as-cran
