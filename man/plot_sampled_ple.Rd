@@ -8,22 +8,52 @@ plot_sampled_ple(df99, cl66_objval, cl95_objval, cl99_objval, plots_dir, model,
   logspace = TRUE, scientific_notation = TRUE)
 }
 \arguments{
-\item{df99}{the 99\% confidence level data frame}
+\item{df99}{the data set including the fits within 99\% confidence level}
 
-\item{cl66_objval}{the 66\% confidence level objective value}
+\item{cl66_objval}{the objective value at 66\% confidence level}
 
-\item{cl95_objval}{the 95\% confidence level objective value}
+\item{cl95_objval}{the objective value at 95\% confidence level}
 
-\item{cl99_objval}{the 99\% confidence level objective value}
+\item{cl99_objval}{the objective value at 99\% confidence level}
 
 \item{plots_dir}{the directory to save the generated plots}
 
 \item{model}{the model name}
 
-\item{logspace}{true if parameters should be plotted in logspace. (default: TRUE)}
+\item{logspace}{true if parameters should be plotted in logspace}
 
-\item{scientific_notation}{true if the axis labels should be plotted in scientific notation (default: TRUE)}
+\item{scientific_notation}{true if the axis labels should be plotted in scientific notation}
 }
 \description{
 Plot the sampled profile likelihood estimations (PLE). The table is made of two columns: ObjVal | Parameter
+}
+\examples{
+dir.create(file.path("pe_datasets"))
+dir.create(file.path("pe_plots"))
+data(insulin_receptor_all_fits)
+write.table(insulin_receptor_all_fits, 
+            file=file.path("pe_datasets", "all_fits.csv"), 
+            row.names=FALSE)
+# generate the global statistics for the parameter estimation
+pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+              param.names=c('k1', 'k2', 'k3'), 
+              logspace=TRUE, 
+              all.fits=TRUE, 
+              data_point_num=33, 
+              fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+# load the fits for this parameter
+df <- as.data.frame(data.table::fread(file.path("pe_datasets", "all_fits_log10.csv"), 
+                                      select=c("ObjVal", "k2")))
+# load the global statistics for the parameter estimation
+dt.stats <- data.table::fread(file.path("pe_datasets", "param_estim_summary.csv"), 
+                              select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+df99 <- df[df[ ,"ObjVal"] <= dt.stats$CL99ObjVal, ]
+# compute the stats for parameter k2. 
+plot_sampled_ple(df99=df99, 
+                 cl66_objval=dt.stats$CL66ObjVal, 
+                 cl95_objval=dt.stats$CL95ObjVal, 
+                 cl99_objval=dt.stats$CL99ObjVal, 
+                 plots_dir="pe_plots",
+                 model="ir_beta",
+                 logspace=TRUE)
 }

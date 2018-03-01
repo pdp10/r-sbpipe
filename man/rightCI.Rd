@@ -4,18 +4,31 @@
 \alias{rightCI}
 \title{Return the right value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue}
 \usage{
-rightCI(largest.param.value, full_dataset, objval_conf_level)
+rightCI(largest.param.value, full_dataset, cl_objval)
 }
 \arguments{
 \item{largest.param.value}{the largest parameter value within the specified confidence level}
 
 \item{full_dataset}{the full dataset}
 
-\item{objval_conf_level}{the objective function confidence level}
+\item{cl_objval}{the objective value at the desired confidence level}
 }
 \value{
 the right confidence interval
 }
 \description{
 Return the right value of the parameter confidence interval. The provided dataset has two columns: ObjVal | ParamValue
+}
+\examples{
+data(insulin_receptor_all_fits)
+colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+min_objval <- min(insulin_receptor_all_fits[,1])
+# compute the stats for parameter k2. 
+insulin_receptor_all_fits <- subset(insulin_receptor_all_fits, select=c(1,3))
+rightCI(largest.param.value=0.477115, 
+        full_dataset=insulin_receptor_all_fits, 
+        cl_objval=min_objval+0.01)
+rightCI(largest.param.value=0.467000, 
+        full_dataset=insulin_receptor_all_fits, 
+        cl_objval=min_objval+0.01)
 }

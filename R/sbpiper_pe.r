@@ -39,9 +39,34 @@ objval.col <- "ObjVal"
 #' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
 #' @param logspace true if parameters should be plotted in logspace.
 #' @param scientific_notation true if axis labels should be plotted in scientific notation.
-# #' @examples 
-# #' \donttest{
-# #' }
+#' @examples 
+#' \donttest{
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_best_fits)
+#' write.table(insulin_receptor_best_fits, 
+#'             file=file.path("pe_datasets", "best_fits.csv"), 
+#'             row.names=FALSE)
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' sbpiper_pe(model="ir_beta", 
+#'            finalfits_filenamein=file.path("pe_datasets", "best_fits.csv"), 
+#'            allfits_filenamein=file.path("pe_datasets", "all_fits.csv"), 
+#'            plots_dir="pe_plots", 
+#'            data_point_num=33, 
+#'            fileout_param_estim_details=file.path("pe_datasets", 
+#'                                                  "param_estim_details.csv"), 
+#'            fileout_param_estim_summary=file.path("pe_datasets", 
+#'                                                  "param_estim_summary.csv"), 
+#'            best_fits_percent=95, 
+#'            plot_2d_66cl_corr=TRUE, 
+#'            plot_2d_95cl_corr=TRUE, 
+#'            plot_2d_99cl_corr=TRUE, 
+#'            logspace=TRUE, 
+#'            scientific_notation=TRUE)
+#' }
 #' @export
 sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
                        data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
@@ -52,8 +77,10 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
   
   # Run some controls first
   
-  dim_final_fits = dim(read.table(finalfits_filenamein, sep="\t"))[1]
-  dim_all_fits = dim(read.table(allfits_filenamein, header=TRUE, sep="\t"))[1]
+  dim_final_fits = dim(data.table::fread(finalfits_filenamein))[1]
+
+  df_all_fits <- data.table::fread(allfits_filenamein)
+  dim_all_fits = dim(df_all_fits)[1]
   
   if(dim_final_fits-1 <= 1) {
     warning('Best fits analysis requires at least two parameter estimations. Skip.')
@@ -63,8 +90,6 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
     warning('All fits analysis requires at least one parameter set. Cannot continue.')
     stop()
   }
-  
-  df_all_fits = read.table(allfits_filenamein, header=TRUE, dec=".", sep="\t")
   
   # non-positive entries test
   # If so, logspace will be set to FALSE, otherwise SBpipe will fail due to NaN values.
@@ -303,14 +328,43 @@ pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FAL
 
 #' Plot the sampled profile likelihood estimations (PLE). The table is made of two columns: ObjVal | Parameter
 #'
-#' @param df99 the 99\% confidence level data frame
-#' @param cl66_objval the 66\% confidence level objective value
-#' @param cl95_objval the 95\% confidence level objective value
-#' @param cl99_objval the 99\% confidence level objective value
+#' @param df99 the data set including the fits within 99\% confidence level
+#' @param cl66_objval the objective value at 66\% confidence level
+#' @param cl95_objval the objective value at 95\% confidence level
+#' @param cl99_objval the objective value at 99\% confidence level
 #' @param plots_dir the directory to save the generated plots
 #' @param model the model name
-#' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
-#' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @param logspace true if parameters should be plotted in logspace
+#' @param scientific_notation true if the axis labels should be plotted in scientific notation
+#' @examples 
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=TRUE, 
+#'               data_point_num=33, 
+#'               fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+#' # load the fits for this parameter
+#' df <- as.data.frame(data.table::fread(file.path("pe_datasets", "all_fits_log10.csv"), 
+#'                                       select=c("ObjVal", "k2")))
+#' # load the global statistics for the parameter estimation
+#' dt.stats <- data.table::fread(file.path("pe_datasets", "param_estim_summary.csv"), 
+#'                               select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
+#' df99 <- df[df[ ,"ObjVal"] <= dt.stats$CL99ObjVal, ]
+#' # compute the stats for parameter k2. 
+#' plot_sampled_ple(df99=df99, 
+#'                  cl66_objval=dt.stats$CL66ObjVal, 
+#'                  cl95_objval=dt.stats$CL95ObjVal, 
+#'                  cl99_objval=dt.stats$CL99ObjVal, 
+#'                  plots_dir="pe_plots",
+#'                  model="ir_beta",
+#'                  logspace=TRUE)
 #' @export
 plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_dir, model,
                              logspace=TRUE, scientific_notation=TRUE) {
@@ -343,15 +397,27 @@ plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_
 #'
 #' @param smallest.param.value the smallest parameter value within the specified confidence level
 #' @param full_dataset the full dataset
-#' @param objval_conf_level the objective function confidence level
+#' @param cl_objval the objective value at the desired confidence level
 #' @return the left confidence interval
+#' @examples 
+#' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+#' min_objval <- min(insulin_receptor_all_fits[,1])
+#' # compute the stats for parameter k2. 
+#' insulin_receptor_all_fits <- subset(insulin_receptor_all_fits, select=c(1,3))
+#' leftCI(smallest.param.value=0.466971, 
+#'         full_dataset=insulin_receptor_all_fits, 
+#'         cl_objval=min_objval+0.01)
+#' leftCI(smallest.param.value=0.467000, 
+#'         full_dataset=insulin_receptor_all_fits, 
+#'         cl_objval=min_objval+0.01)
 #' @export
-leftCI <- function(smallest.param.value, full_dataset, objval_conf_level) {
+leftCI <- function(smallest.param.value, full_dataset, cl_objval) {
   min_ci <- smallest.param.value
   # retrieve the objective function values of the parameters with value smaller than smallest.param.value, within the full dataset.
   # ...[min95, )  (we are retrieving those ...)
   lt_min_objvals <- full_dataset[full_dataset[,2] < min_ci, objval.col]
-  if(length(lt_min_objvals) == 0 || min(lt_min_objvals) <= objval_conf_level) {
+  if(length(lt_min_objvals) == 0 || min(lt_min_objvals) <= cl_objval) {
     min_ci <- "-inf"
   }
   min_ci
@@ -362,15 +428,27 @@ leftCI <- function(smallest.param.value, full_dataset, objval_conf_level) {
 #'
 #' @param largest.param.value the largest parameter value within the specified confidence level
 #' @param full_dataset the full dataset
-#' @param objval_conf_level the objective function confidence level
+#' @param cl_objval the objective value at the desired confidence level
 #' @return the right confidence interval
+#' @examples 
+#' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+#' min_objval <- min(insulin_receptor_all_fits[,1])
+#' # compute the stats for parameter k2. 
+#' insulin_receptor_all_fits <- subset(insulin_receptor_all_fits, select=c(1,3))
+#' rightCI(largest.param.value=0.477115, 
+#'         full_dataset=insulin_receptor_all_fits, 
+#'         cl_objval=min_objval+0.01)
+#' rightCI(largest.param.value=0.467000, 
+#'         full_dataset=insulin_receptor_all_fits, 
+#'         cl_objval=min_objval+0.01)
 #' @export
-rightCI <- function(largest.param.value, full_dataset, objval_conf_level) {
+rightCI <- function(largest.param.value, full_dataset, cl_objval) {
   max_ci <- largest.param.value
   # retrieve the objective function of the parameters with value greater than largest.param.value, within the full dataset.
   # (, max95]...  (we are retrieving those ...)
   gt_max_objvals <- full_dataset[full_dataset[,2] > max_ci, objval.col]
-  if(length(gt_max_objvals) == 0 || min(gt_max_objvals) <= objval_conf_level) {
+  if(length(gt_max_objvals) == 0 || min(gt_max_objvals) <= cl_objval) {
     max_ci <- "+inf"
   }
   max_ci
@@ -386,6 +464,18 @@ rightCI <- function(largest.param.value, full_dataset, objval_conf_level) {
 #' @param cl99_objval the 99\% confidence level objective value
 #' @param logspace true if parameters are plotted in logspace (default: TRUE)
 #' @return the list of parameter values with their confidence intervals
+#' @examples 
+#' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+#' min_objval <- min(insulin_receptor_all_fits[,1])
+#' # compute the stats for parameter k2. 
+#' insulin_receptor_all_fits <- subset(insulin_receptor_all_fits, select=c(1,3))
+#' compute_sampled_ple_stats(df=insulin_receptor_all_fits, 
+#'                           min_objval=min_objval, 
+#'                           cl66_objval=min_objval+0.01, 
+#'                           cl95_objval=min_objval+0.02, 
+#'                           cl99_objval=min_objval+0.03, 
+#'                           logspace=FALSE)
 #' @export
 compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, cl99_objval, logspace=TRUE) {
   
@@ -462,8 +552,27 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
-# #' @examples 
-# #' sampled_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+#' @examples 
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=TRUE, 
+#'               data_point_num=33, 
+#'               fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+#' sampled_ple_analysis(model="ir_beta", 
+#'                      filename=file.path("pe_datasets", "all_fits_log10.csv"), 
+#'                      parameter="k1", 
+#'                      plots_dir="pe_plots", 
+#'                      fileout_param_estim_summary=file.path("pe_datasets", 
+#'                                                            "param_estim_summary.csv"),
+#'                      logspace=TRUE)
 #' @export
 sampled_ple_analysis <- function(model, 
                                  filename, 
@@ -514,6 +623,7 @@ sampled_ple_analysis <- function(model,
 #' @examples 
 #' dir.create(file.path("pe_plots"))
 #' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
 #' insulin_receptor_all_fits[,2:4] <- log10(insulin_receptor_all_fits[,2:4])
 #' fileout <- file.path("pe_plots", "dens_k1.png")
 #' plot_parameter_density(df=insulin_receptor_all_fits, 
@@ -629,7 +739,6 @@ parameter_density_analysis <- function(model, filename, parameter,
     # sort by descending objective value so that the low objective values
     # (which are the most important) are on top. Then extract the tail from the data frame.
     df <- df[order(-df[,objval.col]),]
-    print(selected_rows)
     df <- tail(df, selected_rows)
     
     fileout <- file.path(plots_dir, paste(model, "_best_fits_", parameter, ".png", sep=""))
