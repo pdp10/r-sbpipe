@@ -5,9 +5,11 @@
 \title{Main R function for SBpipe pipeline: parameter_estimation().}
 \usage{
 sbpiper_pe(model, finalfits_filenamein, allfits_filenamein, plots_dir,
-  data_point_num, fileout_param_estim_details, fileout_param_estim_summary,
-  best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr,
-  logspace, scientific_notation)
+  data_point_num, fileout_param_estim_details = "param_estim_details.csv",
+  fileout_param_estim_summary = "param_estim_summary.csv",
+  best_fits_percent = 50, plot_2d_66cl_corr = TRUE,
+  plot_2d_95cl_corr = TRUE, plot_2d_99cl_corr = TRUE, logspace = TRUE,
+  scientific_notation = TRUE)
 }
 \arguments{
 \item{model}{the name of the model}
@@ -60,7 +62,7 @@ sbpiper_pe(model="ir_beta",
                                                  "param_estim_details.csv"), 
            fileout_param_estim_summary=file.path("pe_datasets", 
                                                  "param_estim_summary.csv"), 
-           best_fits_percent=95, 
+           best_fits_percent=50, 
            plot_2d_66cl_corr=TRUE, 
            plot_2d_95cl_corr=TRUE, 
            plot_2d_99cl_corr=TRUE, 

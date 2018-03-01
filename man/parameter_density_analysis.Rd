@@ -5,7 +5,7 @@
 \title{Parameter density analysis.}
 \usage{
 parameter_density_analysis(model, filename, parameter, plots_dir,
-  thres = "BestFits", best_fits_percent = 100,
+  thres = "BestFits", best_fits_percent = 50,
   fileout_param_estim_summary = "", logspace = TRUE,
   scientific_notation = TRUE)
 }
@@ -68,6 +68,6 @@ parameter_density_analysis(model="ir_beta",
                            parameter="k1", 
                            plots_dir="pe_plots", 
                            thres="BestFits",
-                           best_fits_percent=95,
+                           best_fits_percent=50,
                            logspace=TRUE)
 }

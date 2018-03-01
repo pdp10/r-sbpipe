@@ -5,7 +5,7 @@
 \title{2D profile likelihood estimation analysis.}
 \usage{
 sampled_2d_ple_analysis(model, filename, parameter1, parameter2, plots_dir,
-  thres = "BestFits", best_fits_percent = 100,
+  thres = "BestFits", best_fits_percent = 50,
   fileout_param_estim_summary = "", logspace = TRUE,
   scientific_notation = TRUE)
 }
@@ -72,6 +72,6 @@ sampled_2d_ple_analysis(model="ir_beta",
                         parameter2="k2",
                         plots_dir="pe_plots", 
                         thres="BestFits",
-                        best_fits_percent=95,
+                        best_fits_percent=50,
                         logspace=TRUE)
 }

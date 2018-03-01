@@ -60,7 +60,7 @@ objval.col <- "ObjVal"
 #'                                                  "param_estim_details.csv"), 
 #'            fileout_param_estim_summary=file.path("pe_datasets", 
 #'                                                  "param_estim_summary.csv"), 
-#'            best_fits_percent=95, 
+#'            best_fits_percent=50, 
 #'            plot_2d_66cl_corr=TRUE, 
 #'            plot_2d_95cl_corr=TRUE, 
 #'            plot_2d_99cl_corr=TRUE, 
@@ -68,10 +68,19 @@ objval.col <- "ObjVal"
 #'            scientific_notation=TRUE)
 #' }
 #' @export
-sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
-                       data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
-                       best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
-                       logspace, scientific_notation) {
+sbpiper_pe <- function(model, 
+                       finalfits_filenamein, 
+                       allfits_filenamein, 
+                       plots_dir, 
+                       data_point_num, 
+                       fileout_param_estim_details="param_estim_details.csv", 
+                       fileout_param_estim_summary="param_estim_summary.csv", 
+                       best_fits_percent=50, 
+                       plot_2d_66cl_corr=TRUE, 
+                       plot_2d_95cl_corr=TRUE, 
+                       plot_2d_99cl_corr=TRUE, 
+                       logspace=TRUE, 
+                       scientific_notation=TRUE) {
   
   ### ------------ ###
   
@@ -106,8 +115,8 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
   }
   
   if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
-    warning("best_fits_percent is not in (0, 100]. Now set to 100")
-    best_fits_percent = 100
+    warning("best_fits_percent is not in (0, 100]. Now set to 50")
+    best_fits_percent = 50
   }
   
   ### ------------ ###
@@ -691,13 +700,18 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #'                            parameter="k1", 
 #'                            plots_dir="pe_plots", 
 #'                            thres="BestFits",
-#'                            best_fits_percent=95,
+#'                            best_fits_percent=50,
 #'                            logspace=TRUE)
 #' @export
-parameter_density_analysis <- function(model, filename, parameter,  
-                                       plots_dir, thres="BestFits", best_fits_percent=100,
+parameter_density_analysis <- function(model, 
+                                       filename, 
+                                       parameter,  
+                                       plots_dir, 
+                                       thres="BestFits", 
+                                       best_fits_percent=50,
                                        fileout_param_estim_summary="",
-                                       logspace=TRUE, scientific_notation=TRUE) {
+                                       logspace=TRUE, 
+                                       scientific_notation=TRUE) {
   
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
@@ -731,8 +745,8 @@ parameter_density_analysis <- function(model, filename, parameter,
     }
   } else { 
     if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
-      warning("best_fits_percent is not in (0, 100]. Now set to 100")
-      best_fits_percent = 100
+      warning("best_fits_percent is not in (0, 100]. Now set to 50")
+      best_fits_percent = 50
     }
     # Calculate the number of rows to extract.
     selected_rows <- (nrow(df)*best_fits_percent/100)
@@ -845,12 +859,12 @@ plot_sampled_2d_ple <- function(df,
 #'                         parameter2="k2",
 #'                         plots_dir="pe_plots", 
 #'                         thres="BestFits",
-#'                         best_fits_percent=95,
+#'                         best_fits_percent=50,
 #'                         logspace=TRUE)
 #' @export
 sampled_2d_ple_analysis <- function(model, filename, 
                                     parameter1, parameter2, 
-                                    plots_dir, thres="BestFits", best_fits_percent=100, 
+                                    plots_dir, thres="BestFits", best_fits_percent=50, 
                                     fileout_param_estim_summary="",  
                                     logspace=TRUE, scientific_notation=TRUE) {
   
@@ -886,8 +900,8 @@ sampled_2d_ple_analysis <- function(model, filename,
     }
   } else {
     if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
-      warning("best_fits_percent is not in (0, 100]. Now set to 100")
-      best_fits_percent = 100
+      warning("best_fits_percent is not in (0, 100]. Now set to 50")
+      best_fits_percent = 50
     }
     # Calculate the number of rows to extract.
     selected_rows <- nrow(df)*best_fits_percent/100
