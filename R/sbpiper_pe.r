@@ -133,10 +133,10 @@ compute_bic <- function(chi2, k, n) {
 #' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false
 # #' @examples 
-# #' sbpipe_pe_ds_preproc(filename="all_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=TRUE, data_point_num=33, fileout_param_estim_summary="param_estim_summary.csv")
-# #' sbpipe_pe_ds_preproc(filename="final_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=FALSE)
+# #' pe_ds_preproc(filename="all_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=TRUE, data_point_num=33, fileout_param_estim_summary="param_estim_summary.csv")
+# #' pe_ds_preproc(filename="final_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=FALSE)
 #' @export
-sbpiper_pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="param_estim_summary.csv") {
+pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="param_estim_summary.csv") {
   dt <- data.table::fread(filename)
   colnames(dt) <- replace_colnames(colnames(dt))
   dt.log10 <- dt
@@ -353,9 +353,9 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 #' @param logspace true if parameters should be plotted in logspace. (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
 # #' @examples 
-# #' sbpiper_sampled_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sbpiper_sampled_ple_analysis <- function(model, filename, parameter, 
+sampled_ple_analysis <- function(model, filename, parameter, 
                                         plots_dir, fileout_param_estim_summary,
                                         logspace=TRUE, scientific_notation=TRUE) {
 
@@ -394,9 +394,9 @@ sbpiper_sampled_ple_analysis <- function(model, filename, parameter,
 #' @param plots_dir the directory to save the generated plots
 #' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
 # #' @examples 
-# #' sbpiper_combine_param_ple_stats(plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv")
+# #' combine_param_ple_stats(plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv")
 #' @export
-sbpiper_combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
+combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
   
   files <- list.files(plots_dir, pattern="\\.csv$")
   if(length(files) < 0) { return }
@@ -447,13 +447,13 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 # #' @examples
-# #' sbpiper_parameter_density_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' parameter_density_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sbpiper_parameter_density_analysis <- function(model, filename, parameter,  
+parameter_density_analysis <- function(model, filename, parameter,  
                                        plots_dir, thres="BestFits", best_fits_percent=100,
                                        fileout_param_estim_summary="",
                                        logspace=TRUE, scientific_notation=TRUE) {
@@ -552,13 +552,13 @@ plot_sampled_2d_ple <- function(df, parameter1, parameter2,
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
 # #' @examples
-# #' sbpiper_sampled_2d_ple_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sbpiper_sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sbpiper_sampled_2d_ple_analysis <- function(model, filename, 
+sampled_2d_ple_analysis <- function(model, filename, 
                                     parameter1, parameter2, 
                                     plots_dir, thres="BestFits", best_fits_percent=100, 
                                     fileout_param_estim_summary="",  
@@ -635,9 +635,9 @@ plot_objval_vs_iters <- function(objval.vec, model, plots_dir) {
 #' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
 # #' @examples 
-# #' sbpiper_objval_vs_iters_analysis(model="insulin_receptor", filename="all_estim_collection.csv", plots_dir="param_estim_plots")
+# #' objval_vs_iters_analysis(model="insulin_receptor", filename="all_estim_collection.csv", plots_dir="param_estim_plots")
 #' @export
-sbpiper_objval_vs_iters_analysis <- function(model, filename, plots_dir) {
+objval_vs_iters_analysis <- function(model, filename, plots_dir) {
   # load the fits for this parameter
   dt <- data.table::fread(filename, select=c(objval.col))
   
@@ -675,6 +675,9 @@ get_param_names <- function(filename) {
 #' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
 #' @param logspace true if parameters should be plotted in logspace.
 #' @param scientific_notation true if axis labels should be plotted in scientific notation.
+# #' @examples 
+# #' \donttest{
+# #' }
 #' @export
 sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
                       data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
@@ -725,9 +728,9 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
   param.names <- get_param_names(finalfits_filenamein)
   
   # data preprocessing  
-  sbpiper_pe_ds_preproc(filename=allfits_filenamein, param.names=param.names, logspace=logspace, 
+  pe_ds_preproc(filename=allfits_filenamein, param.names=param.names, logspace=logspace, 
                        all.fits=TRUE, data_point_num=data_point_num, fileout_param_estim_summary=fileout_param_estim_summary)
-  sbpiper_pe_ds_preproc(filename=finalfits_filenamein, param.names=param.names, logspace=logspace, all.fits=FALSE)
+  pe_ds_preproc(filename=finalfits_filenamein, param.names=param.names, logspace=logspace, all.fits=FALSE)
 
   if(logspace) {
     finalfits_filenamein <- gsub(".csv", "_log10.csv", finalfits_filenamein)
@@ -735,36 +738,36 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
   }
   
   # objective value vs iterations analysis
-  sbpiper_objval_vs_iters_analysis(model=model, filename=allfits_filenamein, plots_dir=plots_dir)
+  objval_vs_iters_analysis(model=model, filename=allfits_filenamein, plots_dir=plots_dir)
   
   for(i in seq_along(param.names)) {
     # PLE analysis
-    sbpiper_sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], 
+    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], 
                                 plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
                                 logspace=logspace, scientific_notation=scientific_notation)
     
     # parameter density analysis
-    sbpiper_parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-    sbpiper_parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    sbpiper_parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    sbpiper_parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    # sbpiper_parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
   }
   
   # create summary file containing parameter PLE stats
-  sbpiper_combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
+  combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
   
   # 2D PLE analysis
   for(i in 1:(length(param.names)-1)) {
     for(j in (i+1):length(param.names)) {
-      sbpiper_sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_66cl_corr) 
-        sbpiper_sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_95cl_corr)
-        sbpiper_sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_99cl_corr)
-        sbpiper_sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      # sbpiper_sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
     }
   }
  

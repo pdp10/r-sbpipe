@@ -27,6 +27,37 @@
 
 
 
+#' Main R function for SBpipe pipeline: parameter_scan2().
+#'
+#' @param model the model name
+#' @param scanned_par1 the 1st scanned parameter
+#' @param scanned_par2 the 2nd scanned parameter
+#' @param inputdir the input directory
+#' @param outputdir the output directory
+#' @param run the simulation run
+#' @examples
+#' \donttest{
+#' data(insulin_receptor_ps2_tp2)
+#' dir.create(file.path("ps2_datasets"))
+#' write.table(insulin_receptor_ps2_tp2, 
+#'             file=file.path("ps2_datasets", 
+#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv"), 
+#'             row.names=FALSE)
+#' sbpiper_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
+#'            scanned_par1="InsulinPercent", 
+#'            scanned_par2="IRbetaPercent", 
+#'            inputdir="ps2_datasets", 
+#'            outputdir="ps2_plots", 
+#'            run=1)
+#' }
+#' @export
+sbpiper_ps2 <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
+  
+  plot_double_param_scan_data(model, scanned_par1, scanned_par2, 
+                              inputdir, outputdir, run)
+}
+
+
 #' Plot model double parameter scan time courses.
 #'
 #' @param model the model name without extension
@@ -96,33 +127,5 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
             dpi=300,  width=8, height=6)
       }
   }
-}
-
-#' Main R function for SBpipe pipeline: parameter_scan2().
-#'
-#' @param model the model name
-#' @param scanned_par1 the 1st scanned parameter
-#' @param scanned_par2 the 2nd scanned parameter
-#' @param inputdir the input directory
-#' @param outputdir the output directory
-#' @param run the simulation run
-#' @examples
-#' data(insulin_receptor_ps2_tp2)
-#' dir.create(file.path("ps2_datasets"))
-#' write.table(insulin_receptor_ps2_tp2, 
-#'             file=file.path("ps2_datasets", 
-#'                            "insulin_receptor_InsulinPercent__IRbetaPercent__rep_1__tp_2.csv"), 
-#'             row.names=FALSE)
-#' sbpiper_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent", 
-#'            scanned_par1="InsulinPercent", 
-#'            scanned_par2="IRbetaPercent", 
-#'            inputdir="ps2_datasets", 
-#'            outputdir="ps2_plots", 
-#'            run=1)
-#' @export
-sbpiper_ps2 <- function(model, scanned_par1, scanned_par2, inputdir, outputdir, run) {
-
-  plot_double_param_scan_data(model, scanned_par1, scanned_par2, 
-                              inputdir, outputdir, run)
 }
 
