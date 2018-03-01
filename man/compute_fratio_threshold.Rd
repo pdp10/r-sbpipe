@@ -4,14 +4,14 @@
 \alias{compute_fratio_threshold}
 \title{Compute the fratio threshold for the confidence level.}
 \usage{
-compute_fratio_threshold(m, n, p = 0.05)
+compute_fratio_threshold(params = 1, data_points = 2, level = 0.05)
 }
 \arguments{
-\item{m}{number of model parameters}
+\item{params}{the number of parameters}
 
-\item{n}{number of data points}
+\item{data_points}{the number of data points}
 
-\item{p}{significance level}
+\item{level}{the confidence level threshold (e.g. 0.01, 0.05)}
 }
 \value{
 the f-ratio threshold
@@ -20,6 +20,6 @@ the f-ratio threshold
 Compute the fratio threshold for the confidence level.
 }
 \examples{
-compute_fratio_threshold(5, 100)
-compute_fratio_threshold(5, 100, p=0.01)
+compute_fratio_threshold(params=5, data_points=100)
+compute_fratio_threshold(params=5, data_points=100, level=0.01)
 }

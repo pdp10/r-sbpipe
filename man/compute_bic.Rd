@@ -5,14 +5,14 @@
 \title{Compute the Bayesian Information Criterion. Assuming additive Gaussian
 measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2}
 \usage{
-compute_bic(chi2, k, n)
+compute_bic(chi2 = 0, params = 1, data_points = 1)
 }
 \arguments{
 \item{chi2}{the Chi^2 for the model}
 
-\item{k}{the number of model parameters}
+\item{params}{the number of model parameters}
 
-\item{n}{the number of data points}
+\item{data_points}{the number of data points}
 }
 \value{
 the BIC
@@ -20,4 +20,7 @@ the BIC
 \description{
 Compute the Bayesian Information Criterion. Assuming additive Gaussian
 measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2
+}
+\examples{
+compute_bic(chi2=10, params=5, data_points=100)
 }

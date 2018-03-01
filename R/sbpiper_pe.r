@@ -140,20 +140,20 @@ sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_di
 
 #' Compute the fratio threshold for the confidence level.
 #'
-#' @param m number of model parameters
-#' @param n number of data points
-#' @param p significance level
+#' @param params the number of parameters
+#' @param data_points the number of data points
+#' @param level the confidence level threshold (e.g. 0.01, 0.05)
 #' @return the f-ratio threshold
 #' @examples 
-#' compute_fratio_threshold(5, 100)
-#' compute_fratio_threshold(5, 100, p=0.01)
+#' compute_fratio_threshold(params=5, data_points=100)
+#' compute_fratio_threshold(params=5, data_points=100, level=0.01)
 #' @export
-compute_fratio_threshold <- function(m, n, p=0.05) {
-  if(n-m < 1) {
+compute_fratio_threshold <- function(params=1, data_points=2, level=0.05) {
+  if(data_points-params < 1) {
     warning("`data_point_num` is less than the number of estimated parameters. Skipping thresholds.")
     0
   } else {
-    1 + (m/(n-m)) * qf(1.0-p, df1=m, df2=n-m)
+    1 + (params/(data_points-params)) * qf(1.0-level, df1=params, df2=data_points-params)
   }
 }
 
@@ -164,8 +164,10 @@ compute_fratio_threshold <- function(m, n, p=0.05) {
 #' @param data_points the number of data points
 #' @param level the confidence level threshold (e.g. 0.01, 0.05)
 #' @return the confidence level based on minimum objective value
+#' @examples 
+#' compute_cl_objval(min_objval=10, params=5, data_points=100)
 #' @export
-compute_cl_objval <- function(min_objval, params, data_points, level=0.05) {
+compute_cl_objval <- function(min_objval=0, params=1, data_points=2, level=0.05) {
   min_objval * compute_fratio_threshold(params, data_points, level)
 }
 
@@ -174,11 +176,13 @@ compute_cl_objval <- function(min_objval, params, data_points, level=0.05) {
 #' measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2
 #'
 #' @param chi2 the Chi^2 for the model
-#' @param k the number of model parameters
+#' @param params the number of model parameters
 #' @return the AIC
+#' @examples 
+#' compute_aic(chi2=10, params=5)
 #' @export
-compute_aic <- function(chi2, k) {
-  chi2 + 2*k
+compute_aic <- function(chi2=0, params=0) {
+  chi2 + 2*params
 }
 
 
@@ -186,12 +190,14 @@ compute_aic <- function(chi2, k) {
 #' measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2
 #'
 #' @param chi2 the Chi^2 for the model
-#' @param k the number of model parameters
-#' @param n the number of data points
+#' @param params the number of model parameters
+#' @param data_points the number of data points
 #' @return the AICc
+#' @examples 
+#' compute_aicc(chi2=10, params=5, data_points=100)
 #' @export
-compute_aicc <- function(chi2, k, n) {
-  compute_aic(chi2, k) + (2*k*(k+1))/(n-k-1)
+compute_aicc <- function(chi2=0, params=0, data_points=0) {
+  compute_aic(chi2, params) + (2*params*(params+1))/(data_points-params-1)
 }
 
 
@@ -199,12 +205,14 @@ compute_aicc <- function(chi2, k, n) {
 #' measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2
 #'
 #' @param chi2 the Chi^2 for the model
-#' @param k the number of model parameters
-#' @param n the number of data points
+#' @param params the number of model parameters
+#' @param data_points the number of data points
 #' @return the BIC
+#' @examples 
+#' compute_bic(chi2=10, params=5, data_points=100)
 #' @export
-compute_bic <- function(chi2, k, n) {
-  chi2 + k*log(n)
+compute_bic <- function(chi2=0, params=1, data_points=1) {
+  chi2 + params*log(data_points)
 }
 
 
@@ -217,9 +225,26 @@ compute_bic <- function(chi2, k, n) {
 #' @param all.fits true if filename contains all fits, false otherwise
 #' @param data_point_num the number of data points used for parameterise the model. Ignored if all.fits is false
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false
-# #' @examples 
-# #' pe_ds_preproc(filename="all_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=TRUE, data_point_num=33, fileout_param_estim_summary="param_estim_summary.csv")
-# #' pe_ds_preproc(filename="final_estim_collection.csv", param.names=c('k1', 'k2', 'k3'), logspace=TRUE, all.fits=FALSE)
+#' @examples 
+#' dir.create(file.path("pe_datasets"))
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=TRUE, 
+#'               data_point_num=33, 
+#'               fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+#' data(insulin_receptor_best_fits)
+#' write.table(insulin_receptor_best_fits, 
+#'             file=file.path("pe_datasets", "best_fits.csv"), 
+#'             row.names=FALSE)
+#' pe_ds_preproc(filename=file.path("pe_datasets", "best_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=FALSE)
 #' @export
 pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FALSE, data_point_num=0, fileout_param_estim_summary="param_estim_summary.csv") {
   dt <- data.table::fread(filename)
@@ -440,9 +465,13 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 # #' @examples 
 # #' sampled_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
-sampled_ple_analysis <- function(model, filename, parameter, 
-                                 plots_dir, fileout_param_estim_summary,
-                                 logspace=TRUE, scientific_notation=TRUE) {
+sampled_ple_analysis <- function(model, 
+                                 filename, 
+                                 parameter, 
+                                 plots_dir, 
+                                 fileout_param_estim_summary,
+                                 logspace=TRUE, 
+                                 scientific_notation=TRUE) {
   
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))

@@ -5,12 +5,12 @@
 \title{Compute the Akaike Information Criterion. Assuming additive Gaussian
 measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2}
 \usage{
-compute_aic(chi2, k)
+compute_aic(chi2 = 0, params = 0)
 }
 \arguments{
 \item{chi2}{the Chi^2 for the model}
 
-\item{k}{the number of model parameters}
+\item{params}{the number of model parameters}
 }
 \value{
 the AIC
@@ -18,4 +18,7 @@ the AIC
 \description{
 Compute the Akaike Information Criterion. Assuming additive Gaussian
 measurement noise of width 1, the term -2ln(L(theta|y)) ~ SSR ~ Chi^2
+}
+\examples{
+compute_aic(chi2=10, params=5)
 }
