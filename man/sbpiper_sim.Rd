@@ -35,6 +35,7 @@ sbpiper_sim(model, inputdir, outputdir, outputfile_stats, outputfile_repeats,
 Main R function for SBpipe pipeline: simulate().
 }
 \examples{
+\donttest{
 data(insulin_receptor_1)
 data(insulin_receptor_2)
 data(insulin_receptor_3)
@@ -65,4 +66,5 @@ sbpiper_sim(model="insulin_receptor",
            xaxis_label=NULL, 
            yaxis_label=NULL, 
            column_to_read="IR_beta_pY1146")
+}
 }

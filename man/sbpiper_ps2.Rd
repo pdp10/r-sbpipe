@@ -23,6 +23,7 @@ sbpiper_ps2(model, scanned_par1, scanned_par2, inputdir, outputdir, run)
 Main R function for SBpipe pipeline: parameter_scan2().
 }
 \examples{
+\donttest{
 data(insulin_receptor_ps2_tp2)
 dir.create(file.path("ps2_datasets"))
 write.table(insulin_receptor_ps2_tp2, 
@@ -35,4 +36,5 @@ sbpiper_ps2(model="insulin_receptor_InsulinPercent__IRbetaPercent",
            inputdir="ps2_datasets", 
            outputdir="ps2_plots", 
            run=1)
+}
 }

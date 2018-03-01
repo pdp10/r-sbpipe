@@ -30,7 +30,7 @@
 #' Main R function for SBpipe pipeline: parameter_scan1(). 
 #'
 #' @param model the model name
-#' @param inhibition_only true if the scanning only decreases the variable amount (inhibition only)
+#' @param inhibition_only true if the the variable amount can only decrease
 #' @param inputdir the input directory containing the simulated data
 #' @param outputdir the output directory that will contain the simulated plots
 #' @param run the simulation number
@@ -41,7 +41,7 @@
 #' @param homogeneous_lines true if lines should be plotted homogeneously
 #' @param xaxis_label the label for the x axis (e.g. Time (min))
 #' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
-#' @export
+#' @examples 
 #' \donttest{
 #' data(insulin_receptor_ps1_l0)
 #' data(insulin_receptor_ps1_l1)
@@ -113,6 +113,7 @@
 #'        xaxis_label="Time [m]", 
 #'        yaxis_label="Level [a.u.]")
 #' }
+#' @export
 sbpiper_ps1 <- function(model, 
                        inhibition_only, 
                        inputdir, 
