@@ -27,24 +27,16 @@
 
 
 
-#####################
-# UTILITY FUNCTIONS #
-#####################
-
-
-
-
-
-
 #' Normalise a vector within 0 and 1
 #'
 #' @param vec the vector to normalise 
 #' @param na.rm TRUE if NA values should be discarded
 #' @return the normalised vector
-#' @examples 
-#' normalise_vec(vec=c(-4,2,10,25,9,NA))
+#' @examples
+#' v <- c(-4,2,10,25,9,NA)
+#' normalise_vec(vec=v)
 #' @export
-normalise_vec <- function(vec, na.rm = TRUE) {
+normalise_vec <- function(vec, na.rm=TRUE) {
   ranx <- range(vec, na.rm = na.rm)
   vec.norm <- (vec - ranx[1]) / diff(ranx)
   return(vec.norm)
@@ -56,6 +48,9 @@ normalise_vec <- function(vec, na.rm = TRUE) {
 #' @param dfCol a data frame with exactly one column.
 #' @param g the current ggplot to overlap
 #' @return the plot
+#' @examples 
+#' a <- as.data.frame(rnorm(100))
+#' histogramplot(dfCol=a)
 #' @export
 histogramplot <- function(dfCol, g=ggplot()) {
     g <- g +
@@ -63,7 +58,6 @@ histogramplot <- function(dfCol, g=ggplot()) {
         theme(axis.text.x=element_text(vjust = 1))
     return(g)
 }
-
 
 
 #' Plot a scatter plot using a coloured palette
@@ -77,12 +71,15 @@ histogramplot <- function(dfCol, g=ggplot()) {
 #' @param colours the palette to use
 #' @param limits the limits for the palette (NULL if no limit is used)
 #' @return the plot
+#' @examples 
+#' df <- data.frame(a=rnorm(10000), b=rnorm(10000), c=rev(seq(10000)))
+#' scatterplot_w_colour(df, colNameX="a", colNameY="b", colNameColor="c")
 #' @export
 scatterplot_w_colour <- function(df, 
                                  g=ggplot(), 
-                                 colNameX, 
-                                 colNameY, 
-                                 colNameColor, 
+                                 colNameX="x", 
+                                 colNameY="y", 
+                                 colNameColor="colour", 
                                  dot_size=1.0, 
                                  colours=colorRamps::matlab.like(256), 
                                  limits=NULL) {
@@ -115,19 +112,26 @@ scatterplot_w_colour <- function(df,
 #' @param conf_level_99 the 99\% confidence level to plot
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @examples 
+#' a <- rnorm(10000)
+#' b <- a^2+10
+#' df<-data.frame(a, b)
+#' scatterplot_ple(df, colNameX="a", colNameY="b", conf_level_66=0)
+#' scatterplot_ple(df, colNameX="a", colNameY="b", 
+#'                 conf_level_66=13, conf_level_95=16.5, conf_level_99=20)
 #' @export
 scatterplot_ple <- function(df, 
                             g=ggplot(), 
-                            colNameX, 
-                            colNameY, 
-                            conf_level_66, 
-                            conf_level_95, 
-                            conf_level_99, 
+                            colNameX="x", 
+                            colNameY="y", 
+                            conf_level_66=0, 
+                            conf_level_95=0, 
+                            conf_level_99=0, 
                             dot_size=0.1) {
   df.thresholds <- data.frame(conf_level_66, conf_level_95, conf_level_99)
   g <- g + geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size)
 
-  if (conf_level_66 > 0) {
+  if (conf_level_66 > 0 && conf_level_95 > 0 && conf_level_99 > 0) {
       g <- g +
           geom_hline(data=df.thresholds, aes(yintercept=conf_level_66, color="_66", linetype="_66"), size=2, show.legend=TRUE) +
           geom_hline(data=df.thresholds, aes(yintercept=conf_level_95, color="_95", linetype="_95"), size=2, show.legend=TRUE) +
@@ -144,7 +148,6 @@ scatterplot_ple <- function(df,
 }
 
 
-
 #' Plot a generic scatter plot
 #'
 #' @param df a data frame
@@ -153,14 +156,20 @@ scatterplot_ple <- function(df,
 #' @param colNameY the name of the column for the Y axis
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @examples 
+#' df <- data.frame(a=rnorm(10000), b=rnorm(10000))
+#' scatterplot(df, colNameX="a", colNameY="b")
 #' @export
-scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
+scatterplot <-function(df, 
+                       g=ggplot(), 
+                       colNameX="x", 
+                       colNameY="y", 
+                       dot_size=0.5) {
   g <- g +
        geom_point(data=df, aes_string(x=colNameX, y=colNameY), size=dot_size) +
        theme(axis.text.x=element_text(vjust = 1))
   return(g)
 }
-
 
 
 #' Plot a generic scatter plot in log10 scale
@@ -171,8 +180,15 @@ scatterplot <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 #' @param colNameY the name of the column for the Y axis
 #' @param dot_size the size of the dots in the scatterplot
 #' @return the plot
+#' @examples 
+#' df <- data.frame(a=exp(rnorm(10000)), b=exp(rnorm(10000)))
+#' scatterplot_log10(df, colNameX="a", colNameY="b")
 #' @export
-scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
+scatterplot_log10 <-function(df, 
+                             g=ggplot(), 
+                             colNameX="x", 
+                             colNameY="y", 
+                             dot_size=0.5) {
   df <- log10(df)
   g <- scatterplot(df, g, colNameX, colNameY, dot_size) +
        #scale_x_log10() +
@@ -184,12 +200,14 @@ scatterplot_log10 <-function(df, g=ggplot(), colNameX, colNameY, dot_size=0.5) {
 }
 
 
-
 #' Plot the number of iterations vs objective values in log10 scale.
 #'
 #' @param objval.vec the array of objective function values.
 #' @param g the current ggplot to overlap
 #' @return the plot
+#' @examples 
+#' v <- 10*(rnorm(10000))^4 + 10
+#' plot_fits(objval.vec=v) + basic_theme(36)
 #' @export
 plot_fits <- function(objval.vec, g=ggplot()) {
   iters <- c()
@@ -217,8 +235,8 @@ plot_fits <- function(objval.vec, g=ggplot()) {
 }
 
 
-
-#' Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).
+#' Add experimental data points to a plot. The length of the experimental time course to 
+#' plot is limited by the length of the simulated time course (=max_sim_tp).
 #'
 #' @param df_exp_dataset the experimental data set
 #' @param g the current ggplot to overlap
@@ -228,6 +246,10 @@ plot_fits <- function(objval.vec, g=ggplot()) {
 #' @param yaxis.min the lower limit for the y axis
 #' @param yaxis.max the upper limit for the y axis
 #' @return the plot
+#' @examples 
+#' data(insulin_receptor_exp_dataset)
+#' plot_raw_dataset(insulin_receptor_exp_dataset, readout="IR_beta_pY1146", 
+#'                  max_sim_tp=30, alpha=1, yaxis.min=NULL, yaxis.max=NULL) 
 #' @export
 plot_raw_dataset <- function(df_exp_dataset, 
                              g=ggplot(), 
@@ -252,7 +274,6 @@ plot_raw_dataset <- function(df_exp_dataset,
 }
 
 
-
 #' Plot repeated time courses in the same plot with mean, 1 standard deviation, and 95\% confidence intervals.
 #'
 #' @param df a data frame
@@ -265,6 +286,23 @@ plot_raw_dataset <- function(df_exp_dataset,
 #' @param yaxis.min the lower limit for the y axis
 #' @param yaxis.max the upper limit for the y axis
 #' @return the plot
+#' @examples 
+#' data(insulin_receptor_1)
+#' data(insulin_receptor_2)
+#' data(insulin_receptor_3)
+#' df <- data.frame(Time=insulin_receptor_1[,1], 
+#'                  X1=insulin_receptor_1[,2], 
+#'                  X2=insulin_receptor_2[,2], 
+#'                  X3=insulin_receptor_3[,2])
+#' plot_combined_tc(df=df, 
+#'                  xaxis_label="Time [m]", yaxis_label="Level [a.u.]", 
+#'                  bar_type="mean", alpha=1, yaxis.min=NULL, yaxis.max=NULL)
+#' plot_combined_tc(df=df, 
+#'                  xaxis_label="Time [m]", yaxis_label="Level [a.u.]", 
+#'                  bar_type="mean_sd", alpha=1, yaxis.min=NULL, yaxis.max=NULL)
+#' plot_combined_tc(df=df, 
+#'                  xaxis_label="Time [m]", yaxis_label="Level [a.u.]", 
+#'                  bar_type="mean_sd_ci95", alpha=0.3, yaxis.min=NULL, yaxis.max=NULL)
 #' @export
 plot_combined_tc <- function(df, 
                              g=ggplot(), 
@@ -298,7 +336,6 @@ plot_combined_tc <- function(df,
 }
 
 
-
 #' Plot repeated time courses in the same plot separately. First column is Time.
 #'
 #' @param df a data frame
@@ -310,6 +347,17 @@ plot_combined_tc <- function(df,
 #' @param yaxis.min the lower limit for the y axis
 #' @param yaxis.max the upper limit for the y axis
 #' @return the plot
+#' @examples 
+#' data(insulin_receptor_1)
+#' data(insulin_receptor_2)
+#' data(insulin_receptor_3)
+#' df <- data.frame(Time=insulin_receptor_1[,1], 
+#'                  X1=insulin_receptor_1[,2], 
+#'                  X2=insulin_receptor_2[,2], 
+#'                  X3=insulin_receptor_3[,2])
+#' plot_repeated_tc(df=df, 
+#'                  xaxis_label="Time [m]", yaxis_label="Level [a.u.]", 
+#'                  alpha=1, yaxis.min=NULL, yaxis.max=NULL)
 #' @export
 plot_repeated_tc <- function(df, 
                              g=ggplot(), 
@@ -334,9 +382,6 @@ plot_repeated_tc <- function(df,
 }
 
 
-
-
-
 #' Plot time courses organised as data frame columns with a heatmap.
 #'
 #' @param df a data frame, with Time as first column
@@ -346,6 +391,16 @@ plot_repeated_tc <- function(df,
 #' @param xaxis_label the xaxis label of the plot
 #' @param yaxis_label the yaxis label of the plot
 #' @return the plot
+#' @examples 
+#' data(insulin_receptor_1)
+#' data(insulin_receptor_2)
+#' data(insulin_receptor_3)
+#' df <- data.frame(Time=insulin_receptor_1[,1], 
+#'                  X1=insulin_receptor_1[,2], 
+#'                  X2=insulin_receptor_2[,2], 
+#'                  X3=insulin_receptor_3[,2])
+#' plot_heatmap_tc(df=df, scaled=FALSE, xaxis_label="Time [m]", yaxis_label="repeats")
+#' plot_heatmap_tc(df=df, scaled=TRUE, xaxis_label="Time [m]", yaxis_label="repeats")
 #' @export
 plot_heatmap_tc <- function(df, 
                             g=ggplot(), 

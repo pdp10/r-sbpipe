@@ -17,3 +17,7 @@ the plot
 \description{
 Plot a generic histogram
 }
+\examples{
+a <- as.data.frame(rnorm(100))
+histogramplot(dfCol=a)
+}

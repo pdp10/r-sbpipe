@@ -4,8 +4,9 @@
 \alias{scatterplot_ple}
 \title{Plot a profile likelihood estimation (PLE) scatter plot}
 \usage{
-scatterplot_ple(df, g = ggplot(), colNameX, colNameY, conf_level_66,
-  conf_level_95, conf_level_99, dot_size = 0.1)
+scatterplot_ple(df, g = ggplot(), colNameX = "x", colNameY = "y",
+  conf_level_66 = 0, conf_level_95 = 0, conf_level_99 = 0,
+  dot_size = 0.1)
 }
 \arguments{
 \item{df}{a data frame}
@@ -29,4 +30,12 @@ the plot
 }
 \description{
 Plot a profile likelihood estimation (PLE) scatter plot
+}
+\examples{
+a <- rnorm(10000)
+b <- a^2+10
+df<-data.frame(a, b)
+scatterplot_ple(df, colNameX="a", colNameY="b", conf_level_66=0)
+scatterplot_ple(df, colNameX="a", colNameY="b", 
+                conf_level_66=13, conf_level_95=16.5, conf_level_99=20)
 }

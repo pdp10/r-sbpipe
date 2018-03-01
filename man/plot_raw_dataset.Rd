@@ -2,7 +2,8 @@
 % Please edit documentation in R/sbpiper_plots.r
 \name{plot_raw_dataset}
 \alias{plot_raw_dataset}
-\title{Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).}
+\title{Add experimental data points to a plot. The length of the experimental time course to
+plot is limited by the length of the simulated time course (=max_sim_tp).}
 \usage{
 plot_raw_dataset(df_exp_dataset, g = ggplot(), readout = "time",
   max_sim_tp = 0, alpha = 1, yaxis.min = NULL, yaxis.max = NULL)
@@ -26,5 +27,11 @@ plot_raw_dataset(df_exp_dataset, g = ggplot(), readout = "time",
 the plot
 }
 \description{
-Add experimental data points to a plot. The length of the experimental time course to plot is limited by the length of the simulated time course (=max_sim_tp).
+Add experimental data points to a plot. The length of the experimental time course to
+plot is limited by the length of the simulated time course (=max_sim_tp).
+}
+\examples{
+data(insulin_receptor_exp_dataset)
+plot_raw_dataset(insulin_receptor_exp_dataset, readout="IR_beta_pY1146", 
+                 max_sim_tp=30, alpha=1, yaxis.min=NULL, yaxis.max=NULL) 
 }

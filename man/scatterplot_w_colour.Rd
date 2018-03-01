@@ -4,8 +4,9 @@
 \alias{scatterplot_w_colour}
 \title{Plot a scatter plot using a coloured palette}
 \usage{
-scatterplot_w_colour(df, g = ggplot(), colNameX, colNameY, colNameColor,
-  dot_size = 1, colours = colorRamps::matlab.like(256), limits = NULL)
+scatterplot_w_colour(df, g = ggplot(), colNameX = "x", colNameY = "y",
+  colNameColor = "colour", dot_size = 1,
+  colours = colorRamps::matlab.like(256), limits = NULL)
 }
 \arguments{
 \item{df}{a data frame}
@@ -29,4 +30,8 @@ the plot
 }
 \description{
 Plot a scatter plot using a coloured palette
+}
+\examples{
+df <- data.frame(a=rnorm(10000), b=rnorm(10000), c=rev(seq(10000)))
+scatterplot_w_colour(df, colNameX="a", colNameY="b", colNameColor="c")
 }

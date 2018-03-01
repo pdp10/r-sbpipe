@@ -17,3 +17,7 @@ the plot
 \description{
 Plot the number of iterations vs objective values in log10 scale.
 }
+\examples{
+v <- 10*(rnorm(10000))^4 + 10
+plot_fits(objval.vec=v) + basic_theme(36)
+}

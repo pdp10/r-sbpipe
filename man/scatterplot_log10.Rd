@@ -4,7 +4,8 @@
 \alias{scatterplot_log10}
 \title{Plot a generic scatter plot in log10 scale}
 \usage{
-scatterplot_log10(df, g = ggplot(), colNameX, colNameY, dot_size = 0.5)
+scatterplot_log10(df, g = ggplot(), colNameX = "x", colNameY = "y",
+  dot_size = 0.5)
 }
 \arguments{
 \item{df}{a data frame to trasform to log10 scale}
@@ -22,4 +23,8 @@ the plot
 }
 \description{
 Plot a generic scatter plot in log10 scale
+}
+\examples{
+df <- data.frame(a=exp(rnorm(10000)), b=exp(rnorm(10000)))
+scatterplot_log10(df, colNameX="a", colNameY="b")
 }

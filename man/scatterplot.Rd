@@ -4,7 +4,8 @@
 \alias{scatterplot}
 \title{Plot a generic scatter plot}
 \usage{
-scatterplot(df, g = ggplot(), colNameX, colNameY, dot_size = 0.5)
+scatterplot(df, g = ggplot(), colNameX = "x", colNameY = "y",
+  dot_size = 0.5)
 }
 \arguments{
 \item{df}{a data frame}
@@ -22,4 +23,8 @@ the plot
 }
 \description{
 Plot a generic scatter plot
+}
+\examples{
+df <- data.frame(a=rnorm(10000), b=rnorm(10000))
+scatterplot(df, colNameX="a", colNameY="b")
 }
