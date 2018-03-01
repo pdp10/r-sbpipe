@@ -14,6 +14,9 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#' The name of the Objective Value column
+objval.col <- "ObjVal"
+
 
 ######################
 # EXPORTED FUNCTIONS #
@@ -21,35 +24,117 @@
 
 
 
-#####################
-# UTILITY FUNCTIONS #
-#####################
-
-
-
-
-
-
-#' The name of the Objective Value column
-objval.col <- "ObjVal"
-
-#' Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
-#' removed.
+#' Main R function for SBpipe pipeline: parameter_estimation(). 
 #'
-#' @param df.cols The columns of a data frame.
-#' @return the renamed columns
-replace_colnames <- function(df.cols) {
-  df.cols <- gsub("ObjectiveValue", objval.col, df.cols)
-  # global variables
-  df.cols <- gsub("Values.", "", df.cols)
-  df.cols <- gsub("..InitialValue", "", df.cols)
-  # compartments
-  df.cols <- gsub("Compartments.", "", df.cols)
-  df.cols <- gsub("..InitialVolume", "", df.cols)
-  # species
-  df.cols <- gsub("X.", "", df.cols)
-  df.cols <- gsub("._0", "", df.cols)
-  df.cols <- gsub(".InitialParticleNumber", "", df.cols)
+#' @param model the name of the model
+#' @param finalfits_filenamein the dataset containing the best parameter fits
+#' @param allfits_filenamein the dataset containing all the parameter fits
+#' @param plots_dir the directory to save the generated plots.
+#' @param data_point_num the number of data points used for parameterise the model.
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
+#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
+#' @param best_fits_percent the percent of best fits to analyse.
+#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted.
+#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted.
+#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
+#' @param logspace true if parameters should be plotted in logspace.
+#' @param scientific_notation true if axis labels should be plotted in scientific notation.
+# #' @examples 
+# #' \donttest{
+# #' }
+#' @export
+sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
+                       data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
+                       best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
+                       logspace, scientific_notation) {
+  
+  ### ------------ ###
+  
+  # Run some controls first
+  
+  dim_final_fits = dim(read.table(finalfits_filenamein, sep="\t"))[1]
+  dim_all_fits = dim(read.table(allfits_filenamein, header=TRUE, sep="\t"))[1]
+  
+  if(dim_final_fits-1 <= 1) {
+    warning('Best fits analysis requires at least two parameter estimations. Skip.')
+    finalfits = FALSE
+  }
+  if(dim_all_fits-1 <= 0) {
+    warning('All fits analysis requires at least one parameter set. Cannot continue.')
+    stop()
+  }
+  
+  df_all_fits = read.table(allfits_filenamein, header=TRUE, dec=".", sep="\t")
+  
+  # non-positive entries test
+  # If so, logspace will be set to FALSE, otherwise SBpipe will fail due to NaN values.
+  # This is set once for all
+  nonpos_entries <- sum(df_all_fits <= 0)
+  if(nonpos_entries > 0) {
+    warning('Non-positive values found for one or more parameters. `logspace` option set to FALSE')
+    logspace = FALSE
+  }
+  
+  if(data_point_num < 0.0) {
+    warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
+    stop()
+  }
+  
+  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+    warning("best_fits_percent is not in (0, 100]. Now set to 100")
+    best_fits_percent = 100
+  }
+  
+  ### ------------ ###
+  
+  
+  # retrieve the list of parameter names
+  param.names <- get_param_names(finalfits_filenamein)
+  
+  # data preprocessing  
+  pe_ds_preproc(filename=allfits_filenamein, param.names=param.names, logspace=logspace, 
+                all.fits=TRUE, data_point_num=data_point_num, fileout_param_estim_summary=fileout_param_estim_summary)
+  pe_ds_preproc(filename=finalfits_filenamein, param.names=param.names, logspace=logspace, all.fits=FALSE)
+  
+  if(logspace) {
+    finalfits_filenamein <- gsub(".csv", "_log10.csv", finalfits_filenamein)
+    allfits_filenamein <- gsub(".csv", "_log10.csv", allfits_filenamein)
+  }
+  
+  # objective value vs iterations analysis
+  objval_vs_iters_analysis(model=model, filename=allfits_filenamein, plots_dir=plots_dir)
+  
+  for(i in seq_along(param.names)) {
+    # PLE analysis
+    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], 
+                         plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
+                         logspace=logspace, scientific_notation=scientific_notation)
+    
+    # parameter density analysis
+    parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+  }
+  
+  # create summary file containing parameter PLE stats
+  combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
+  
+  # 2D PLE analysis
+  for(i in 1:(length(param.names)-1)) {
+    for(j in (i+1):length(param.names)) {
+      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_66cl_corr) 
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_95cl_corr)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      if(plot_2d_99cl_corr)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    }
+  }
+  
 }
 
 
@@ -166,7 +251,7 @@ pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FAL
     cl99_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.01)
     cl95_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.05)
     cl66_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.33)
- 
+    
     # Write global statistics for the parameter estimation, including the confidence levels
     fileoutPLE <- sink(fileout_param_estim_summary)
     cat(paste("MinObjVal", 
@@ -206,10 +291,10 @@ plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_
                              logspace=TRUE, scientific_notation=TRUE) {
   
   parameter <- colnames(df99)[2]
-
+  
   print(paste('sampled PLE for', parameter))
   fileout <- file.path(plots_dir, paste(model, "_approx_ple_", parameter, ".png", sep=""))
-
+  
   theme_set(basic_theme(36))
   g <- scatterplot_ple(df99, ggplot(), parameter, objval.col, cl66_objval, cl95_objval, cl99_objval) +
     theme(legend.key.height = unit(0.5, "in"))
@@ -356,9 +441,9 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
 # #' sampled_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
 #' @export
 sampled_ple_analysis <- function(model, filename, parameter, 
-                                        plots_dir, fileout_param_estim_summary,
-                                        logspace=TRUE, scientific_notation=TRUE) {
-
+                                 plots_dir, fileout_param_estim_summary,
+                                 logspace=TRUE, scientific_notation=TRUE) {
+  
   # load the fits for this parameter
   df <- as.data.frame(data.table::fread(filename, select=c(objval.col, parameter)))
   
@@ -369,7 +454,7 @@ sampled_ple_analysis <- function(model, filename, parameter,
   plot_sampled_ple(df[df[ ,objval.col] <= dt.stats$CL99ObjVal, ], 
                    dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
                    plots_dir, model, logspace, scientific_notation)
-
+  
   # compute the confidence levels and the value for the best parameter
   ci_obj <- compute_sampled_ple_stats(df, dt.stats$MinObjVal, dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal,logspace)
   
@@ -377,7 +462,7 @@ sampled_ple_analysis <- function(model, filename, parameter,
   fileoutPLE <- sink(file.path(plots_dir, paste0(model, "_approx_ple_", parameter,".csv")))
   cat(paste("Parameter", "Value", "LeftCI66", "RightCI66", "LeftCI95", "RightCI95", "LeftCI99", "RightCI99", 
             "Value_LeftCI66_ratio", "RightCI66_Value_ratio", "Value_LeftCI95_ratio", "RightCI95_Value_ratio", "Value_LeftCI99_ratio", "RightCI99_Value_ratio\n", sep="\t"), append=TRUE)
-
+  
   # write on file
   cat(paste(parameter, ci_obj$par_value, ci_obj$min_ci_66, ci_obj$max_ci_66, ci_obj$min_ci_95, ci_obj$max_ci_95,
             ci_obj$min_ci_99, ci_obj$max_ci_99, ci_obj$min_ci_66_par_value_ratio, ci_obj$max_ci_66_par_value_ratio,
@@ -389,30 +474,6 @@ sampled_ple_analysis <- function(model, filename, parameter,
 }
 
 
-#' Combine the statistics for the parameter estimation details
-#'
-#' @param plots_dir the directory to save the generated plots
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
-# #' @examples 
-# #' combine_param_ple_stats(plots_dir="param_estim_plots", fileout_param_estim_details="param_estim_details.csv")
-#' @export
-combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
-  
-  files <- list.files(plots_dir, pattern="\\.csv$")
-  if(length(files) < 0) { return }
-  
-  for(i in 1:length(files)) {
-    if(i==1) {
-      dt <- data.table::fread(file.path(plots_dir, files[1])) 
-    } else {
-      dt <- rbind(dt, data.table::fread(file.path(plots_dir, files[i])))
-    }
-  }
-
-  data.table::fwrite(dt, fileout_param_estim_details)
-}
-
-
 #' Plot parameter density.
 #'
 #' @param df the data set containing the parameter estimates to plot.
@@ -421,6 +482,14 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 #' @param title the plot title (default: "")
 #' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @examples 
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' insulin_receptor_all_fits[,2:4] <- log10(insulin_receptor_all_fits[,2:4])
+#' fileout <- file.path("pe_plots", "dens_k1.png")
+#' plot_parameter_density(df=insulin_receptor_all_fits, 
+#'                        parameter="k1", 
+#'                        fileout=fileout) 
 #' @export
 plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TRUE, scientific_notation=TRUE) {
   theme_set(basic_theme(36))
@@ -446,12 +515,45 @@ plot_parameter_density <- function(df, parameter, fileout, title="", logspace=TR
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
-# #' @examples
-# #' parameter_density_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' parameter_density_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter="k1", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+#' @examples 
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=TRUE, 
+#'               data_point_num=33, 
+#'               fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+#' parameter_density_analysis(model="ir_beta", 
+#'                            filename=file.path("pe_datasets", "all_fits_log10.csv"), 
+#'                            parameter="k1", 
+#'                            plots_dir="pe_plots", 
+#'                            thres="CL95",
+#'                            fileout_param_estim_summary=file.path("pe_datasets", 
+#'                                                                  "param_estim_summary.csv"),
+#'                            logspace=TRUE)
+#'                            
+#' data(insulin_receptor_best_fits)
+#' write.table(insulin_receptor_best_fits, 
+#'             file=file.path("pe_datasets", "best_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "best_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=FALSE)
+#' parameter_density_analysis(model="ir_beta", 
+#'                            filename=file.path("pe_datasets", "best_fits_log10.csv"), 
+#'                            parameter="k1", 
+#'                            plots_dir="pe_plots", 
+#'                            thres="BestFits",
+#'                            best_fits_percent=95,
+#'                            logspace=TRUE)
 #' @export
 parameter_density_analysis <- function(model, filename, parameter,  
                                        plots_dir, thres="BestFits", best_fits_percent=100,
@@ -494,10 +596,11 @@ parameter_density_analysis <- function(model, filename, parameter,
       best_fits_percent = 100
     }
     # Calculate the number of rows to extract.
-    selected_rows <- nrow(df)*best_fits_percent/100
+    selected_rows <- (nrow(df)*best_fits_percent/100)
     # sort by descending objective value so that the low objective values
     # (which are the most important) are on top. Then extract the tail from the data frame.
     df <- df[order(-df[,objval.col]),]
+    print(selected_rows)
     df <- tail(df, selected_rows)
     
     fileout <- file.path(plots_dir, paste(model, "_best_fits_", parameter, ".png", sep=""))
@@ -518,10 +621,24 @@ parameter_density_analysis <- function(model, filename, parameter,
 #' @param title the plot title (default: "")
 #' @param logspace true if the parameters should be plotted in logspace (default: TRUE)
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation (default: TRUE)
+#' @examples 
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+#' insulin_receptor_all_fits[,2:4] <- log10(insulin_receptor_all_fits[,2:4])
+#' fileout <- file.path("pe_plots", "2d_ple_k1_k2.png")
+#' plot_sampled_2d_ple(df=insulin_receptor_all_fits, 
+#'                     parameter1="k1", 
+#'                     parameter2="k2", 
+#'                     fileout=fileout) 
 #' @export
-plot_sampled_2d_ple <- function(df, parameter1, parameter2, 
-                                fileout, title="", 
-                                logspace=TRUE, scientific_notation=TRUE) {
+plot_sampled_2d_ple <- function(df, 
+                                parameter1, 
+                                parameter2, 
+                                fileout, 
+                                title="", 
+                                logspace=TRUE, 
+                                scientific_notation=TRUE) {
   theme_set(basic_theme(36))
   g <- scatterplot_w_colour(df, ggplot(), parameter1, parameter2, objval.col) +
     ggtitle(title) +
@@ -551,12 +668,47 @@ plot_sampled_2d_ple <- function(df, parameter1, parameter2,
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation. Only used if thres!="BestFits".
 #' @param logspace true if the parameters should be plotted in logspace
 #' @param scientific_notation true if the axis labels should be plotted in scientific notation
-# #' @examples
-# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="final_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="BestFits", best_fits_percent=75, logspace=TRUE, scientific_notation=TRUE)
-# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL66", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL95", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="CL99", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
-# #' sampled_2d_ple_analysis(model="insulin_receptor", filename="all_estim_collection_log10.csv", parameter1="k1", parameter2="k2", plots_dir="param_estim_plots", thres="All", fileout_param_estim_summary="param_estim_summary.csv", logspace=TRUE, scientific_notation=TRUE)
+#' @examples
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "all_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=TRUE, 
+#'               data_point_num=33, 
+#'               fileout_param_estim_summary=file.path("pe_datasets", "param_estim_summary.csv"))
+#' sampled_2d_ple_analysis(model="ir_beta", 
+#'                         filename=file.path("pe_datasets", "all_fits_log10.csv"), 
+#'                         parameter1="k1",
+#'                         parameter2="k2", 
+#'                         plots_dir="pe_plots", 
+#'                         thres="CL95",
+#'                         fileout_param_estim_summary=file.path("pe_datasets", 
+#'                                                               "param_estim_summary.csv"),
+#'                         logspace=TRUE)
+#'                            
+#' data(insulin_receptor_best_fits)
+#' write.table(insulin_receptor_best_fits, 
+#'             file=file.path("pe_datasets", "best_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "best_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=FALSE)
+#' sampled_2d_ple_analysis(model="ir_beta", 
+#'                         filename=file.path("pe_datasets", "best_fits_log10.csv"), 
+#'                         parameter1="k1",
+#'                         parameter2="k2",
+#'                         plots_dir="pe_plots", 
+#'                         thres="BestFits",
+#'                         best_fits_percent=95,
+#'                         logspace=TRUE)
 #' @export
 sampled_2d_ple_analysis <- function(model, filename, 
                                     parameter1, parameter2, 
@@ -621,6 +773,10 @@ sampled_2d_ple_analysis <- function(model, filename,
 #' @param objval.vec the vector containing the objective values
 #' @param model the model name
 #' @param plots_dir the directory to save the generated plots
+#' @examples 
+#' dir.create(file.path("pe_plots"))
+#' v <- 10*(rnorm(10000))^4 + 10
+#' plot_objval_vs_iters(objval.vec=v, model="model", plots_dir="pe_plots")
 #' @export
 plot_objval_vs_iters <- function(objval.vec, model, plots_dir) {
   theme_set(basic_theme(36))
@@ -634,23 +790,36 @@ plot_objval_vs_iters <- function(objval.vec, model, plots_dir) {
 #' @param model the model name
 #' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
-# #' @examples 
-# #' objval_vs_iters_analysis(model="insulin_receptor", filename="all_estim_collection.csv", plots_dir="param_estim_plots")
+#' @examples 
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_all_fits)
+#' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
+#' write.table(insulin_receptor_all_fits, 
+#'             file=file.path("pe_datasets", "all_fits.csv"), 
+#'             row.names=FALSE)
+#' objval_vs_iters_analysis(model="model", 
+#'                          filename=file.path("pe_datasets", "all_fits.csv"), 
+#'                          plots_dir="pe_plots")
 #' @export
 objval_vs_iters_analysis <- function(model, filename, plots_dir) {
-  # load the fits for this parameter
   dt <- data.table::fread(filename, select=c(objval.col))
-  
   print('plotting objective value vs iteration')
   plot_objval_vs_iters(unlist(c(dt)), model, plots_dir)
 }
+
+
+
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
 
 
 #' Get parameter names
 #'
 #' @param filename the filename containing the best fits
 #' @return the parameter names
-#' @export
 get_param_names <- function(filename) {
   # load the fits for this parameter
   names <- colnames(data.table::fread(filename))
@@ -660,116 +829,43 @@ get_param_names <- function(filename) {
 }
 
 
-#' Main R function for SBpipe pipeline: parameter_estimation(). 
+#' Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
+#' removed.
 #'
-#' @param model the name of the model
-#' @param finalfits_filenamein the dataset containing the best parameter fits
-#' @param allfits_filenamein the dataset containing all the parameter fits
-#' @param plots_dir the directory to save the generated plots.
-#' @param data_point_num the number of data points used for parameterise the model.
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
-#' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
-#' @param best_fits_percent the percent of best fits to analyse.
-#' @param plot_2d_66cl_corr true if the 2D parameter correlation plots for 66\% confidence intervals should be plotted.
-#' @param plot_2d_95cl_corr true if the 2D parameter correlation plots for 95\% confidence intervals should be plotted.
-#' @param plot_2d_99cl_corr true if the 2D parameter correlation plots for 99\% confidence intervals should be plotted.
-#' @param logspace true if parameters should be plotted in logspace.
-#' @param scientific_notation true if axis labels should be plotted in scientific notation.
-# #' @examples 
-# #' \donttest{
-# #' }
-#' @export
-sbpiper_pe <- function(model, finalfits_filenamein, allfits_filenamein, plots_dir, 
-                      data_point_num, fileout_param_estim_details, fileout_param_estim_summary, 
-                      best_fits_percent, plot_2d_66cl_corr, plot_2d_95cl_corr, plot_2d_99cl_corr, 
-                      logspace, scientific_notation) {
-  
-  ### ------------ ###
-  
-  # Run some controls first
-  
-  dim_final_fits = dim(read.table(finalfits_filenamein, sep="\t"))[1]
-  dim_all_fits = dim(read.table(allfits_filenamein, header=TRUE, sep="\t"))[1]
-  
-  if(dim_final_fits-1 <= 1) {
-    warning('Best fits analysis requires at least two parameter estimations. Skip.')
-    finalfits = FALSE
-  }
-  if(dim_all_fits-1 <= 0) {
-    warning('All fits analysis requires at least one parameter set. Cannot continue.')
-    stop()
-  }
-  
-  df_all_fits = read.table(allfits_filenamein, header=TRUE, dec=".", sep="\t")
-  
-  # non-positive entries test
-  # If so, logspace will be set to FALSE, otherwise SBpipe will fail due to NaN values.
-  # This is set once for all
-  nonpos_entries <- sum(df_all_fits <= 0)
-  if(nonpos_entries > 0) {
-    warning('Non-positive values found for one or more parameters. `logspace` option set to FALSE')
-    logspace = FALSE
-  }
-  
-  if(data_point_num < 0.0) {
-    warning("`data_point_num` must be >= 0. To visualise thresholds, `data_point_num` must be greater than the number of estimated parameters.")
-    stop()
-  }
-  
-  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
-    warning("best_fits_percent is not in (0, 100]. Now set to 100")
-    best_fits_percent = 100
-  }
-  
-  ### ------------ ###
-  
-  
-  # retrieve the list of parameter names
-  param.names <- get_param_names(finalfits_filenamein)
-  
-  # data preprocessing  
-  pe_ds_preproc(filename=allfits_filenamein, param.names=param.names, logspace=logspace, 
-                       all.fits=TRUE, data_point_num=data_point_num, fileout_param_estim_summary=fileout_param_estim_summary)
-  pe_ds_preproc(filename=finalfits_filenamein, param.names=param.names, logspace=logspace, all.fits=FALSE)
-
-  if(logspace) {
-    finalfits_filenamein <- gsub(".csv", "_log10.csv", finalfits_filenamein)
-    allfits_filenamein <- gsub(".csv", "_log10.csv", allfits_filenamein)
-  }
-  
-  # objective value vs iterations analysis
-  objval_vs_iters_analysis(model=model, filename=allfits_filenamein, plots_dir=plots_dir)
-  
-  for(i in seq_along(param.names)) {
-    # PLE analysis
-    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], 
-                                plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
-                                logspace=logspace, scientific_notation=scientific_notation)
-    
-    # parameter density analysis
-    parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-  }
-  
-  # create summary file containing parameter PLE stats
-  combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
-  
-  # 2D PLE analysis
-  for(i in 1:(length(param.names)-1)) {
-    for(j in (i+1):length(param.names)) {
-      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_66cl_corr) 
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_95cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_99cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    }
-  }
- 
+#' @param df.cols The columns of a data frame.
+#' @return the renamed columns
+replace_colnames <- function(df.cols) {
+  df.cols <- gsub("ObjectiveValue", objval.col, df.cols)
+  # global variables
+  df.cols <- gsub("Values.", "", df.cols)
+  df.cols <- gsub("..InitialValue", "", df.cols)
+  # compartments
+  df.cols <- gsub("Compartments.", "", df.cols)
+  df.cols <- gsub("..InitialVolume", "", df.cols)
+  # species
+  df.cols <- gsub("X.", "", df.cols)
+  df.cols <- gsub("._0", "", df.cols)
+  df.cols <- gsub(".InitialParticleNumber", "", df.cols)
+  return(df.cols)
 }
 
+
+#' Combine the statistics for the parameter estimation details
+#'
+#' @param plots_dir the directory to save the generated plots
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
+  
+  files <- list.files(plots_dir, pattern="\\.csv$")
+  if(length(files) < 0) { return }
+  
+  for(i in 1:length(files)) {
+    if(i==1) {
+      dt <- data.table::fread(file.path(plots_dir, files[1])) 
+    } else {
+      dt <- rbind(dt, data.table::fread(file.path(plots_dir, files[i])))
+    }
+  }
+  
+  data.table::fwrite(dt, fileout_param_estim_details)
+}

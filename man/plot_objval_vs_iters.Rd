@@ -16,3 +16,8 @@ plot_objval_vs_iters(objval.vec, model, plots_dir)
 \description{
 Plot the Objective values vs Iterations
 }
+\examples{
+dir.create(file.path("pe_plots"))
+v <- 10*(rnorm(10000))^4 + 10
+plot_objval_vs_iters(objval.vec=v, model="model", plots_dir="pe_plots")
+}
