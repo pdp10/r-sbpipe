@@ -6,16 +6,15 @@
 \alias{sbpiper-package}
 \title{sbpiper: Data Analysis Functions for 'SBpipe' Package}
 \description{
-'sbpiper' contains the functions used by the software 'SBpipe' for analysing
-repetitive parameter estimations and simulations of mathematical models. Examples
-of mathematical models are Ordinary Differential equations (ODEs) or
-Stochastic Differential Equations (SDEs) models. Among the analyses for parameter
+Provides an API for analysing repetitive parameter estimations and simulations of
+mathematical models. Examples of mathematical models are Ordinary Differential equations (ODEs)
+or Stochastic Differential Equations (SDEs) models. Among the analyses for parameter
 estimation 'sbpiper' calculates statistics and generates plots for parameter density,
 parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These results can
 be generated using all or a subset of the best computed parameter sets. Among the analyses
 for model simulation 'sbpiper' calculates statistics and generates plots for deterministic
 and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model
-parameters can also be generated.
+parameters can also be generated. This package is primarily used by the software 'SBpipe'. Citation: Dalle Pezze P, Le Novère N. SBpipe: a collection of pipelines for automating repetitive simulation and analysis tasks. BMC Systems Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>.
 }
 \seealso{
 Useful links:

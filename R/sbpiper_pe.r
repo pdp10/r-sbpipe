@@ -961,6 +961,28 @@ objval_vs_iters_analysis <- function(model, filename, plots_dir) {
 }
 
 
+#' Combine the statistics for the parameter estimation details
+#'
+#' @param plots_dir the directory to save the generated plots
+#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
+#' @export
+combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
+  
+  files <- list.files(plots_dir, pattern="\\.csv$")
+  if(length(files) < 0) { return }
+  
+  for(i in 1:length(files)) {
+    if(i==1) {
+      dt <- data.table::fread(file.path(plots_dir, files[1])) 
+    } else {
+      dt <- rbind(dt, data.table::fread(file.path(plots_dir, files[i])))
+    }
+  }
+  
+  data.table::fwrite(dt, fileout_param_estim_details)
+}
+
+
 
 #####################
 # UTILITY FUNCTIONS #
@@ -1001,23 +1023,3 @@ replace_colnames <- function(df.cols) {
   return(df.cols)
 }
 
-
-#' Combine the statistics for the parameter estimation details
-#'
-#' @param plots_dir the directory to save the generated plots
-#' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
-combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
-  
-  files <- list.files(plots_dir, pattern="\\.csv$")
-  if(length(files) < 0) { return }
-  
-  for(i in 1:length(files)) {
-    if(i==1) {
-      dt <- data.table::fread(file.path(plots_dir, files[1])) 
-    } else {
-      dt <- rbind(dt, data.table::fread(file.path(plots_dir, files[i])))
-    }
-  }
-  
-  data.table::fwrite(dt, fileout_param_estim_details)
-}
