@@ -983,6 +983,97 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 }
 
 
+#' PCA for the parameters. These plots rely on factoextra::fviz_*** functions.
+#' 
+#' @param model the model name
+#' @param filename the filename containing the fits sequence
+#' @param plots_dir the directory to save the generated plots
+#' @param best_fits_percent the percent of best fits to analyse.
+#' dir.create(file.path("pe_datasets"))
+#' dir.create(file.path("pe_plots"))
+#' data(insulin_receptor_best_fits)
+#' write.table(insulin_receptor_best_fits, 
+#'             file=file.path("pe_datasets", "best_fits.csv"), 
+#'             row.names=FALSE)
+#' # generate the global statistics for the parameter estimation
+#' pe_ds_preproc(filename=file.path("pe_datasets", "best_fits.csv"), 
+#'               param.names=c('k1', 'k2', 'k3'), 
+#'               logspace=TRUE, 
+#'               all.fits=FALSE)
+#' parameter_pca_analysis(model="ir_beta", 
+#'                        filename=file.path("pe_datasets", "best_fits_log10.csv"), 
+#'                        plots_dir="pe_plots",
+#'                        best_fits_percent=50)
+#' @export
+parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent=50) {
+  
+  # extract the best parameter values
+  df <- as.data.frame(data.table::fread(filename))
+
+  # df filtering
+  if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
+    warning("best_fits_percent is not in (0, 100]. Now set to 50")
+    best_fits_percent = 50
+  }
+  # Calculate the number of rows to extract.
+  selected_rows <- (nrow(df)*best_fits_percent/100)
+  # sort by descending objective value so that the low objective values
+  # (which are the most important) are on top. Then extract the tail from the data frame.
+  df <- df[order(-df[,objval.col]),]
+  df <- tail(df, selected_rows)
+  
+  # remove the first two columns as these are not used for the PCA
+  df <- df[-c(1,2)]
+  
+  print('parameter PCA analysis')
+  
+  # Compute PCA
+  pca <- prcomp(t(df), center=TRUE, scale.=TRUE)
+  # Write the calculated PCA `rotation` (PCA load). This is the table miRNAs (rows) vs PCAs (cols).
+  write.csv(pca$rotation, file=paste0(gsub('.csv', '', filename),"_PCA_rotation.csv"), quote=FALSE)
+  
+  # Visualize eigenvalues (scree plot). Show the percentage of variances explained by each principal component.
+  factoextra::fviz_eig(pca) + labs(y="Variance (%)") + basic_theme(28)
+  ggsave(file.path(plots_dir, paste0(model, "_eigenvalues.png")), dpi=300, width=8, height=6)
+  
+  # PCA plots by components
+  for(i in 1:(ncol(pca$rotation)-1)) {
+    for(j in (i+1):(ncol(pca$rotation))) {
+
+      print(paste0('PC components : PC', as.character(i), ' vs PC', as.character(j)))
+      # Graph of individuals. Individuals with a similar profile are grouped together.
+      factoextra::fviz_pca_ind(pca, 
+                               axes=c(i,j),
+                               col.ind = "contrib", # Color by contributions to the individuals 
+                               gradient.cols = c("blue", "red"),
+                               repel = TRUE     # Avoid text overlapping
+      ) + basic_theme(28)
+      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+      
+      # Graph of variables. Positive correlated variables point to the same side of the plot. 
+      # Negative correlated variables point to opposite sides of the graph.
+      factoextra::fviz_pca_var(pca,
+                               axes=c(i,j),
+                               col.var = "contrib", # Color by contributions to the PC
+                               gradient.cols = c("blue", "red"),
+                               repel = TRUE     # Avoid text overlapping
+      ) + basic_theme(28)
+      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+      
+      # Biplot of individuals and variables
+      factoextra::fviz_pca_biplot(pca, 
+                                  axes=c(i,j),
+                                  repel = TRUE,
+                                  col.var = "#2E9FDF", # Variables color
+                                  col.ind = "#696969"  # Individuals color
+      ) + basic_theme(28)
+      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+            
+    }
+  }
+  
+}
+
 
 #####################
 # UTILITY FUNCTIONS #
