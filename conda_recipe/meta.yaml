@@ -47,7 +47,6 @@ requirements:
         - r-scales
         - r-stringr
         - r-colorramps
-        - r-factoextra
         #- r-essentials       
     run:
         - r-base=3.4.2    
@@ -58,7 +57,6 @@ requirements:
         - r-scales
         - r-stringr
         - r-colorramps
-        - r-factoextra
         #- r-essentials       
 test:
     commands:

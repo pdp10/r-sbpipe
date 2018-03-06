@@ -31,6 +31,5 @@ dependencies:
   - r-scales
   - r-stringr
   - r-colorramps
-  - r-factoextra
   #- r-essentials
   
