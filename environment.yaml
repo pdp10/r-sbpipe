@@ -30,6 +30,7 @@ dependencies:
   - r-hmisc  
   - r-scales
   - r-stringr
-  - r-colorramps  
+  - r-colorramps
+  - r-factoextra
   #- r-essentials
   
