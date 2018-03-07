@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpiper_sim.r
 \name{compute_descriptive_statistics}
 \alias{compute_descriptive_statistics}
-\title{For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar,
+\title{For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar, 
 min, 1st quantile, median, 3rd quantile, and max.}
 \usage{
 compute_descriptive_statistics(timepoint.values, nfiles)
@@ -16,6 +16,6 @@ compute_descriptive_statistics(timepoint.values, nfiles)
 the statistics for the array of values for a specific time point
 }
 \description{
-For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar,
+For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar, 
 min, 1st quantile, median, 3rd quantile, and max.
 }

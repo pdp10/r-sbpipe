@@ -14,7 +14,9 @@ parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These re
 be generated using all or a subset of the best computed parameter sets. Among the analyses
 for model simulation 'sbpiper' calculates statistics and generates plots for deterministic
 and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model
-parameters can also be generated. This package is primarily used by the software 'SBpipe'. Citation: Dalle Pezze P, Le Novère N. SBpipe: a collection of pipelines for automating repetitive simulation and analysis tasks. BMC Systems Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>.
+parameters can also be generated. This package is primarily used by the software 'SBpipe'.
+Citation: Dalle Pezze P, Le Novère N. SBpipe: a collection of pipelines for automating
+repetitive simulation and analysis tasks. BMC Systems Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>.
 }
 \seealso{
 Useful links:

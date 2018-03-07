@@ -3,18 +3,18 @@
 \docType{data}
 \name{insulin_receptor_exp_dataset}
 \alias{insulin_receptor_exp_dataset}
-\title{Experimental data set for the insulin receptor beta phosphorylated at pY1146 as published in
+\title{Experimental data set for the insulin receptor beta phosphorylated at pY1146 as published in 
 Dalle Pezze et al. Science Signaling 2012.}
 \format{A data frame with 2 variables:
 \describe{
-\item{Time}{The time variable}
-\item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+  \item{Time}{The time variable}
+  \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
 }}
 \usage{
 insulin_receptor_exp_dataset
 }
 \description{
-Experimental data set for the insulin receptor beta phosphorylated at pY1146 as published in
+Experimental data set for the insulin receptor beta phosphorylated at pY1146 as published in 
 Dalle Pezze et al. Science Signaling 2012.
 }
 \keyword{datasets}

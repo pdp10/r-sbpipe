@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpiper_pe.r
 \name{pe_ds_preproc}
 \alias{pe_ds_preproc}
-\title{Parameter estimation pre-processing. It renames the data set columns, and applies a log10 transformation if logspace is TRUE.
+\title{Parameter estimation pre-processing. It renames the data set columns, and applies a log10 transformation if logspace is TRUE. 
 If all.fits is true, it also computes the confidence levels.}
 \usage{
 pe_ds_preproc(filename, param.names = c(), logspace = TRUE,
@@ -23,7 +23,7 @@ pe_ds_preproc(filename, param.names = c(), logspace = TRUE,
 \item{fileout_param_estim_summary}{the name of the file containing the summary for the parameter estimation. Ignored if all.fits is false}
 }
 \description{
-Parameter estimation pre-processing. It renames the data set columns, and applies a log10 transformation if logspace is TRUE.
+Parameter estimation pre-processing. It renames the data set columns, and applies a log10 transformation if logspace is TRUE. 
 If all.fits is true, it also computes the confidence levels.
 }
 \examples{

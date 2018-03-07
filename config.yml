@@ -14,7 +14,6 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 channels:
-  - pdp10
-  - r
+  - conda-forge
   - defaults
   

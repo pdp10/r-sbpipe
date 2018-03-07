@@ -6,11 +6,11 @@
 \title{A parameter estimation data set including only the best evaluated fits.}
 \format{A data frame with 4 variables:
 \describe{
-\item{Estimation}{the number of estimated parameter sets}
-\item{ObjectiveValue}{the best objective value for this parameter estimation}
-\item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
-\item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
-\item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
+  \item{Estimation}{the number of estimated parameter sets}
+  \item{ObjectiveValue}{the best objective value for this parameter estimation}
+  \item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
+  \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
+  \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 }}
 \usage{
 insulin_receptor_best_fits

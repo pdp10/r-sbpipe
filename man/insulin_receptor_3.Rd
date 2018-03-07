@@ -6,8 +6,8 @@
 \title{A stochastic model simulation}
 \format{A data frame with 2 variables:
 \describe{
-\item{Time}{The time variable}
-\item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+  \item{Time}{The time variable}
+  \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
 }}
 \usage{
 insulin_receptor_3

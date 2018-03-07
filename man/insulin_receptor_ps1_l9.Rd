@@ -3,19 +3,19 @@
 \docType{data}
 \name{insulin_receptor_ps1_l9}
 \alias{insulin_receptor_ps1_l9}
-\title{A deterministic simulation of the insulin receptor model upon scanning of
+\title{A deterministic simulation of the insulin receptor model upon scanning of 
 1 model parameter. The initial amount of IR-beta is approx 9.}
 \format{A data frame with 3 variables:
 \describe{
-\item{Time}{The time variable.}
-\item{IR_beta}{The unphosphorylated state of the insulin receptor beta. The scanned variable.}
-\item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+  \item{Time}{The time variable.}
+  \item{IR_beta}{The unphosphorylated state of the insulin receptor beta. The scanned variable.}
+  \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
 }}
 \usage{
 insulin_receptor_ps1_l9
 }
 \description{
-A deterministic simulation of the insulin receptor model upon scanning of
+A deterministic simulation of the insulin receptor model upon scanning of 
 1 model parameter. The initial amount of IR-beta is approx 9.
 }
 \keyword{datasets}

@@ -39,25 +39,25 @@ build:
 
 requirements:
     build:
-        - r-base=3.4.2
+        - r-base=3.4.1
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
-        - r-hmisc        
+        - r-hmisc  
         - r-scales
         - r-stringr
         - r-colorramps
-        #- r-essentials       
+        - r-factoextra      
     run:
-        - r-base=3.4.2    
+        - r-base=3.4.1
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
-        - r-hmisc
+        - r-hmisc  
         - r-scales
         - r-stringr
         - r-colorramps
-        #- r-essentials       
+        - r-factoextra     
 test:
     commands:
         - $R -e "library('sbpiper')"

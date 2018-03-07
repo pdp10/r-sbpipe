@@ -3,20 +3,20 @@
 \docType{data}
 \name{insulin_receptor_ps2_tp2}
 \alias{insulin_receptor_ps2_tp2}
-\title{A deterministic simulation of the insulin receptor model upon scanning of
+\title{A deterministic simulation of the insulin receptor model upon scanning of 
 2 model parameters.}
 \format{A data frame with 4 variables:
 \describe{
-\item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
-\item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
-\item{IRbetaPercent}{The percent of available IR_beta amount.}
-\item{InsulinPercent}{The percent of available insulin amount.}
+  \item{Time}{The time variable. This dataset is at time T=2min upon insulin stimulation}
+  \item{IR_beta_pY1146}{The insulin receptor beta phosphorylated at pY1146}
+  \item{IRbetaPercent}{The percent of available IR_beta amount.}
+  \item{InsulinPercent}{The percent of available insulin amount.}
 }}
 \usage{
 insulin_receptor_ps2_tp2
 }
 \description{
-A deterministic simulation of the insulin receptor model upon scanning of
+A deterministic simulation of the insulin receptor model upon scanning of 
 2 model parameters.
 }
 \keyword{datasets}

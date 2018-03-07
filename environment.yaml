@@ -19,11 +19,10 @@
 name:
   - sbpiper
 channels:
-  - pdp10        # r-colorramps
-  - r
+  - conda-forge
   - defaults
 dependencies:
-  - r-base=3.4.2
+  - r-base=3.4.1
   - r-data.table
   - r-ggplot2>=2.2.0
   - r-reshape2
@@ -31,5 +30,4 @@ dependencies:
   - r-scales
   - r-stringr
   - r-colorramps
-  #- r-essentials
-  
+  - r-factoextra

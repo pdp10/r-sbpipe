@@ -2,7 +2,7 @@
 % Please edit documentation in R/sbpiper_pe.r
 \name{replace_colnames}
 \alias{replace_colnames}
-\title{Rename data frame columns. \code{ObjectiveValue} is renamed as \code{ObjVal}. Substrings \code{Values.} and \code{..InitialValue} are
+\title{Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
 removed.}
 \usage{
 replace_colnames(df.cols)
@@ -14,6 +14,6 @@ replace_colnames(df.cols)
 the renamed columns
 }
 \description{
-Rename data frame columns. \code{ObjectiveValue} is renamed as \code{ObjVal}. Substrings \code{Values.} and \code{..InitialValue} are
+Rename data frame columns. `ObjectiveValue` is renamed as `ObjVal`. Substrings `Values.` and `..InitialValue` are
 removed.
 }

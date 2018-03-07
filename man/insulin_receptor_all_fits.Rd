@@ -6,10 +6,10 @@
 \title{A parameter estimation data set including all the evaluated fits.}
 \format{A data frame with 4 variables:
 \describe{
-\item{ObjectiveValue}{the objective value for this parameter set}
-\item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
-\item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
-\item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
+  \item{ObjectiveValue}{the objective value for this parameter set}
+  \item{k1}{First estimated parameter: kinetic rate constant for IRbeta phosphorylation.}
+  \item{k2}{Second estimated parameter: kinetic rate constant for IRbeta refractory status.}
+  \item{k3}{Third estimated parameter: kinetic rate constant for IRbeta dephosphorylation.}
 }}
 \usage{
 insulin_receptor_all_fits
