@@ -123,7 +123,7 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
                   legend.key.width = unit(0.5, "in"), 
                   legend.key.height = unit(0.65, "in"), 
                   plot.title = element_text(hjust = 0.5))
-        ggsave(file.path(outputdir, paste0(model, "__eval_", columns[k], '__rep_', run, "__tp_", tp, ".png")),
+        ggsave(file.path(outputdir, paste0(model, "__eval_", columns[k], '__rep_', run, "__tp_", tp, ".pdf")),
             dpi=300,  width=8, height=6)
       }
   }

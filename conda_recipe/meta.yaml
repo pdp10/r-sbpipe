@@ -47,7 +47,8 @@ requirements:
         - r-scales
         - r-stringr
         - r-colorramps
-        - r-factoextra      
+        - r-factoextra
+        - r-factominer
     run:
         - r-base=3.4.1
         - r-data.table
@@ -57,7 +58,8 @@ requirements:
         - r-scales
         - r-stringr
         - r-colorramps
-        - r-factoextra     
+        - r-factoextra
+        - r-factominer
 test:
     commands:
         - $R -e "library('sbpiper')"

@@ -317,7 +317,7 @@ plot_single_param_scan_data <- function(model,
       # scale_linetype_manual("Levels", values=linetype, labels=labels) +
       xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
       theme(legend.title=element_blank(), legend.position="bottom", legend.key.height=unit(0.5, "in")) +
-      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".png")),
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".pdf")),
              dpi=300,  width=8, height=8)
   }
 }
@@ -370,7 +370,7 @@ plot_single_param_scan_data_homogen <- function(model,
     g <- ggplot() + 
       geom_line(data=df.melt, aes_string(x="time", y="value", group="variable"), color='blue', size=1.0) +
       xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
-      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".png")),
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".pdf")),
              dpi=300,  width=8, height=8)
   }
 }

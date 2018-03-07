@@ -384,7 +384,7 @@ plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_
   parameter <- colnames(df99)[2]
   
   print(paste('sampled PLE for', parameter))
-  fileout <- file.path(plots_dir, paste(model, "_approx_ple_", parameter, ".png", sep=""))
+  fileout <- file.path(plots_dir, paste(model, "_approx_ple_", parameter, ".pdf", sep=""))
   
   theme_set(basic_theme(36))
   g <- scatterplot_ple(df99, ggplot(), parameter, objval.col, cl66_objval, cl95_objval, cl99_objval) +
@@ -400,7 +400,7 @@ plot_sampled_ple <- function(df99, cl66_objval, cl95_objval, cl99_objval, plots_
   
   # Add density information (removed as it was not showing much more..)
   #g <- g + stat_density2d(color="green")
-  #fileout = gsub('.png', '_density.png', fileout)
+  #fileout = gsub('.pdf', '_density.pdf', fileout)
   #ggsave(fileout, dpi=300, width=8, height=6)
 }
 
@@ -637,7 +637,7 @@ sampled_ple_analysis <- function(model,
 #' data(insulin_receptor_all_fits)
 #' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
 #' insulin_receptor_all_fits[,2:4] <- log10(insulin_receptor_all_fits[,2:4])
-#' fileout <- file.path("pe_plots", "dens_k1.png")
+#' fileout <- file.path("pe_plots", "dens_k1.pdf")
 #' plot_parameter_density(df=insulin_receptor_all_fits, 
 #'                        parameter="k1", 
 #'                        fileout=fileout) 
@@ -727,19 +727,19 @@ parameter_density_analysis <- function(model,
     if(dt.stats$CL99ObjVal != 0) {
       if(thres == "CL66") {
         df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_cl66_fits_", parameter, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_cl66_fits_", parameter, ".pdf", sep=""))
         title <- expression("fits"<="CL66%")
       } else if(thres == "CL95") {
         df <- df[df[ , objval.col] <= dt.stats$CL95ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_cl95_fits_", parameter, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_cl95_fits_", parameter, ".pdf", sep=""))
         title <- expression("fits"<="CL95%")
       } else if(thres == "CL99") {
         df <- df[df[ , objval.col] <= dt.stats$CL99ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_cl99_fits_", parameter, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_cl99_fits_", parameter, ".pdf", sep=""))
         title <- expression("fits"<="CL99%")
       } else if(thres == "All") {
         # no filtering, but we assume that filename contains all the fits
-        fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter, ".pdf", sep=""))
         title <- expression("all fits")
       } else {
         warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
@@ -758,7 +758,7 @@ parameter_density_analysis <- function(model,
     df <- df[order(-df[,objval.col]),]
     df <- tail(df, selected_rows)
     
-    fileout <- file.path(plots_dir, paste(model, "_best_fits_", parameter, ".png", sep=""))
+    fileout <- file.path(plots_dir, paste(model, "_best_fits_", parameter, ".pdf", sep=""))
     title <- expression("best fits")
   }
   
@@ -781,7 +781,7 @@ parameter_density_analysis <- function(model,
 #' data(insulin_receptor_all_fits)
 #' colnames(insulin_receptor_all_fits)[1] <- "ObjVal"
 #' insulin_receptor_all_fits[,2:4] <- log10(insulin_receptor_all_fits[,2:4])
-#' fileout <- file.path("pe_plots", "2d_ple_k1_k2.png")
+#' fileout <- file.path("pe_plots", "2d_ple_k1_k2.pdf")
 #' plot_sampled_2d_ple(df=insulin_receptor_all_fits, 
 #'                     parameter1="k1", 
 #'                     parameter2="k2", 
@@ -882,19 +882,19 @@ sampled_2d_ple_analysis <- function(model, filename,
     if(dt.stats$CL99ObjVal != 0) {
       if(thres == "CL66") {
         df <- df[df[ , objval.col] <= dt.stats$CL66ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl66_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl66_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
         title <- expression("fits"<="CL66%")
       } else if(thres == "CL95") {
         df <- df[df[ , objval.col] <= dt.stats$CL95ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl95_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl95_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
         title <- expression("fits"<="CL95%")
       } else if(thres == "CL99") {
         df <- df[df[ , objval.col] <= dt.stats$CL99ObjVal, ]
-        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl99_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_ple_2d_cl99_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
         title <- expression("fits"<="CL99%")
       } else if(thres == "All") {
         # no filtering, but we assume that filename contains all the fits
-        fileout <- file.path(plots_dir, paste(model, "_ple_2d_all_fits_", parameter1, "_", parameter2, ".png", sep=""))
+        fileout <- file.path(plots_dir, paste(model, "_ple_2d_all_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
         title <- expression("all fits")
       } else {
         warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
@@ -913,7 +913,7 @@ sampled_2d_ple_analysis <- function(model, filename,
     df <- df[order(-df[,objval.col]),]
     df <- tail(df, selected_rows)
     
-    fileout <- file.path(plots_dir, paste(model, "_ple_2d_best_fits_", parameter1, "_", parameter2, ".png", sep=""))
+    fileout <- file.path(plots_dir, paste(model, "_ple_2d_best_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
     title <- expression("best fits")
   }
   
@@ -936,7 +936,7 @@ sampled_2d_ple_analysis <- function(model, filename,
 plot_objval_vs_iters <- function(objval.vec, model, plots_dir) {
   theme_set(basic_theme(36))
   g <- plot_fits(objval.vec, ggplot())
-  ggsave(file.path(plots_dir, paste(model, "_objval_vs_iter.png", sep="")), dpi=300, width=8, height=6)
+  ggsave(file.path(plots_dir, paste(model, "_objval_vs_iter.pdf", sep="")), dpi=300, width=8, height=6)
 }
 
 
@@ -1028,20 +1028,31 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
   # remove the first two columns as these are not used for the PCA
   df <- df[-c(1,2)]
 
-  print('parameter PCA analysis')
+  print('PCA analysis')
 
   # Compute PCA
-  pca <- prcomp(t(df), center=TRUE, scale.=TRUE)
-  # Write the calculated PCA `rotation` (PCA load). This is the table miRNAs (rows) vs PCAs (cols).
-  write.csv(pca$rotation, file=paste0(gsub('.csv', '', filename),"_PCA_rotation.csv"), quote=FALSE)
+  #pca <- prcomp(df, center=TRUE, scale.=TRUE)
+  #write.csv(pca$loadings, file=paste0(gsub('.csv', '', filename),"_PCA_loadings.csv"), quote=FALSE)
+  
+  pca <- FactoMineR::PCA(df, scale.unit=TRUE, graph=FALSE)
+  
+  print(pca)
+  print(factoextra::get_pca_ind(pca))
+  
+  # Write the PCA individuals (repeats)
+  write.csv(pca$ind$coord, file=paste0(gsub('.csv', '', filename),"_PCA_individuals_coord.csv"), quote=FALSE)
+  # Write the PCA variables (vars)
+  write.csv(pca$var$coord, file=paste0(gsub('.csv', '', filename),"_PCA_variables_coord.csv"), quote=FALSE)  
+  # Write the eigenvalues
+  write.csv(pca$eig, file=paste0(gsub('.csv', '', filename),"_PCA_eigenvalues.csv"), quote=FALSE)
 
   # Visualize eigenvalues (scree plot). Show the percentage of variances explained by each principal component.
-  factoextra::fviz_eig(pca) + labs(y="Variance (%)") + basic_theme(28)
-  ggsave(file.path(plots_dir, paste0(model, "_eigenvalues.png")), dpi=300, width=8, height=6)
+  factoextra::fviz_eig(pca) + labs(y="Variance (%)") + basic_theme(36)
+  ggsave(file.path(plots_dir, paste0(model, "_eigenvalues.pdf")), dpi=300, width=8, height=6)
 
   # PCA plots by components
-  for(i in 1:(ncol(pca$rotation)-1)) {
-    for(j in (i+1):(ncol(pca$rotation))) {
+  for(i in 1:(ncol(pca$var$coord)-1)) {
+    for(j in (i+1):(ncol(pca$var$coord))) {
 
       print(paste0('PC components : PC', as.character(i), ' vs PC', as.character(j)))
       # Graph of individuals. Individuals with a similar profile are grouped together.
@@ -1050,8 +1061,10 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                col.ind = "contrib", # Color by contributions to the individuals
                                gradient.cols = c("blue", "red"),
                                repel = TRUE     # Avoid text overlapping
-      ) + basic_theme(28)
-      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+                               ) +
+        labs(title="PCA - indiv") +
+        basic_theme(36)
+      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
 
       # Graph of variables. Positive correlated variables point to the same side of the plot.
       # Negative correlated variables point to opposite sides of the graph.
@@ -1060,8 +1073,13 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                col.var = "contrib", # Color by contributions to the PC
                                gradient.cols = c("blue", "red"),
                                repel = TRUE     # Avoid text overlapping
-      ) + basic_theme(28)
-      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+                               ) + 
+        labs(title="PCA - vars") +
+        basic_theme(36) + 
+        theme(legend.text=element_text(size=30),
+              legend.key.width = unit(0.4, "in"), 
+              legend.key.height = unit(0.5, "in"))
+      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
 
       # Biplot of individuals and variables
       factoextra::fviz_pca_biplot(pca,
@@ -1069,8 +1087,13 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                   repel = TRUE,
                                   col.var = "#2E9FDF", # Variables color
                                   col.ind = "#696969"  # Individuals color
-      ) + basic_theme(28)
-      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".png", sep="")), dpi=300, width=8, height=6)
+                                  ) + 
+        labs(title="PCA - biplot") +
+        basic_theme(36) +
+        theme(legend.text=element_text(size=30),
+              legend.key.width = unit(0.4, "in"), 
+              legend.key.height = unit(0.5, "in"))
+      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
 
     }
   }
