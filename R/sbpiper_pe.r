@@ -31,6 +31,7 @@ objval.col <- "ObjVal"
 #' @param allfits_filenamein the dataset containing all the parameter fits
 #' @param plots_dir the directory to save the generated plots.
 #' @param data_point_num the number of data points used for parameterise the model.
+#' @param fileout_param_estim_best_fits_details the name of the file for the statistics of the parameters best fits.
 #' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters.
 #' @param fileout_param_estim_summary the name of the file containing the summary for the parameter estimation.
 #' @param best_fits_percent the percent of best fits to analyse.
@@ -56,6 +57,8 @@ objval.col <- "ObjVal"
 #'            allfits_filenamein=file.path("pe_datasets", "all_fits.csv"), 
 #'            plots_dir="pe_plots", 
 #'            data_point_num=33, 
+#'            fileout_param_estim_best_fits_details=file.path("pe_datasets", 
+#'                                                  "param_estim_best_fits_details.csv"), 
 #'            fileout_param_estim_details=file.path("pe_datasets", 
 #'                                                  "param_estim_details.csv"), 
 #'            fileout_param_estim_summary=file.path("pe_datasets", 
@@ -73,6 +76,7 @@ sbpiper_pe <- function(model,
                        allfits_filenamein, 
                        plots_dir, 
                        data_point_num, 
+                       fileout_param_estim_best_fits_details="param_estim_best_fits_details.csv",
                        fileout_param_estim_details="param_estim_details.csv", 
                        fileout_param_estim_summary="param_estim_summary.csv", 
                        best_fits_percent=50, 
@@ -81,7 +85,7 @@ sbpiper_pe <- function(model,
                        plot_2d_99cl_corr=TRUE, 
                        logspace=TRUE, 
                        scientific_notation=TRUE) {
-  
+
   ### ------------ ###
   
   # Run some controls first
@@ -154,6 +158,9 @@ sbpiper_pe <- function(model,
     parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
     # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
   }
+
+  # create summary file containing parameter best fits stats
+  combine_param_best_fits_stats(plots_dir=plots_dir, fileout_param_estim_best_fits_details=fileout_param_estim_best_fits_details)
   
   # create summary file containing parameter PLE stats
   combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
@@ -315,25 +322,22 @@ pe_ds_preproc <- function(filename, param.names=c(), logspace=TRUE, all.fits=FAL
     cl66_objval <- compute_cl_objval(objval.min, param.num, data_point_num, 0.33)
     
     # Write global statistics for the parameter estimation, including the confidence levels
-    fileoutPLE <- sink(fileout_param_estim_summary)
-    cat(paste("MinObjVal", 
-              "AIC", 
-              "AICc", 
-              "BIC", 
-              "ParamNum", "DataPointNum", 
-              "CL66ObjVal", "CL66FitsNum", 
-              "CL95ObjVal", "CL95FitsNum", 
-              "CL99ObjVal", "CL99FitsNum\n", sep="\t"))
-    cat(paste(objval.min, 
-              compute_aic(objval.min, param.num), 
-              compute_aicc(objval.min, param.num, data_point_num), 
-              compute_bic(objval.min, param.num, data_point_num), 
-              param.num, data_point_num, 
-              cl66_objval, sum(dt[,objval.col, with=F] <= cl66_objval), 
-              cl95_objval, sum(dt[,objval.col, with=F] <= cl95_objval), 
-              cl99_objval, sum(dt[,objval.col, with=F] <= cl99_objval), sep="\t"), append=TRUE)
-    cat("\n", append=TRUE)
-    sink()
+    df.stats <- data.frame(MinObjVal=objval.min, 
+                           AIC=compute_aic(objval.min, param.num), 
+                           AICc=compute_aicc(objval.min, param.num, data_point_num), 
+                           BIC=compute_bic(objval.min, param.num, data_point_num), 
+                           ParamNum=param.num, 
+                           DataPointNum=data_point_num, 
+                           CL66ObjVal=cl66_objval, 
+                           CL66FitsNum=sum(dt[,objval.col, with=F] <= cl66_objval), 
+                           CL95ObjVal=cl95_objval, 
+                           CL95FitsNum=sum(dt[,objval.col, with=F] <= cl95_objval), 
+                           CL99ObjVal=cl99_objval, 
+                           CL99FitsNum=sum(dt[,objval.col, with=F] <= cl99_objval))
+    write.table(df.stats,
+                file=fileout_param_estim_summary,
+                row.names=FALSE,
+                sep="\t")
   }
 }
 
@@ -609,18 +613,24 @@ sampled_ple_analysis <- function(model,
   ci_obj <- compute_sampled_ple_stats(df, dt.stats$MinObjVal, dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal,logspace)
   
   # Save the sampled profile likelihood estimations (PLE) statistics
-  fileoutPLE <- sink(file.path(plots_dir, paste0(model, "_approx_ple_", parameter,".csv")))
-  cat(paste("Parameter", "Value", "LeftCI66", "RightCI66", "LeftCI95", "RightCI95", "LeftCI99", "RightCI99", 
-            "Value_LeftCI66_ratio", "RightCI66_Value_ratio", "Value_LeftCI95_ratio", "RightCI95_Value_ratio", "Value_LeftCI99_ratio", "RightCI99_Value_ratio\n", sep="\t"), append=TRUE)
-  
-  # write on file
-  cat(paste(parameter, ci_obj$par_value, ci_obj$min_ci_66, ci_obj$max_ci_66, ci_obj$min_ci_95, ci_obj$max_ci_95,
-            ci_obj$min_ci_99, ci_obj$max_ci_99, ci_obj$min_ci_66_par_value_ratio, ci_obj$max_ci_66_par_value_ratio,
-            ci_obj$min_ci_95_par_value_ratio, ci_obj$max_ci_95_par_value_ratio, ci_obj$min_ci_99_par_value_ratio,
-            ci_obj$max_ci_99_par_value_ratio, sep="\t"), append=TRUE)
-  cat("\n", append=TRUE)
-  sink()
-  
+  df.ple.stats <- data.frame(Parameter=parameter, 
+                             Value=ci_obj$par_value, 
+                             LeftCI66=ci_obj$min_ci_66, 
+                             RightCI66=ci_obj$max_ci_66, 
+                             LeftCI95=ci_obj$min_ci_95, 
+                             RightCI95=ci_obj$max_ci_95, 
+                             LeftCI99=ci_obj$min_ci_99, 
+                             RightCI99=ci_obj$max_ci_99, 
+                             Value_LeftCI66_ratio=ci_obj$min_ci_66_par_value_ratio, 
+                             RightCI66_Value_ratio=ci_obj$max_ci_66_par_value_ratio, 
+                             Value_LeftCI95_ratio=ci_obj$min_ci_95_par_value_ratio, 
+                             RightCI95_Value_ratio=ci_obj$max_ci_95_par_value_ratio, 
+                             Value_LeftCI99_ratio=ci_obj$min_ci_99_par_value_ratio, 
+                             RightCI99_Value_ratio=ci_obj$max_ci_99_par_value_ratio)
+  write.table(df.ple.stats,
+              file=file.path(plots_dir, paste0(model, "_approx_ple_", parameter,".csv")),
+              row.names=FALSE,
+              sep="\t")
 }
 
 
@@ -760,6 +770,22 @@ parameter_density_analysis <- function(model,
     
     fileout <- file.path(plots_dir, paste(model, "_best_fits_", parameter, ".pdf", sep=""))
     title <- expression("best fits")
+    
+    # Save basic statistics for the parameter based on the best fits data set
+    if(logspace) {
+      param.values <- 10^df[,2]
+    } else {
+      param.values <- df[,2]
+    }
+    df.stats <- data.frame(Parameter=parameter,
+                           mean=mean(param.values),
+                           sd=sd(param.values),
+                           median=median(param.values),
+                           mad=mad(param.values))
+    write.table(df.stats, 
+                file=file.path(plots_dir, paste0(model, "_best_fits_", parameter,".csv")),
+                row.names=FALSE,
+                sep="\t")
   }
   
   print(paste('density analysis for', parameter, '(', thres, ')'))
@@ -964,25 +990,46 @@ objval_vs_iters_analysis <- function(model, filename, plots_dir) {
 }
 
 
-#' Combine the statistics for the parameter estimation details
+#' Combine the parameter PLE statistics. 
 #'
 #' @param plots_dir the directory to save the generated plots
 #' @param fileout_param_estim_details the name of the file containing the detailed statistics for the estimated parameters
 #' @export
 combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
   
-  files <- list.files(plots_dir, pattern="\\.csv$")
+  files <- list.files(plots_dir, pattern="_approx_ple_.*csv$")
   if(length(files) < 0) { return }
   
   for(i in 1:length(files)) {
     if(i==1) {
-      dt <- data.table::fread(file.path(plots_dir, files[1])) 
+      df <- read.table(file.path(plots_dir, files[1]), header=TRUE, sep="\t")
     } else {
-      dt <- rbind(dt, data.table::fread(file.path(plots_dir, files[i])))
+      df <- rbind(df, read.table(file.path(plots_dir, files[i]), header=TRUE, sep="\t"))
+    }
+  }
+  write.table(df, file=fileout_param_estim_details, sep="\t", row.names=FALSE)
+}
+
+
+#' Combine the parameter best fits statistics. 
+#'
+#' @param plots_dir the directory to save the generated plots
+#' @param fileout_param_estim_best_fits_details the name of the file containing the statistics for the parameter best fits.
+#' @export
+combine_param_best_fits_stats <- function(plots_dir, fileout_param_estim_best_fits_details) {
+  
+  files <- list.files(plots_dir, pattern="_best_fits_.*csv$")
+  if(length(files) < 0) { return }
+  
+  for(i in 1:length(files)) {
+    if(i==1) {
+      df <- read.table(file.path(plots_dir, files[1]), header=TRUE, sep="\t")
+    } else {
+      df <- rbind(df, read.table(file.path(plots_dir, files[i]), header=TRUE, sep="\t"))
     }
   }
   
-  data.table::fwrite(dt, fileout_param_estim_details)
+  write.table(df, file=fileout_param_estim_best_fits_details, sep="\t", row.names=FALSE)
 }
 
 
