@@ -1039,7 +1039,7 @@ combine_param_best_fits_stats <- function(plots_dir, fileout_param_estim_best_fi
 #' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
 #' @param best_fits_percent the percent of best fits to analyse.
-#' @param label.ind parameter `label` passed to factoextra::fviz_pca_ind().
+#' @param label.ind parameter `label` passed to factoextra::fviz_pca_ind(). Labels shown if <= 75 and select.ind is NULL.
 #' @param select.ind parameter `select.ind` passed to factoextra::fviz_pca_ind().
 #' @param repel.ind parameter `repel` passed to factoextra::fviz_pca_ind()
 #' @param label.var parameter `label` passed to factoextra::fviz_pca_var().
@@ -1108,6 +1108,12 @@ parameter_pca_analysis <- function(model,
   # Visualize eigenvalues (scree plot). Show the percentage of variances explained by each principal component.
   factoextra::fviz_eig(pca) + labs(y="Variance (%)") + pca_theme(36)
   ggsave(file.path(plots_dir, paste0(model, "_eigenvalues.pdf")), dpi=300, width=8, height=6)
+  
+  # only plots the labels if the individuals are not too many.
+  if(is.null(select.ind) && nrow(pca$ind$coord) > 75) {
+    label.ind = "none"
+    repel.ind = FALSE
+  }
 
   # PCA plots by components
   ndims <- ncol(pca$var$coord)
@@ -1153,7 +1159,7 @@ parameter_pca_analysis <- function(model,
       factoextra::fviz_pca_biplot(pca,
                                   axes=c(i,j),
                                   label = "var", 
-                                  repel = TRUE,
+                                  repel = repel.var,
                                   col.var = "#2E9FDF", # Variables color
                                   col.ind = "#696969"  # Individuals color
                                   ) + 

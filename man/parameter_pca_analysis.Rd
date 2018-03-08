@@ -17,7 +17,7 @@ parameter_pca_analysis(model, filename, plots_dir, best_fits_percent = 50,
 
 \item{best_fits_percent}{the percent of best fits to analyse.}
 
-\item{label.ind}{parameter `label` passed to factoextra::fviz_pca_ind().}
+\item{label.ind}{parameter `label` passed to factoextra::fviz_pca_ind(). Labels shown if <= 75 and select.ind is NULL.}
 
 \item{select.ind}{parameter `select.ind` passed to factoextra::fviz_pca_ind().}
 
