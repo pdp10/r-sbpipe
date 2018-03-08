@@ -145,7 +145,7 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
   
   # collect all files in the directory
   files <- list.files( path=inputdir, pattern=model )
-  print(files)
+  # print(files)
   
   # Read the simulated time course data sets
   timecourses <- data.table::fread(file.path(inputdir, files[1]), select=c('Time'))
@@ -170,7 +170,6 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
   compute.stats <- function(mat) {
     for(i in 1:nrow(mat)) {
       timepoint.values <- repeats[i,]
-      print(timepoint.values)
       mat[i,1] = mean(timepoint.values, na.rm = TRUE)
       mat[i,2] = sd(timepoint.values, na.rm = TRUE)
       mat[i,3] = var(timepoint.values, na.rm = TRUE)
