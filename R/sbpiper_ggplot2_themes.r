@@ -69,3 +69,23 @@ basic_theme <- function (base_size=12, base_family="") {
         )
 }
 
+
+#' A generic basic theme for pca. It extends ggplot2 theme_classic().
+#'
+#' @param base_size the font size
+#' @param base_family the font family
+#' @examples
+#' library(ggplot2)
+#' theme_set(pca_theme(36))
+#' @export
+pca_theme <- function (base_size=12, base_family="") {
+  theme_classic(base_size=base_size, base_family=base_family) %+replace% 
+  theme(aspect.ratio = 1,
+        axis.line = element_line(colour = "black", size=1.0),
+        axis.text.x=element_text(angle=-45, hjust=0, vjust=0.8),
+        panel.border = element_rect(colour = "black", fill=NA, size=1.5),
+        legend.text=element_text(size=30),
+        legend.key.width = unit(0.4, "in"), 
+        legend.key.height = unit(0.5, "in")
+        )
+}

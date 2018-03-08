@@ -1036,9 +1036,6 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
   
   pca <- FactoMineR::PCA(df, scale.unit=TRUE, graph=FALSE)
   
-  print(pca)
-  print(factoextra::get_pca_ind(pca))
-  
   # Write the PCA individuals (repeats)
   write.csv(pca$ind$coord, file=paste0(gsub('.csv', '', filename),"_PCA_individuals_coord.csv"), quote=FALSE)
   # Write the PCA variables (vars)
@@ -1047,12 +1044,20 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
   write.csv(pca$eig, file=paste0(gsub('.csv', '', filename),"_PCA_eigenvalues.csv"), quote=FALSE)
 
   # Visualize eigenvalues (scree plot). Show the percentage of variances explained by each principal component.
-  factoextra::fviz_eig(pca) + labs(y="Variance (%)") + basic_theme(36)
+  factoextra::fviz_eig(pca) + labs(y="Variance (%)") + pca_theme(36)
   ggsave(file.path(plots_dir, paste0(model, "_eigenvalues.pdf")), dpi=300, width=8, height=6)
 
   # PCA plots by components
-  for(i in 1:(ncol(pca$var$coord)-1)) {
-    for(j in (i+1):(ncol(pca$var$coord))) {
+  ndims <- ncol(pca$var$coord)
+  for(i in 1:(ndims-1)) {
+    
+    # Contributions of variables to PCi
+    factoextra::fviz_contrib(pca, choice="var", axes=i) + 
+      labs(title=paste0("PC", as.character(i))) +
+      pca_theme(36)
+    ggsave(file.path(plots_dir, paste0(model, "_contrib_var_PC", as.character(i),".pdf")), dpi=300, width=8, height=6)
+    
+    for(j in (i+1):ndims) {
 
       print(paste0('PC components : PC', as.character(i), ' vs PC', as.character(j)))
       # Graph of individuals. Individuals with a similar profile are grouped together.
@@ -1063,8 +1068,8 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                repel = TRUE     # Avoid text overlapping
                                ) +
         labs(title="PCA - indiv") +
-        basic_theme(36)
-      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
+        pca_theme(36)
+      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
 
       # Graph of variables. Positive correlated variables point to the same side of the plot.
       # Negative correlated variables point to opposite sides of the graph.
@@ -1075,28 +1080,29 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                repel = TRUE     # Avoid text overlapping
                                ) + 
         labs(title="PCA - vars") +
-        basic_theme(36) + 
-        theme(legend.text=element_text(size=30),
-              legend.key.width = unit(0.4, "in"), 
-              legend.key.height = unit(0.5, "in"))
-      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
+        pca_theme(36)
+      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
 
       # Biplot of individuals and variables
       factoextra::fviz_pca_biplot(pca,
                                   axes=c(i,j),
+                                  label = "var", 
                                   repel = TRUE,
                                   col.var = "#2E9FDF", # Variables color
                                   col.ind = "#696969"  # Individuals color
                                   ) + 
         labs(title="PCA - biplot") +
-        basic_theme(36) +
-        theme(legend.text=element_text(size=30),
-              legend.key.width = unit(0.4, "in"), 
-              legend.key.height = unit(0.5, "in"))
-      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".pdf", sep="")), dpi=300, width=8, height=6)
+        pca_theme(36)
+      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
 
     }
   }
+  
+  # Contributions of variables to PCn
+  factoextra::fviz_contrib(pca, choice="var", axes=ndims) + 
+    labs(title=paste0("PC", as.character(ndims))) + 
+    pca_theme(36)
+  ggsave(file.path(plots_dir, paste0(model, "_contrib_var_PC", as.character(ndims),".pdf")), dpi=300, width=8, height=6)
 
 }
 
