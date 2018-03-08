@@ -5,7 +5,9 @@
 \title{Main R function for SBpipe pipeline: parameter_estimation().}
 \usage{
 sbpiper_pe(model, finalfits_filenamein, allfits_filenamein, plots_dir,
-  data_point_num, fileout_param_estim_details = "param_estim_details.csv",
+  data_point_num,
+  fileout_param_estim_best_fits_details = "param_estim_best_fits_details.csv",
+  fileout_param_estim_details = "param_estim_details.csv",
   fileout_param_estim_summary = "param_estim_summary.csv",
   best_fits_percent = 50, plot_2d_66cl_corr = TRUE,
   plot_2d_95cl_corr = TRUE, plot_2d_99cl_corr = TRUE, logspace = TRUE,
@@ -21,6 +23,8 @@ sbpiper_pe(model, finalfits_filenamein, allfits_filenamein, plots_dir,
 \item{plots_dir}{the directory to save the generated plots.}
 
 \item{data_point_num}{the number of data points used for parameterise the model.}
+
+\item{fileout_param_estim_best_fits_details}{the name of the file for the statistics of the parameters best fits.}
 
 \item{fileout_param_estim_details}{the name of the file containing the detailed statistics for the estimated parameters.}
 
@@ -58,6 +62,8 @@ sbpiper_pe(model="ir_beta",
            allfits_filenamein=file.path("pe_datasets", "all_fits.csv"), 
            plots_dir="pe_plots", 
            data_point_num=33, 
+           fileout_param_estim_best_fits_details=file.path("pe_datasets", 
+                                                 "param_estim_best_fits_details.csv"), 
            fileout_param_estim_details=file.path("pe_datasets", 
                                                  "param_estim_details.csv"), 
            fileout_param_estim_summary=file.path("pe_datasets", 

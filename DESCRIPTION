@@ -46,5 +46,5 @@ Collate:
     'sbpiper_pe.r'
     'data.r'
 RoxygenNote: 6.0.1
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = FALSE)
 Encoding: UTF-8

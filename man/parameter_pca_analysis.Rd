@@ -2,9 +2,11 @@
 % Please edit documentation in R/sbpiper_pe.r
 \name{parameter_pca_analysis}
 \alias{parameter_pca_analysis}
-\title{PCA for the parameters. These plots rely on factoextra::fviz functions.}
+\title{PCA for the parameters. These plots rely on factoextra fviz functions.}
 \usage{
-parameter_pca_analysis(model, filename, plots_dir, best_fits_percent = 50)
+parameter_pca_analysis(model, filename, plots_dir, best_fits_percent = 50,
+  label.ind = "all", select.ind = NULL, repel.ind = TRUE,
+  label.var = "all", select.var = NULL, repel.var = TRUE)
 }
 \arguments{
 \item{model}{the model name}
@@ -13,7 +15,19 @@ parameter_pca_analysis(model, filename, plots_dir, best_fits_percent = 50)
 
 \item{plots_dir}{the directory to save the generated plots}
 
-\item{best_fits_percent}{the percent of best fits to analyse.
+\item{best_fits_percent}{the percent of best fits to analyse.}
+
+\item{label.ind}{parameter `label` passed to factoextra::fviz_pca_ind().}
+
+\item{select.ind}{parameter `select.ind` passed to factoextra::fviz_pca_ind().}
+
+\item{repel.ind}{parameter `repel` passed to factoextra::fviz_pca_ind()}
+
+\item{label.var}{parameter `label` passed to factoextra::fviz_pca_var().}
+
+\item{select.var}{parameter `select.var` passed to factoextra::fviz_pca_var().}
+
+\item{repel.var}{parameter `repel` passed to factoextra::fviz_pca_var() 
 dir.create(file.path("pe_datasets"))
 dir.create(file.path("pe_plots"))
 data(insulin_receptor_best_fits)
@@ -31,5 +45,5 @@ parameter_pca_analysis(model="ir_beta",
                        best_fits_percent=50)}
 }
 \description{
-PCA for the parameters. These plots rely on factoextra::fviz functions.
+PCA for the parameters. These plots rely on factoextra fviz functions.
 }
