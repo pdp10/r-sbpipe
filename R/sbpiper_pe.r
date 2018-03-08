@@ -992,6 +992,12 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 #' @param filename the filename containing the fits sequence
 #' @param plots_dir the directory to save the generated plots
 #' @param best_fits_percent the percent of best fits to analyse.
+#' @param label.ind parameter `label` passed to factoextra::fviz_pca_ind().
+#' @param select.ind parameter `select.ind` passed to factoextra::fviz_pca_ind().
+#' @param repel.ind parameter `repel` passed to factoextra::fviz_pca_ind()
+#' @param label.var parameter `label` passed to factoextra::fviz_pca_var().
+#' @param select.var parameter `select.var` passed to factoextra::fviz_pca_var().
+#' @param repel.var parameter `repel` passed to factoextra::fviz_pca_var() 
 #' dir.create(file.path("pe_datasets"))
 #' dir.create(file.path("pe_plots"))
 #' data(insulin_receptor_best_fits)
@@ -1008,7 +1014,16 @@ combine_param_ple_stats <- function(plots_dir, fileout_param_estim_details) {
 #'                        plots_dir="pe_plots",
 #'                        best_fits_percent=50)
 #' @export
-parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent=50) {
+parameter_pca_analysis <- function(model, 
+                                   filename, 
+                                   plots_dir, 
+                                   best_fits_percent=50,
+                                   label.ind = "all",
+                                   select.ind = NULL,
+                                   repel.ind = TRUE,
+                                   label.var = "all",
+                                   select.var = NULL,
+                                   repel.var = TRUE) {
 
   # extract the best parameter values
   df <- as.data.frame(data.table::fread(filename))
@@ -1065,7 +1080,9 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                axes=c(i,j),
                                col.ind = "contrib", # Color by contributions to the individuals
                                gradient.cols = c("blue", "red"),
-                               repel = TRUE     # Avoid text overlapping
+                               label = label.ind,
+                               select.ind = select.ind,
+                               repel = repel.ind     # Avoid text overlapping
                                ) +
         labs(title="PCA - indiv") +
         pca_theme(36)
@@ -1077,7 +1094,9 @@ parameter_pca_analysis <- function(model, filename, plots_dir, best_fits_percent
                                axes=c(i,j),
                                col.var = "contrib", # Color by contributions to the PC
                                gradient.cols = c("blue", "red"),
-                               repel = TRUE     # Avoid text overlapping
+                               label = label.var,
+                               select.var = select.var,
+                               repel = repel.var     # Avoid text overlapping
                                ) + 
         labs(title="PCA - vars") +
         pca_theme(36)
