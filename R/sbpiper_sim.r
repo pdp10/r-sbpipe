@@ -148,77 +148,53 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
   print(files)
   
   # Read the simulated time course data sets
-  timecourses <- data.table::fread(file.path(inputdir, files[1]), select=c('Time', column_to_read))
-  
-  column <- names (timecourses)
-  
-  column.names <- c ("Time")
+  timecourses <- data.table::fread(file.path(inputdir, files[1]), select=c('Time'))
   timepoints <- timecourses$Time
   #print(timepoints)
-  
   time_length <- length(timepoints)
 
-  # statistical table (to export)
-  statistics <- matrix( nrow=time_length, ncol=(((length(column)-1)*13)+1) )
-  statistics[,1] <- timepoints
-  colidx <- 2
-  
-  # an empty colum that we need for creating a data.frame of length(timecourses$Time) rows
-  na <- c(rep(NA, length(timecourses$Time)))
-  
-  for(j in 1:length(column)) {
-    if(column[j] != "Time") {
-      #print(column[j])
-      
-      # Extract column[j] for each file.
-      dataset <- data.frame(na)
-      for(i in 1:length(files)) {
-        dataset <- data.frame(dataset, data.table::fread(file.path(inputdir,files[i]), select=c(column[j])))
-      }
-      # remove the first column (na)
-      dataset <- subset(dataset, select=-c(na))
-      
-      #print(dataset)
-      # structures
-      data <-list("mean"=c(),"sd"=c(),"var"=c(),"skew"=c(),"kurt"=c(),"ci95"=c(),
-                  "coeffvar"=c(),"min"=c(),"stquantile"=c(),"median"=c(),"rdquantile"=c(),"max"=c())
-      k <- 1
-      # for each computed timepoint
-      for( l in 1:length ( timecourses$Time ) ) {
-        
-        timepoint.values <- c ( )
-        
-        if ( k <= length( timepoints ) && as.character(timepoints[k]) == as.character(timecourses$Time[l]) ) {
-          # for each Sample
-          for(m in 1:length(files)) {
-            timepoint.values <- c(timepoint.values, dataset[l,m])  
-          }
-          timepoint <- compute_descriptive_statistics(timepoint.values, length(files))
-          # put data in lists
-          data$mean <- c ( data$mean, timepoint$mean )
-          data$sd <- c ( data$sd, timepoint$sd )
-          data$var <- c ( data$var, timepoint$var )
-          data$skew <- c ( data$skew, timepoint$skew )
-          data$kurt <- c ( data$kurt, timepoint$kurt )
-          data$ci95 <- c ( data$ci95, timepoint$ci95 )
-          data$coeffvar <- c ( data$coeffvar, timepoint$coeffvar )
-          data$min <- c ( data$min, timepoint$min )
-          data$stquantile <- c ( data$stquantile, timepoint$stquantile )
-          data$median <- c ( data$median, timepoint$median )
-          data$rdquantile <- c ( data$rdquantile, timepoint$rdquantile )
-          data$max <- c ( data$max, timepoint$max )
-          
-          #print(data)
-          k <- k + 1
-        }
-      }
-      column.names <- get_column_names_statistics(column.names, column[j])
-      statistics <- get_stats(statistics, data, colidx)
-      colidx <- colidx+13
+
+  # the repeats for this readout
+  collect.repeats <- function(mat) {
+    for(i in 1:length(files)) {
+      mat[,i] <- as.data.frame(data.table::fread(file.path(inputdir,files[i]), select=c(column_to_read)))[,1]
     }
+    return(mat)
   }
-  #print (statistics)
-  write.table(statistics, outputfile, sep="\t", col.names = column.names, row.names = FALSE) 
+  repeats <- matrix(data=NA, nrow=time_length, ncol=length(files))
+  repeats <- collect.repeats(repeats)
+  # print(repeats)
+
+    
+  # the statistics
+  compute.stats <- function(mat) {
+    for(i in 1:nrow(mat)) {
+      timepoint.values <- repeats[i,]
+      print(timepoint.values)
+      mat[i,1] = mean(timepoint.values, na.rm = TRUE)
+      mat[i,2] = sd(timepoint.values, na.rm = TRUE)
+      mat[i,3] = var(timepoint.values, na.rm = TRUE)
+      mat[i,4] = mean(timepoint.values^3, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^1.5
+      mat[i,5] = mean(timepoint.values^4, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^2 -3
+      mat[i,6] = qnorm(0.975)*mat[i,2]/sqrt(ncol(mat)) # quantile normal distribution (lot of samples)
+      mat[i,7] = mat[i,2] / mat[i,1]
+      mat[i,8] = min(timepoint.values, na.rm = TRUE)
+      mat[i,9] = quantile(timepoint.values, na.rm = TRUE)[2]  # Q1
+      mat[i,10] = median(timepoint.values, na.rm = TRUE)  # Q2 or quantile(timepoint.values)[3]
+      mat[i,11] = quantile(timepoint.values, na.rm = TRUE)[4]  # Q3
+      mat[i,12] = max(timepoint.values, na.rm = TRUE)
+    }
+    return(mat) 
+  }
+  statistics <- matrix(data=NA, nrow=time_length, ncol=12)
+  statistics <- as.data.frame(compute.stats(statistics))
+  statistics <- cbind(timepoints, statistics)  
+  colnames(statistics) <- c ("Time", "Mean", "StdDev", "Variance", "Skewness", "Kurtosis", 
+                             "n-dist_CI95", "CoeffVar", "Minimum", "1stQuantile", 
+                             "Median", "3rdQuantile", "Maximum")  
+  # print(statistics)
+
+  write.table(statistics, outputfile, sep="\t", row.names = FALSE) 
 }
 
 
@@ -458,86 +434,6 @@ summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
 #####################
 # UTILITY FUNCTIONS #
 #####################
-
-
-
-#' For each time point compute the most relevant descriptive statistics: mean, sd, var, skew, kurt, ci95, coeffvar, 
-#' min, 1st quantile, median, 3rd quantile, and max.
-#'
-#' @param timepoint.values array of values for a certain time point
-#' @param nfiles the number of files (samples) 
-#' @return the statistics for the array of values for a specific time point
-compute_descriptive_statistics <- function(timepoint.values, nfiles) {
-	timepoint <- list("mean"=0,"sd"=0,"var"=0,"skew"=0,"kurt"=0,"ci95"=0,
-			  "coeffvar"=0,"min"=0,"stquantile"=0,"median"=0,"rdquantile"=0,"max"=0)
-    # compute mean, standard deviation, error, error.left, error.right
-    timepoint$mean <- mean(timepoint.values, na.rm = TRUE)
-    timepoint$sd <- sd(timepoint.values, na.rm = TRUE)
-    timepoint$var <- var(timepoint.values, na.rm = TRUE)
-    #y <- timepoint.values - timepoint.mean
-    timepoint$skew <- mean(timepoint.values^3, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^1.5
-    timepoint$kurt <- mean(timepoint.values^4, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^2 -3
-    # 0.95 confidence level 
-    #timepoint$ci95 <- qt(0.975, df=nfiles-1)*timepoint$sd/sqrt(nfiles)  # quantile t-distribution (few sample, stddev unknown exactly)
-    timepoint$ci95 <- qnorm(0.975)*timepoint$sd/sqrt(nfiles) # quantile normal distribution (lot of samples)
-    timepoint$coeffvar <- timepoint$sd / timepoint$mean
-    timepoint$min <- min(timepoint.values, na.rm = TRUE)
-    timepoint$stquantile <- quantile(timepoint.values, na.rm = TRUE)[2]  # Q1
-    timepoint$median <- median(timepoint.values, na.rm = TRUE)  # Q2 or quantile(timepoint.values)[3]
-    timepoint$rdquantile <- quantile(timepoint.values, na.rm = TRUE)[4]  # Q3
-    timepoint$max <- max(timepoint.values, na.rm = TRUE)
-
-    return (timepoint)
-}
-
-
-#' Return the column names of the statitics to calculate.
-#'
-#' @param column.names an array of column names
-#' @param readout the name of the readout
-#' @return the column names including the readout name
-get_column_names_statistics <- function(column.names, readout) {    
-    column.names <- c (column.names,
-                       paste(readout, "_Mean", sep=""),
-                       paste(readout, "_StdDev", sep=""),
-                       paste(readout, "_Variance", sep=""),
-                       paste(readout, "_Skewness", sep=""),
-                       paste(readout, "_Kurtosis", sep=""),                       
-                       paste(readout, "_t-dist_CI95%", sep=""),
-                       paste(readout, "_StdErr", sep=""),
-                       paste(readout, "_CoeffVar", sep=""),
-                       paste(readout, "_Minimum", sep=""),
-                       paste(readout, "_1stQuantile", sep=""),
-                       paste(readout, "_Median", sep=""),
-                       paste(readout, "_3rdQuantile", sep=""),
-                       paste(readout, "_Maximum", sep=""))
-    #print(readout)
-    return (column.names)
-}
-
-
-#' Add the statistics for a readout to the table of statistics. The first column is Time.
-#'
-#' @param statistics the table of statistics to fill up
-#' @param readout the statistics for this readout.
-#' @param colidx the position in the table to put the readout statistics
-#' @return The table of statistics including this readout.
-get_stats <- function(statistics, readout, colidx=2) {
-    #print(readout$mean) 
-    statistics[,colidx]   <- readout$mean
-    statistics[,colidx+1] <- readout$sd
-    statistics[,colidx+2] <- readout$var
-    statistics[,colidx+3] <- readout$skew
-    statistics[,colidx+4] <- readout$kurt
-    statistics[,colidx+5] <- readout$ci95
-    statistics[,colidx+6] <- readout$coeffvar
-    statistics[,colidx+7] <- readout$min
-    statistics[,colidx+8] <- readout$stquantile
-    statistics[,colidx+9] <- readout$median
-    statistics[,colidx+10] <- readout$rdquantile
-    statistics[,colidx+11] <- readout$max
-    return (statistics)
-}
 
 
 #' Check that the experimental data set exists.

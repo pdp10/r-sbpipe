@@ -388,21 +388,23 @@ plot_single_param_scan_data_homogen <- function(model,
 #' @param files the scanned files.
 #' @return the index of the levels
 get_sorted_level_indexes <- function(files) {
-    levels <- c()
-    levels.index <- c()
+  
+    # preallocate the structures
+    levels <- vector(mode="numeric", length=length(files))
+    levels.index <- vector(mode="integer", length=length(files))
 
     # the array files MUST be sorted. Required to convert the string into numeric.
     # this is important because the legend must represent variable's knockdown in order.
     for(i in 1:length(files)) {
         num_of_underscores <- length(gregexpr("_", files[i])[[1]])
-        levels <- c(levels, as.numeric(gsub(".csv", "", strsplit( files[i], "_")[[1]][num_of_underscores + 1]) ))
+        levels[i] <- as.numeric(gsub(".csv", "", strsplit( files[i], "_")[[1]][num_of_underscores + 1]) )
     }
     levels.temp <- c(levels)
     newmax <- max(levels)+1
     for(i in 1:length(levels)) {
         min <- which.min(levels.temp)
         #print(min(levels.temp))
-        levels.index <- c(levels.index, min)
+        levels.index[i] <- min
         levels.temp[min] <- newmax
     }
     return(levels.index)
