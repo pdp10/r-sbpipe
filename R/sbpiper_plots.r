@@ -210,9 +210,6 @@ scatterplot_log10 <-function(df,
 #' plot_fits(objval.vec=v) + basic_theme(36)
 #' @export
 plot_fits <- function(objval.vec, g=ggplot()) {
-  iters <- c()
-  j <- 0
-  k <- 0
 
   # We intentionally consider only the objective values below 100*median(objval.vec).
   # Often the very first objective values can be extremely large (e^[hundreds]). When so,
@@ -220,11 +217,16 @@ plot_fits <- function(objval.vec, g=ggplot()) {
   med_objval <- median(objval.vec[is.finite(objval.vec)])
   objval.vec <- objval.vec[objval.vec < med_objval*100]
 
+  # we preallocate iters
+  iters <- vector(mode="integer", length=length(objval.vec))
+  j <- 0
+  k <- 0
+  
   for(i in 1:length(objval.vec)) {
     if(k < objval.vec[i]) {
       j <- 0
     }
-    iters <- c(iters, j)
+    iters[i] <- j
     j <- j+1
     k <- objval.vec[i]
   }
