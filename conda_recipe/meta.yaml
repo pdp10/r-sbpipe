@@ -39,7 +39,7 @@ build:
 
 requirements:
     build:
-        - r-base=3.4.1
+        - r-base>=3.4.1
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2
@@ -50,7 +50,7 @@ requirements:
         - r-factoextra
         - r-factominer
     run:
-        - r-base=3.4.1
+        - r-base>=3.4.1
         - r-data.table
         - r-ggplot2>=2.2.0
         - r-reshape2

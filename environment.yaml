@@ -22,7 +22,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - r-base=3.4.1
+  - r-base>=3.4.1
   - r-data.table
   - r-ggplot2>=2.2.0
   - r-reshape2

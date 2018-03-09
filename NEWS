@@ -1,6 +1,9 @@
 
-v1.4.0
+v1.6.0
 
+- code optimisation
+- added PCA analysis for the best parameter estimation fits
+- bugfixes
 - parameter estimation refactory. Substantial modularity improvements.
 - code optimisation
 - fixed versions for dependency packages installed via conda
