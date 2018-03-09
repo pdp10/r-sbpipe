@@ -11,7 +11,7 @@ summarise_data(inputdir, model, outputfile, column_to_read = "X1")
 
 \item{model}{the model name}
 
-\item{outputfile}{the name of the file to store the simulations}
+\item{outputfile}{the file to store the simulated repeats}
 
 \item{column_to_read}{the name of the column to process}
 }

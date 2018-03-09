@@ -4,21 +4,12 @@
 \alias{gen_stats_table}
 \title{Generate a table of statistics for each model readout.}
 \usage{
-gen_stats_table(inputdir, outputdir, model, outputfile, xaxis_label = "",
-  yaxis_label = "", column_to_read = "X1")
+gen_stats_table(inputfile, outputfile, column_to_read = "X1")
 }
 \arguments{
-\item{inputdir}{the input directory containing the time course files}
+\item{inputfile}{the file to store the simulated repeats}
 
-\item{outputdir}{the output directory}
-
-\item{model}{the model name}
-
-\item{outputfile}{the name of the file to store the statistics}
-
-\item{xaxis_label}{the label for the x axis (e.g. Time (min))}
-
-\item{yaxis_label}{the label for the y axis (e.g. Level (a.u.))}
+\item{outputfile}{the file to store the statistics}
 
 \item{column_to_read}{the name of the column to process}
 }
@@ -30,6 +21,7 @@ data(insulin_receptor_1)
 data(insulin_receptor_2)
 data(insulin_receptor_3)
 dir.create(file.path("sim_datasets"))
+dir.create(file.path("sim_datasets_sum"))
 write.table(insulin_receptor_1, 
             file=file.path("sim_datasets","insulin_receptor_1.csv"), 
             row.names=FALSE)
@@ -39,11 +31,13 @@ write.table(insulin_receptor_2,
 write.table(insulin_receptor_3, 
             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
             row.names=FALSE)
-gen_stats_table(inputdir="sim_datasets", 
-                outputdir="sim_plots", 
-                model="insulin_receptor",
+summarise_data(inputdir="sim_datasets", 
+               model="insulin_receptor", 
+               outputfile=file.path("sim_datasets_sum", 
+                                    "insulin_receptor_IR_beta_pY1146.csv"), 
+               column_to_read="IR_beta_pY1146")
+gen_stats_table(inputfile=file.path("sim_datasets_sum", 
+                                    "insulin_receptor_IR_beta_pY1146.csv"), 
                 outputfile="insulin_receptor_IR_beta_pY1146_stats.csv", 
-                xaxis_label="Time [m]", 
-                yaxis_label="Level [a. u.]", 
                 column_to_read="IR_beta_pY1146")
 }

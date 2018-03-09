@@ -85,11 +85,11 @@ sbpiper_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile
     plot_exp_dataset = FALSE
   }
   
-  print('generating a table of statistics')
-  gen_stats_table(inputdir, outputdir, model, outputfile_stats, xaxis_label, yaxis_label, column_to_read)
-  
-  print('summarising the time course repeats in tables')
+  print('summarising time course repeats in tables')
   summarise_data(inputdir, model, outputfile_repeats, column_to_read)
+  
+  print('generating table of statistics')
+  gen_stats_table(outputfile_repeats, outputfile_stats, column_to_read)
   
   files <- list.files( path=inputdir, pattern=model )
   if(length(files) > 1) {
@@ -103,20 +103,18 @@ sbpiper_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile
 }
 
 
-#' Generate a table of statistics for each model readout.
+#' Summarise the model simulation repeats in a single file.
 #'
 #' @param inputdir the input directory containing the time course files
-#' @param outputdir the output directory
 #' @param model the model name
-#' @param outputfile the name of the file to store the statistics
-#' @param xaxis_label the label for the x axis (e.g. Time (min))
-#' @param yaxis_label the label for the y axis (e.g. Level (a.u.))
+#' @param outputfile the file to store the simulated repeats
 #' @param column_to_read the name of the column to process
 #' @examples
 #' data(insulin_receptor_1)
 #' data(insulin_receptor_2)
 #' data(insulin_receptor_3)
 #' dir.create(file.path("sim_datasets"))
+#' dir.create(file.path("sim_datasets_sum"))
 #' write.table(insulin_receptor_1, 
 #'             file=file.path("sim_datasets","insulin_receptor_1.csv"), 
 #'             row.names=FALSE)
@@ -126,22 +124,13 @@ sbpiper_sim <- function(model, inputdir, outputdir, outputfile_stats, outputfile
 #' write.table(insulin_receptor_3, 
 #'             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
 #'             row.names=FALSE)
-#' gen_stats_table(inputdir="sim_datasets", 
-#'                 outputdir="sim_plots", 
-#'                 model="insulin_receptor",
-#'                 outputfile="insulin_receptor_IR_beta_pY1146_stats.csv", 
-#'                 xaxis_label="Time [m]", 
-#'                 yaxis_label="Level [a. u.]", 
-#'                 column_to_read="IR_beta_pY1146")
+#' summarise_data(inputdir="sim_datasets", 
+#'                model="insulin_receptor", 
+#'                outputfile=file.path("sim_datasets_sum", 
+#'                                     "insulin_receptor_IR_beta_pY1146.csv"), 
+#'                column_to_read="IR_beta_pY1146")
 #' @export
-gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label="", yaxis_label="", column_to_read="X1") {
-  
-  theme_set(tc_theme(36)) #28
-  
-  # create the directory of output
-  if (!file.exists(outputdir)){ 
-    dir.create(outputdir) 
-  }
+summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
   
   # collect all files in the directory
   files <- list.files( path=inputdir, pattern=model )
@@ -149,51 +138,90 @@ gen_stats_table <- function(inputdir, outputdir, model, outputfile, xaxis_label=
   
   # Read the simulated time course data sets
   timecourses <- data.table::fread(file.path(inputdir, files[1]), select=c('Time'))
-  timepoints <- timecourses$Time
   #print(timepoints)
-  time_length <- length(timepoints)
-
-
+  
   # the repeats for this readout
   collect.repeats <- function(mat) {
     for(i in 1:length(files)) {
-      mat[,i] <- as.data.frame(data.table::fread(file.path(inputdir,files[i]), select=c(column_to_read)))[,1]
+      mat[,1+i] <- as.data.frame(data.table::fread(file.path(inputdir,files[i]), select=c(column_to_read)))[,1]
     }
     return(mat)
   }
-  repeats <- matrix(data=NA, nrow=time_length, ncol=length(files))
-  repeats <- collect.repeats(repeats)
+  repeats <- matrix(data=NA, nrow=nrow(timecourses), ncol=1+length(files))
+  repeats[, 1] <- timecourses$Time
+  repeats <- as.data.frame(collect.repeats(repeats))
   # print(repeats)
+  
+  names(repeats) <- c("Time", paste('X', seq(1, length(files), 1), sep=""))
+  write.table(repeats, file=outputfile, sep="\t", row.names=FALSE, quote=FALSE)
+}
 
-    
+
+#' Generate a table of statistics for each model readout.
+#'
+#' @param inputfile the file to store the simulated repeats
+#' @param outputfile the file to store the statistics
+#' @param column_to_read the name of the column to process
+#' @examples
+#' data(insulin_receptor_1)
+#' data(insulin_receptor_2)
+#' data(insulin_receptor_3)
+#' dir.create(file.path("sim_datasets"))
+#' dir.create(file.path("sim_datasets_sum"))
+#' write.table(insulin_receptor_1, 
+#'             file=file.path("sim_datasets","insulin_receptor_1.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_2, 
+#'             file=file.path("sim_datasets","insulin_receptor_2.csv"), 
+#'             row.names=FALSE)
+#' write.table(insulin_receptor_3, 
+#'             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
+#'             row.names=FALSE)
+#' summarise_data(inputdir="sim_datasets", 
+#'                model="insulin_receptor", 
+#'                outputfile=file.path("sim_datasets_sum", 
+#'                                     "insulin_receptor_IR_beta_pY1146.csv"), 
+#'                column_to_read="IR_beta_pY1146")
+#' gen_stats_table(inputfile=file.path("sim_datasets_sum", 
+#'                                     "insulin_receptor_IR_beta_pY1146.csv"), 
+#'                 outputfile="insulin_receptor_IR_beta_pY1146_stats.csv", 
+#'                 column_to_read="IR_beta_pY1146")
+#' @export
+gen_stats_table <- function(inputfile, outputfile, column_to_read="X1") {
+  
+  # Read the summarised simulated time course data set
+  repeats <- data.table::fread(inputfile)
+  time.col <- repeats$Time
+  # equivalent to repeats[, Time :=  NULL] .
+  repeats <- as.matrix(data.table::set(repeats, j=c(1L), value=NULL))
+  
   # the statistics
   compute.stats <- function(mat) {
     for(i in 1:nrow(mat)) {
       timepoint.values <- repeats[i,]
-      mat[i,1] = mean(timepoint.values, na.rm = TRUE)
-      mat[i,2] = sd(timepoint.values, na.rm = TRUE)
-      mat[i,3] = var(timepoint.values, na.rm = TRUE)
-      mat[i,4] = mean(timepoint.values^3, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^1.5
-      mat[i,5] = mean(timepoint.values^4, na.rm = TRUE)/mean(timepoint.values^2, na.rm = TRUE)^2 -3
-      mat[i,6] = qnorm(0.975)*mat[i,2]/sqrt(ncol(mat)) # quantile normal distribution (lot of samples)
-      mat[i,7] = mat[i,2] / mat[i,1]
-      mat[i,8] = min(timepoint.values, na.rm = TRUE)
-      mat[i,9] = quantile(timepoint.values, na.rm = TRUE)[2]  # Q1
-      mat[i,10] = median(timepoint.values, na.rm = TRUE)  # Q2 or quantile(timepoint.values)[3]
-      mat[i,11] = quantile(timepoint.values, na.rm = TRUE)[4]  # Q3
-      mat[i,12] = max(timepoint.values, na.rm = TRUE)
+      mat[i,2] = mean(timepoint.values, na.rm = TRUE)
+      mat[i,3] = sd(timepoint.values, na.rm = TRUE)
+      mat[i,4] = var(timepoint.values, na.rm = TRUE)
+      mat[i,5] = skewness(timepoint.values, na.rm = TRUE)
+      mat[i,6] = kurtosis(timepoint.values, na.rm = TRUE)
+      mat[i,7] = qnorm(0.975)*mat[i,2]/sqrt(ncol(mat)) # quantile normal distribution (lot of samples)
+      mat[i,8] = mat[i,2] / mat[i,1]
+      mat[i,9] = min(timepoint.values, na.rm = TRUE)
+      mat[i,10] = quantile(timepoint.values, na.rm = TRUE)[2]  # Q1
+      mat[i,11] = median(timepoint.values, na.rm = TRUE)  # Q2 or quantile(timepoint.values)[3]
+      mat[i,12] = quantile(timepoint.values, na.rm = TRUE)[4]  # Q3
+      mat[i,13] = max(timepoint.values, na.rm = TRUE)
     }
     return(mat) 
   }
-  statistics <- matrix(data=NA, nrow=time_length, ncol=12)
+  statistics <- matrix(data=NA, nrow=nrow(repeats), ncol=13)
+  statistics[,1] <- time.col
   statistics <- as.data.frame(compute.stats(statistics))
-  statistics <- cbind(timepoints, statistics)  
   colnames(statistics) <- c ("Time", "Mean", "StdDev", "Variance", "Skewness", "Kurtosis", 
                              "n-dist_CI95", "CoeffVar", "Minimum", "1stQuantile", 
                              "Median", "3rdQuantile", "Maximum")  
   # print(statistics)
-
-  write.table(statistics, outputfile, sep="\t", row.names = FALSE) 
+  write.table(statistics, outputfile, sep="\t", row.names = FALSE)
 }
 
 
@@ -371,68 +399,38 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
 }
 
 
-#' Summarise the model simulation repeats in a single file.
-#'
-#' @param inputdir the input directory containing the time course files
-#' @param model the model name
-#' @param outputfile the name of the file to store the simulations
-#' @param column_to_read the name of the column to process
-#' @examples
-#' data(insulin_receptor_1)
-#' data(insulin_receptor_2)
-#' data(insulin_receptor_3)
-#' dir.create(file.path("sim_datasets"))
-#' dir.create(file.path("sim_datasets_sum"))
-#' write.table(insulin_receptor_1, 
-#'             file=file.path("sim_datasets","insulin_receptor_1.csv"), 
-#'             row.names=FALSE)
-#' write.table(insulin_receptor_2, 
-#'             file=file.path("sim_datasets","insulin_receptor_2.csv"), 
-#'             row.names=FALSE)
-#' write.table(insulin_receptor_3, 
-#'             file=file.path("sim_datasets","insulin_receptor_3.csv"), 
-#'             row.names=FALSE)
-#' summarise_data(inputdir="sim_datasets", 
-#'                model="insulin_receptor", 
-#'                outputfile=file.path("sim_datasets_sum", 
-#'                                     "insulin_receptor_IR_beta_pY1146.csv"), 
-#'                column_to_read="IR_beta_pY1146")
-#' @export
-summarise_data <- function(inputdir, model, outputfile, column_to_read='X1') {
-  
-  # collect all files in the directory
-  files <- list.files( path=inputdir, pattern=model )
-  #print(files)
-  
-  # Read the simulated time course data sets
-  timecourses <- data.table::fread( file.path(inputdir, files[1]), select=c('Time', column_to_read))
-  column <- names (timecourses)
-  
-  timepoints <- timecourses$Time
-  #print(timepoints)
-  time_length <- length(timepoints)
-  
-  for(i in 1:length(column)){
-    if(column[i] != "Time") {
-      print(column[i])
-      summary <- NULL
-      cbind(summary, timepoints) -> summary
-      for(j in 1:length(files)) {
-        sim_file <- data.table::fread( file.path(inputdir, files[j]), select=c(column[i]))
-        summary <- cbind(summary, sim_file)
-      }
-      summary <- data.frame(summary)
-      names(summary) <- c("Time", paste('X', seq(1, length(files), 1), sep=""))
-      write.table(summary, file=outputfile, sep="\t", row.names=FALSE, quote=FALSE)
-    }
-  }
-}
-
-
 
 #####################
 # UTILITY FUNCTIONS #
 #####################
+
+
+#' Calculate the skewness of a numeric vector
+#'
+#' @param x the numeric vector
+#' @param na.rm TRUE if NA values should be discarded
+#' @return the skewness
+#' @examples 
+#' skewness(x=c(1,2.4,5,NA), na.rm=TRUE)
+#' @export
+skewness <- function(x, na.rm=FALSE) {
+  if (na.rm) x = x[!is.na(x)]
+  return(sum((x-mean(x))^3/length(x))/sqrt(var(x))^3)
+}
+
+
+#' Calculate the kurtosis of a numeric vector
+#'
+#' @param x the numeric vector
+#' @param na.rm TRUE if NA values should be discarded
+#' @return the kurtosis
+#' @examples 
+#' kurtosis(x=c(1,2.4,5,NA), na.rm=TRUE)
+#' @export
+kurtosis <- function(x, na.rm=FALSE) {
+  if (na.rm) x = x[!is.na(x)]
+  return(sum((x-mean(x))^4/length(x))/sqrt(var(x))^4)
+}
 
 
 #' Check that the experimental data set exists.
