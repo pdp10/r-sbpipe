@@ -291,20 +291,21 @@ plot_single_param_scan_data <- function(model,
   
   # Read variable
   timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
-  column <- names(timecourses)
+  columns <- names(timecourses)[-1]
   my_time <- timecourses[,c('Time')]
   # let's plot now! :)
   
   theme_set(tc_theme(36)) #28
   
-  for(j in 2:length(column)) {
-    print(column[j])
+  lapply(columns, function(column) {
+    print(column)
     
     # extract the data
     df <- data.frame(time=my_time, check.names=FALSE)
+    
     for(m in 1:length(levels.index)) {
       #print(files[levels.index[m]])
-      col.level <- data.table::fread(file.path(inputdir,files[levels.index[m]]), select=c(column[j]))
+      col.level <- data.table::fread(file.path(inputdir,files[levels.index[m]]), select=c(column))
       df <- cbind(df, a=col.level)
       colnames(df)[ncol(df)] <- as.character(m+10)
     }
@@ -315,11 +316,11 @@ plot_single_param_scan_data <- function(model,
       geom_line(data=df.melt, aes_string(x="time", y="value", group="variable", color="variable"), size=1.0) +
       scale_colour_manual("Levels", values=colors, labels=labels) +
       # scale_linetype_manual("Levels", values=linetype, labels=labels) +
-      xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
+      xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column) +
       theme(legend.title=element_blank(), legend.position="bottom", legend.key.height=unit(0.5, "in")) +
-      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".pdf")),
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column, ".pdf")),
              dpi=300,  width=8, height=8)
-  }
+  })
 }
 
 
@@ -350,17 +351,18 @@ plot_single_param_scan_data_homogen <- function(model,
   files <- list.files( path=inputdir, pattern=paste0(model, '__rep_', run, '__level_'))
   # Read variable
   timecourses <- data.frame(data.table::fread(file.path(inputdir, files[1])))
-  column <- names(timecourses)
+  columns <- names(timecourses)[-1]
   my_time <- timecourses[,c('Time')]
   
-  for(j in 2:length(column)) {
-    print(column[j])
+  lapply(columns, function(column) {
+    
+    print(column)
     
     # extract the data
     df <- data.frame(time=my_time, check.names=FALSE)
     for(m in 1:length(files)) {
       #print(files[levels.index[m]])
-      col.level <- data.table::fread(file.path(inputdir,files[m]), select=c(column[j]))
+      col.level <- data.table::fread(file.path(inputdir,files[m]), select=c(column))
       df <- cbind(df, a=col.level)
       colnames(df)[ncol(df)] <- as.character(m)
     }
@@ -369,10 +371,10 @@ plot_single_param_scan_data_homogen <- function(model,
     df.melt <- reshape2::melt(df, id=c("time"), variable.name='variable', value.name='value')
     g <- ggplot() + 
       geom_line(data=df.melt, aes_string(x="time", y="value", group="variable"), color='blue', size=1.0) +
-      xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column[j]) +
-      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column[j], ".pdf")),
+      xlab(xaxis_label) + ylab(yaxis_label) + ggtitle(column) +
+      ggsave(file.path(outputdir, paste0(model, "__rep_", run, "__eval_", column, ".pdf")),
              dpi=300,  width=8, height=8)
-  }
+  })
 }
 
 

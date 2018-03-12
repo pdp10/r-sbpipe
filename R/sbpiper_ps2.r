@@ -98,13 +98,14 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
     files <- sort(files)
     
     if(length(files) < 1) {
-        return
+        return()
     }
 
-    for(j in 1:length(files)) {
-      print(paste('Processing file:', files[j]))
+    lapply(files, function(filein) {
+      
+      print(paste('Processing file:', filein))
       # Read variable
-      df.tp <- as.data.frame(data.table::fread(file.path(inputdir, files[j])))
+      df.tp <- as.data.frame(data.table::fread(file.path(inputdir, filein)))
       
       # Extract the column names (except for time)
       # discard the first column (Time) and the columns of the two scanned parameters
@@ -113,19 +114,20 @@ plot_double_param_scan_data <- function(model, scanned_par1, scanned_par2, input
       columns <- colnames(df.tp[,!(colnames(df.tp) %in% columns2discard), drop = FALSE])
 
       # Extract the time point from the file name
-      tp <- stringr::str_match(files[j], "__tp_(.*?).csv")[, 2]
+      tp <- stringr::str_match(filein, "__tp_(.*?).csv")[, 2]
       
-      for(k in 1:length(columns)) {
-        g <- scatterplot_w_colour(df.tp, ggplot(), scanned_par1, scanned_par2, columns[k]) +
-            ggtitle(paste0(columns[k], ", t=", tp)) +
+      lapply(columns, function(column) {
+        g <- scatterplot_w_colour(df.tp, ggplot(), scanned_par1, scanned_par2, column) +
+            ggtitle(paste0(column, ", t=", tp)) +
             theme(legend.title=element_blank(), 
                   legend.text=element_text(size=30),
                   legend.key.width = unit(0.5, "in"), 
                   legend.key.height = unit(0.65, "in"), 
                   plot.title = element_text(hjust = 0.5))
-        ggsave(file.path(outputdir, paste0(model, "__eval_", columns[k], '__rep_', run, "__tp_", tp, ".pdf")),
+        ggsave(file.path(outputdir, paste0(model, "__eval_", column, '__rep_', run, "__tp_", tp, ".pdf")),
             dpi=300,  width=8, height=6)
-      }
-  }
+      })
+    })
+    return()
 }
 

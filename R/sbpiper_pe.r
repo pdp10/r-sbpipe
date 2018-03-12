@@ -144,20 +144,19 @@ sbpiper_pe <- function(model,
   
   # PCA analysis
   parameter_pca_analysis(model=model, filename=finalfits_filenamein, plots_dir=plots_dir, best_fits_percent=best_fits_percent)
-  
-  for(i in seq_along(param.names)) {
+  lapply(param.names, function(param) {
     # PLE analysis
-    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], 
+    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param, 
                          plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
                          logspace=logspace, scientific_notation=scientific_notation)
     
     # parameter density analysis
-    parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param.names[i], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-  }
+    parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation) 
+  })
 
   # create summary file containing parameter best fits stats
   combine_param_best_fits_stats(plots_dir=plots_dir, fileout_param_estim_best_fits_details=fileout_param_estim_best_fits_details)
