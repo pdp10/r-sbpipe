@@ -1089,6 +1089,7 @@ parameter_pca_analysis <- function(model,
 
   # remove the first two columns as these are not used for the PCA
   df <- df[-c(1,2)]
+  print(df)
 
   print('PCA analysis')
 

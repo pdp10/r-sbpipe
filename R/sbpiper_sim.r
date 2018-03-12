@@ -270,56 +270,55 @@ plot_comb_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_dat
   if (!file.exists(outputdir)){
     dir.create(outputdir)
   }
-  # collect all files in the directory
-  files <- list.files( path=inputdir, pattern=column_to_read )
-  #print(files)
+  
+  filein <- file.path(inputdir, paste0(model, "_", column_to_read, ".csv"))
+  fileout <- file.path(outputdir, gsub('.csv', '.pdf', basename(filein)))
+  # print(filein)
   
   df_exp_dataset <- load_exp_dataset(exp_dataset, plot_exp_dataset)
   
-  for(i in 1:length(files)) {
-    df <- data.table::fread( file.path(inputdir, files[i]))
-    readout <- gsub(paste(model, '_', sep=''), '', gsub('.csv', '', basename(files[i])))
-    template_filename <- file.path(outputdir, gsub('.csv', '.pdf', basename(files[i])))
-    
+  df <- data.table::fread( filein )
+  # print(df)
+
+  # mean
+  fileoutM <- gsub('.pdf', '_mean.pdf', fileout)
+  gM <- ggplot()
+  gM <- plot_combined_tc(df, gM, column_to_read, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+  ggsave(fileoutM, dpi=300, width=8, height=6)#, bg = "transparent")
+  
+  # mean_sd
+  fileoutMSD <- gsub('.pdf', '_mean_sd.pdf', fileout)
+  gMSD <- ggplot()
+  gMSD <- plot_combined_tc(df, gMSD, column_to_read, xaxis_label, yaxis_label, 'mean_sd', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+  ggsave(fileoutMSD, dpi=300, width=8, height=6)#, bg = "transparent")
+  
+  # mean_sd_ci95
+  fileoutMSDCI <- gsub('.pdf', '_mean_sd_ci95.pdf', fileout)
+  gMSDCI <- ggplot()
+  gMSDCI <- plot_combined_tc(df, gMSDCI, column_to_read, xaxis_label, yaxis_label, 'mean_sd_ci95', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+  ggsave(fileoutMSDCI, dpi=300, width=8, height=6)#, bg = "transparent")
+  
+  if(column_to_read %in% colnames(df_exp_dataset)) {
     # mean
-    fileoutM <- gsub('.pdf', '_mean.pdf', template_filename)
+    # we make this plot again because we want the line in front.
     gM <- ggplot()
-    gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-    ggsave(fileoutM, dpi=300, width=8, height=6)#, bg = "transparent")
+    gM <- plot_raw_dataset(df_exp_dataset, gM, column_to_read, max(df$Time), alpha=exp_dataset_alpha)
+    gM <- plot_combined_tc(df, gM, column_to_read, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+    ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutM), dpi=300, width=8, height=6)#, bg = "transparent")
     
     # mean_sd
-    fileoutMSD <- gsub('.pdf', '_mean_sd.pdf', template_filename)
     gMSD <- ggplot()
-    gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-    ggsave(fileoutMSD, dpi=300, width=8, height=6)#, bg = "transparent")
+    gMSD <- plot_raw_dataset(df_exp_dataset, gMSD, column_to_read, max(df$Time), alpha=exp_dataset_alpha)
+    gMSD <- plot_combined_tc(df, gMSD, column_to_read, xaxis_label, yaxis_label, 'mean_sd', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+    ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutMSD), dpi=300, width=8, height=6)#, bg = "transparent")
     
     # mean_sd_ci95
-    fileoutMSDCI <- gsub('.pdf', '_mean_sd_ci95.pdf', template_filename)
     gMSDCI <- ggplot()
-    gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-    ggsave(fileoutMSDCI, dpi=300, width=8, height=6)#, bg = "transparent")
-    
-    if(readout %in% colnames(df_exp_dataset)) {
-      # mean
-      # we make this plot again because we want the line in front.
-      gM <- ggplot()
-      gM <- plot_raw_dataset(df_exp_dataset, gM, readout, max(df$Time), alpha=exp_dataset_alpha)
-      gM <- plot_combined_tc(df, gM, readout, xaxis_label, yaxis_label, 'mean', yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-      ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutM), dpi=300, width=8, height=6)#, bg = "transparent")
-      
-      # mean_sd
-      gMSD <- ggplot()
-      gMSD <- plot_raw_dataset(df_exp_dataset, gMSD, readout, max(df$Time), alpha=exp_dataset_alpha)
-      gMSD <- plot_combined_tc(df, gMSD, readout, xaxis_label, yaxis_label, 'mean_sd', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-      ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutMSD), dpi=300, width=8, height=6)#, bg = "transparent")
-      
-      # mean_sd_ci95
-      gMSDCI <- ggplot()
-      gMSDCI <- plot_raw_dataset(df_exp_dataset, gMSDCI, readout, max(df$Time), alpha=exp_dataset_alpha)
-      gMSDCI <- plot_combined_tc(df, gMSDCI, readout, xaxis_label, yaxis_label, 'mean_sd_ci95', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-      ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutMSDCI), dpi=300, width=8, height=6)#, bg = "transparent")
-    }
+    gMSDCI <- plot_raw_dataset(df_exp_dataset, gMSDCI, column_to_read, max(df$Time), alpha=exp_dataset_alpha)
+    gMSDCI <- plot_combined_tc(df, gMSDCI, column_to_read, xaxis_label, yaxis_label, 'mean_sd_ci95', alpha=0.6, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+    ggsave(gsub('.pdf', '_w_exp_data.pdf', fileoutMSDCI), dpi=300, width=8, height=6)#, bg = "transparent")
   }
+  
 }
 
 
@@ -369,33 +368,30 @@ plot_sep_sims <- function(inputdir, outputdir, model, exp_dataset, plot_exp_data
     dir.create(outputdir)
   }
   # collect all files in the directory
-  files <- list.files( path=inputdir, pattern=column_to_read)
-  print(files)
+  filein <- file.path(inputdir, paste0(model, "_", column_to_read, ".csv"))
+  fileout <- file.path(outputdir, gsub('.csv', '.pdf', basename(filein)))  
+  # print(filein)
   
   df_exp_dataset <- load_exp_dataset(exp_dataset, plot_exp_dataset)
   
-  for(i in 1:length(files)) {
-    df <- data.table::fread( file.path(inputdir, files[i]) )
-    # print(df)
-    readout <- gsub(paste(model, '_', sep=''), '', gsub('.csv', '', basename(files[i])))
-    fileout <- file.path(outputdir, gsub('.csv', '.pdf', basename(files[i])))
-    
-    g <- plot_repeated_tc(df, ggplot(), readout, xaxis_label, yaxis_label, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-    ggsave(fileout, dpi=300,  width=8, height=6)#, bg = "transparent")
-    
-    if(readout %in% colnames(df_exp_dataset)) {
-      g <- plot_raw_dataset(df_exp_dataset, g, readout, max(df$Time), alpha=exp_dataset_alpha, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-      g <- plot_repeated_tc(df, g, readout, xaxis_label, yaxis_label, alpha=0.2, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
-      ggsave(gsub('.pdf', '_w_exp_data.pdf', fileout), dpi=300, width=8, height=6)#, bg = "transparent")
-    }
-    
-    g <- plot_heatmap_tc(df, ggplot(), TRUE, readout, xaxis_label, 'repeats')
-    ggsave(gsub('.pdf', '_heatmap_scaled.pdf', fileout), dpi=300,  width=8, height=6)#, bg = "transparent")
-    
-    g <- plot_heatmap_tc(df, ggplot(), FALSE, readout, xaxis_label, 'repeats')
-    ggsave(gsub('.pdf', '_heatmap.pdf', fileout), dpi=300,  width=8, height=6)#, bg = "transparent")
-    
+  df <- data.table::fread( filein )
+  # print(df)
+  
+  g <- plot_repeated_tc(df, ggplot(), column_to_read, xaxis_label, yaxis_label, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+  ggsave(fileout, dpi=300,  width=8, height=6)#, bg = "transparent")
+  
+  if(column_to_read %in% colnames(df_exp_dataset)) {
+    g <- plot_raw_dataset(df_exp_dataset, g, column_to_read, max(df$Time), alpha=exp_dataset_alpha, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+    g <- plot_repeated_tc(df, g, column_to_read, xaxis_label, yaxis_label, alpha=0.2, yaxis.min=yaxis.min, yaxis.max=yaxis.max)
+    ggsave(gsub('.pdf', '_w_exp_data.pdf', fileout), dpi=300, width=8, height=6)#, bg = "transparent")
   }
+  
+  g <- plot_heatmap_tc(df, ggplot(), TRUE, column_to_read, xaxis_label, 'repeats')
+  ggsave(gsub('.pdf', '_heatmap_scaled.pdf', fileout), dpi=300,  width=8, height=6)#, bg = "transparent")
+  
+  g <- plot_heatmap_tc(df, ggplot(), FALSE, column_to_read, xaxis_label, 'repeats')
+  ggsave(gsub('.pdf', '_heatmap.pdf', fileout), dpi=300,  width=8, height=6)#, bg = "transparent")
+    
 }
 
 
