@@ -166,19 +166,22 @@ sbpiper_pe <- function(model,
   combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
   
   # 2D PLE analysis
-  for(i in 1:(length(param.names)-1)) {
-    for(j in (i+1):length(param.names)) {
-      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+  # create all the combinations we need. This will be a matrix(length(param.names) x 2), where each column is 
+  # a pair.
+  if(length(param.names) >= 2) {
+    ind <- combn(length(param.names), 2)
+    apply(ind, 2, function(x) {
+      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_66cl_corr) 
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_95cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
       if(plot_2d_99cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[i], parameter2=param.names[j], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    }
+        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)    
+    })
   }
-  
+  return()
 }
 
 
@@ -1075,6 +1078,11 @@ parameter_pca_analysis <- function(model,
   # extract the best parameter values
   df <- as.data.frame(data.table::fread(filename))
 
+  if(ncol(df) <= 3) {
+    warning("PCA analysis requires more than 1 parameter")
+    return()
+  }
+  
   # df filtering
   if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
     warning("best_fits_percent is not in (0, 100]. Now set to 50")
@@ -1089,8 +1097,7 @@ parameter_pca_analysis <- function(model,
 
   # remove the first two columns as these are not used for the PCA
   df <- df[-c(1,2)]
-  print(df)
-
+    
   print('PCA analysis')
 
   # Compute PCA
@@ -1117,66 +1124,67 @@ parameter_pca_analysis <- function(model,
   }
 
   # PCA plots by components
-  ndims <- ncol(pca$var$coord)
-  for(i in 1:(ndims-1)) {
-    
-    # Contributions of variables to PCi
-    factoextra::fviz_contrib(pca, choice="var", axes=i) + 
-      labs(title=paste0("PC", as.character(i))) +
-      pca_theme(36)
-    ggsave(file.path(plots_dir, paste0(model, "_contrib_var_PC", as.character(i),".pdf")), dpi=300, width=8, height=6)
-    
-    for(j in (i+1):ndims) {
 
-      print(paste0('PC components : PC', as.character(i), ' vs PC', as.character(j)))
+  ndims <- ncol(pca$var$coord)
+  if(ndims >= 2) {
+    
+    for(i in 1:ndims) {
+      # Contributions of variables to PCi
+      factoextra::fviz_contrib(pca, choice="var", axes=i) + 
+        labs(title=paste0("PC", as.character(i))) +
+        pca_theme(36)
+      ggsave(file.path(plots_dir, paste0(model, "_contrib_var_PC", as.character(i),".pdf")), dpi=300, width=8, height=6)
+    }    
+    
+    # create all the combinations we need. This will be a matrix(length(param.names) x 2), where each column is 
+    # a pair.
+    ind <- combn(ndims, 2)
+    apply(ind, 2, function(x) {
+  
+      print(paste0('PC components : PC', as.character(x[1]), ' vs PC', as.character(x[2])))
       # Graph of individuals. Individuals with a similar profile are grouped together.
       factoextra::fviz_pca_ind(pca,
-                               axes=c(i,j),
+                               axes=c(x[1],x[2]),
                                col.ind = "contrib", # Color by contributions to the individuals
                                gradient.cols = c("blue", "red"),
                                label = label.ind,
                                select.ind = select.ind,
                                repel = repel.ind     # Avoid text overlapping
-                               ) +
+      ) +
         labs(title="PCA - indiv") +
         pca_theme(36)
-      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
-
+      ggsave(file.path(plots_dir, paste0(model, "_individuals_PC", as.character(x[1]), "_PC", as.character(x[2]),".pdf")), dpi=300, width=8, height=6)
+      
       # Graph of variables. Positive correlated variables point to the same side of the plot.
       # Negative correlated variables point to opposite sides of the graph.
       factoextra::fviz_pca_var(pca,
-                               axes=c(i,j),
+                               axes=c(x[1],x[2]),
                                col.var = "contrib", # Color by contributions to the PC
                                gradient.cols = c("blue", "red"),
                                label = label.var,
                                select.var = select.var,
                                repel = repel.var     # Avoid text overlapping
-                               ) + 
+      ) + 
         labs(title="PCA - vars") +
         pca_theme(36)
-      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
-
+      ggsave(file.path(plots_dir, paste0(model, "_variables_PC", as.character(x[1]), "_PC", as.character(x[2]),".pdf")), dpi=300, width=8, height=6)
+      
       # Biplot of individuals and variables
       factoextra::fviz_pca_biplot(pca,
-                                  axes=c(i,j),
+                                  axes=c(x[1],x[2]),
                                   label = "var", 
                                   repel = repel.var,
                                   col.var = "#2E9FDF", # Variables color
                                   col.ind = "#696969"  # Individuals color
-                                  ) + 
+      ) + 
         labs(title="PCA - biplot") +
         pca_theme(36)
-      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(i), "_PC", as.character(j),".pdf")), dpi=300, width=8, height=6)
-
-    }
-  }
+      ggsave(file.path(plots_dir, paste0(model, "_biplot_PC", as.character(x[1]), "_PC", as.character(x[2]),".pdf")), dpi=300, width=8, height=6)
+      
   
-  # Contributions of variables to PCn
-  factoextra::fviz_contrib(pca, choice="var", axes=ndims) + 
-    labs(title=paste0("PC", as.character(ndims))) + 
-    pca_theme(36)
-  ggsave(file.path(plots_dir, paste0(model, "_contrib_var_PC", as.character(ndims),".pdf")), dpi=300, width=8, height=6)
-
+    })
+  }
+  return()
 }
 
 
