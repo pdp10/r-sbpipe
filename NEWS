@@ -5,7 +5,6 @@ v1.6.0
 - added PCA analysis for the best parameter estimation fits
 - bugfixes
 - parameter estimation refactory. Substantial modularity improvements.
-- code optimisation
 - fixed versions for dependency packages installed via conda
 - r-colorramps is now distributed in the conda channel pdp10 and depends on r-base in r channel. 
 This removes dependency conflicts between r-base versions between r and conda-forge channels.
