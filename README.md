@@ -26,7 +26,7 @@ Alternatively, users can install the latest version of SBpiper directly from Git
 
 or via conda:
 ```
-$ conda install sbpiper -c conda-forge -c defaults
+conda install sbpiper -c conda-forge -c defaults
 ```
 
 The R package is loaded as usual:
@@ -34,7 +34,7 @@ The R package is loaded as usual:
 > library(sbpiper)
 ```
 
-## Package builds (developers)
+## Package building (developers)
 Developers can check and build SBpiper using the following commands: 
 ```
 > devtools::check("sbpiper")
@@ -43,22 +43,21 @@ Developers can check and build SBpiper using the following commands:
 
 or outside R with the commands:
 ```
-$ R CMD build .
-$ R CMD check *tar.gz --as-cran
+R CMD build .
+R CMD check *tar.gz --as-cran
 ```
 
 Finally, sbpiper is installed with the command: 
 ```
-$ R CMD INSTALL sbpiper_X.Y.Z.tar.gz
+R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
 Conda recipe for SBpiper retrieves the code from the github branch: `develop`. 
-Anaconda client is needed and can be installed with the following commands:
 ```
-$ conda install anaconda-client
-$ anaconda login
-```
-Build conda package:
-```
-$ conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
+# install anaconda-client
+conda install anaconda-client
+anaconda login
+
+# build conda package:
+conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
 ```
