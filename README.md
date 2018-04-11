@@ -3,17 +3,19 @@
 ## Introduction
 
 R code for SBpipe (see: [https://pdp10.github.io/sbpipe](https://pdp10.github.io/sbpipe)). 
-This package contains a collection of R utility functions used by SBpipe 
-for plotting and generating statistics. Originally, this source code was distributed within SBpipe. 
-SBpiper was conceived to improve modularity and enable the invokation of SBpipe functions for data analysis and plot generation directly as an R library.
+This package contains a collection of R utility functions that SBpipe uses for plotting and generating statistical results. Originally, this source code was distributed within SBpipe. 
+SBpiper was conceived to improve modularity and allows users to call SBpipe functions for data analysis and plot generation directly as an R library.
 
-## How to use this package with SBpipe
+## Using SBpiper within SBpipe
 This dependency library is automatically installed by SBpipe via provided script or using conda, so no further step is needed. See the above link for instructions on how to install SBpipe. 
 
-## How to use this package as an R library
-The below information should be used by those users who intend to use this library directly in their 
-R source code and do NOT plan to install SBpipe.
-SBpiper can directly be installed via github:
+## Installation
+To install SBpiper, R must be installed and started. SBpiper is available on [CRAN](https://cran.r-project.org/package=sbpiper) and can be installed with the command: 
+```
+> install.packages("sbpiper")
+```
+
+Users can install the latest version of SBpiper via github:
 ```
 > install.packages("devtools")
 > devtools::install_github("pdp10/sbpiper")
@@ -29,7 +31,7 @@ The R package is loaded as usual:
 > library(sbpiper)
 ```
 
-## How to build this package (for developers)
+## Package builds (developers)
 Developers can check and build SBpiper using the following commands: 
 ```
 > devtools::check("sbpiper")
