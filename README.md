@@ -1,21 +1,21 @@
-# SBpiper - R package for SBpipe
+# SBpiper - Data analysis functions for SBpipe
 
 ## Introduction
+This R package provides an API for analysing repetitive parameter estimations and simulations of mathematical models. Examples of mathematical models are Ordinary Differential equations (ODEs) or Stochastic Differential Equations (SDEs) models. Among the analyses for parameter estimation, SBpiper calculates statistics and generates plots for parameter density, PCA of the best fits, parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These results can be generated using all or a subset of the best computed parameter sets. Among the analyses for model simulation, SBpiper calculates statistics and generates plots for deterministic and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model parameters can also be generated. This package is primarily used by the software [SBpipe](https://pdp10.github.io/sbpipe).
 
-R code for SBpipe (see: [https://pdp10.github.io/sbpipe](https://pdp10.github.io/sbpipe)). 
-This package contains a collection of R utility functions that SBpipe uses for plotting and generating statistical results. Originally, this source code was distributed within SBpipe. 
-SBpiper was conceived to improve modularity and allows users to call SBpipe functions for data analysis and plot generation directly as an R library.
 
-## Using SBpiper within SBpipe
-This dependency library is automatically installed by SBpipe via provided script or using conda, so no further step is needed. See the above link for instructions on how to install SBpipe. 
+## Using this package within SBpipe
+This dependency library is automatically installed by SBpipe via provided script or using conda, so no further step is needed. To install SBpipe, see [here](http://sbpipe.readthedocs.io/en/latest/index.html). 
+
 
 ## Installation
-To install SBpiper, R must be installed and started. SBpiper is available on [CRAN](https://cran.r-project.org/package=sbpiper) and can be installed with the command: 
+SBpiper requires the installation of [R](https://www.r-project.org/) (≥ 3.2.0) environment. 
+SBpiper is available on [CRAN](https://cran.r-project.org/package=sbpiper) and can be installed as follows: 
 ```
 > install.packages("sbpiper")
 ```
 
-Users can install the latest version of SBpiper via github:
+Alternatively, users can install the latest version of SBpiper directly from GitHub:
 ```
 > install.packages("devtools")
 > devtools::install_github("pdp10/sbpiper")
@@ -61,9 +61,8 @@ $ conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
 ```
 
 
-
 **How to cite SBpipe / SBpiper:**
 
 Dalle Pezze, P and Le Novère, N. (2017) BMC Systems Biology 11:46. SBpipe: a collection of pipelines for automating repetitive simulation and analysis tasks. DOI:10.1186/s12918-017-0423-3
 
-Thanks for using sbpiper!
+Thanks for using SBpiper!
