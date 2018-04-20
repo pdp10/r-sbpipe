@@ -1,9 +1,10 @@
 
-v1.6.0
+v1.7.0
 
+- bugfix: calculation of left and right CI.
 - code optimisation
 - added PCA analysis for the best parameter estimation fits
-- bugfixes
+- multiple bugfixes
 - parameter estimation refactory. Substantial modularity improvements.
 - fixed versions for dependency packages installed via conda
 - r-colorramps is now distributed in the conda channel pdp10 and depends on r-base in r channel. 

@@ -466,6 +466,8 @@ rightCI <- function(largest.param.value, full_dataset, cl_objval) {
   # retrieve the objective function of the parameters with value greater than largest.param.value, within the full dataset.
   # (, max95]...  (we are retrieving those ...)
   gt_max_objvals <- full_dataset[full_dataset[,2] > max_ci, objval.col]
+  #print(gt_max_objvals)
+  #print(max_ci)
   if(length(gt_max_objvals) == 0 || min(gt_max_objvals) <= cl_objval) {
     max_ci <- "+inf"
   }
@@ -510,10 +512,10 @@ compute_sampled_ple_stats <- function(df, min_objval, cl66_objval, cl95_objval, 
   max_ci_95 <- "+inf"
   min_ci_99 <- "-inf"
   max_ci_99 <- "+inf"
-  if(is.numeric(min_ci_66)) { min_ci_95 <- leftCI(min(df95), df99, cl95_objval) }
-  if(is.numeric(max_ci_66)) { max_ci_95 <- rightCI(max(df95), df99, cl95_objval) }
-  if(is.numeric(min_ci_95)) { min_ci_99 <- leftCI(min(df99), df, cl99_objval) }
-  if(is.numeric(max_ci_95)) { max_ci_99 <- rightCI(max(df99), df, cl99_objval) }
+  if(is.numeric(min_ci_66)) { min_ci_95 <- leftCI(min(df95[,2]), df99, cl95_objval) }
+  if(is.numeric(max_ci_66)) { max_ci_95 <- rightCI(max(df95[,2]), df99, cl95_objval) }
+  if(is.numeric(min_ci_95)) { min_ci_99 <- leftCI(min(df99[,2]), df, cl99_objval) }
+  if(is.numeric(max_ci_95)) { max_ci_99 <- rightCI(max(df99[,2]), df, cl99_objval) }
   
   if(logspace) {
     # log10 inverse

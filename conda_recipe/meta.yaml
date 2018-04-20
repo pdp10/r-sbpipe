@@ -14,7 +14,7 @@
 # along with sbpiper.  If not, see <http://www.gnu.org/licenses/>.
 
 
-{% set version= '1.6.0' %}
+{% set version= '1.7.0' %}
 
 package:
   name: sbpiper
