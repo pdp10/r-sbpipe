@@ -1,6 +1,10 @@
+sbpipe (MIT License)
+Copyright 2010-2018 Piero Dalle Pezze
 
-v1.7.0
+v1.8.0
 
+- sbpiper v1.8.0 and above are released under MIT License.
+Previous versions of this package were released under GNU GPL v3.
 - bugfix: calculation of left and right CI.
 - code optimisation
 - added PCA analysis for the best parameter estimation fits

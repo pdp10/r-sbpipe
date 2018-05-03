@@ -12,6 +12,6 @@ citEntry(entry = "article",
   number = "1",
   pages = "46",
   doi = "10.1186/s12918-017-0423-3",
-  url = "https://pdp10.github.io/sbpipe/",
+  url = "https://doi.org/10.1186/s12918-017-0423-3",
   textVersion = "Dalle Pezze P, Le Novère N. SBpipe: a collection of pipelines for automating repetitive simulation and analysis tasks. BMC Systems Biology. 2017;11:46. doi:10.1186/s12918-017-0423-3."
 )
