@@ -5,7 +5,7 @@ Title: Data Analysis Functions for 'SBpipe' Package
 Authors@R: c(
     person("Piero", "Dalle Pezze", email = "piero.dallepezze@gmail.com", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0003-1695-6763"))
     )
-Depends: 
+Depends:
     R (>= 3.2.0)
 Imports:
     colorRamps,
@@ -31,7 +31,7 @@ Description: Provides an API for analysing repetitive parameter estimations and 
     parameters can also be generated. This package is primarily used by the software 'SBpipe'. 
     Citation: Dalle Pezze P, Le Novère N. SBpipe: a collection of pipelines for automating 
     repetitive simulation and analysis tasks. BMC Systems Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>.
-License: MIT | file LICENSE
+License: MIT + file LICENSE
 URL: https://github.com/pdp10/sbpiper
 BugReports: https://github.com/pdp10/sbpiper/issues
 LazyLoad: true

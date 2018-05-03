@@ -29,10 +29,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Piero Dalle Pezze \email{piero.dallepezze@gmail.com} (0000-0003-1695-6763) [copyright holder]
 
-Other contributors:
-\itemize{
-  \item Nicolas Le Novère \email{nicolas.lenovere@babraham.ac.uk} (0000-0002-6309-7327) [copyright holder]
-}
-
 }
 \keyword{internal}
