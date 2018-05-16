@@ -12,13 +12,21 @@ This dependency library is automatically installed by SBpipe via provided script
 
 
 ## Installation
-SBpiper requires the installation of [R](https://www.r-project.org/) (≥ 3.2.0) environment. 
-SBpiper is available on [CRAN](https://cran.r-project.org/package=sbpiper) and can be installed as follows: 
+The stable version of SBpiper can be installed from [CRAN](https://cran.r-project.org/package=sbpiper) 
+or [Anaconda Cloud](https://anaconda.org/bioconda/r-sbpiper). 
+
+Assuming [R](https://www.r-project.org/) (≥ 3.2.0) is installed, SBpiper can be installed from CRAN as follows: 
 ```
 > install.packages("sbpiper")
 ```
 
-Alternatively, users can install the latest version of SBpiper directly from GitHub:
+The installation of SBpiper from Anaconda Cloud requires that [Miniconda3](https://conda.io/miniconda.html) 
+is functional, and is achieved with the command: 
+```
+conda install -c bioconda r-sbpiper
+```
+
+Users can install the latest version of SBpiper directly from GitHub:
 ```
 > install.packages("devtools")
 > devtools::install_github("pdp10/sbpiper")
@@ -29,7 +37,7 @@ or via conda:
 conda install sbpiper -c conda-forge -c defaults
 ```
 
-The R package is loaded as usual:
+Once installed, the package is loaded as usual:
 ```
 > library(sbpiper)
 ```
@@ -52,12 +60,14 @@ Finally, sbpiper is installed with the command:
 R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
-Conda recipe for SBpiper retrieves the code from the github branch: `develop`. 
+The conda recipe for SBpiper retrieves the code from the github branch: `develop`. 
 ```
 # install anaconda-client
 conda install anaconda-client
 anaconda login
 
-# build conda package:
+# build conda package (channel: pdp10):
 conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
 ```
+The main [documentation](http://sbpipe.readthedocs.io) contains the instruction for 
+creating the bioconda recipe for sbpiper. 
