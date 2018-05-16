@@ -12,16 +12,13 @@ This dependency library is automatically installed by SBpipe via provided script
 
 
 ## Installation
-The stable version of SBpiper can be installed from [CRAN](https://cran.r-project.org/package=sbpiper) 
-or [Anaconda Cloud](https://anaconda.org/bioconda/r-sbpiper). 
+The stable version of SBpiper can be installed from:
 
-Assuming [R](https://www.r-project.org/) (≥ 3.2.0) is installed, SBpiper can be installed from CRAN as follows: 
+- [CRAN](https://cran.r-project.org/package=sbpiper). Start [R](https://www.r-project.org/) (≥ 3.2.0) and run: 
 ```
 > install.packages("sbpiper")
 ```
-
-The installation of SBpiper from Anaconda Cloud requires that [Miniconda3](https://conda.io/miniconda.html) 
-is functional, and is achieved with the command: 
+- [Anaconda Cloud](https://anaconda.org/bioconda/r-sbpiper). After installing [Miniconda3](https://conda.io/miniconda.html), run: 
 ```
 conda install -c bioconda r-sbpiper
 ```
