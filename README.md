@@ -26,24 +26,13 @@ is functional, and is achieved with the command:
 conda install -c bioconda r-sbpiper
 ```
 
-Users can install the latest version of SBpiper directly from GitHub:
-```
-> install.packages("devtools")
-> devtools::install_github("pdp10/sbpiper")
-```
-
-or via conda:
-```
-conda install sbpiper -c conda-forge -c defaults
-```
-
 Once installed, the package is loaded as usual:
 ```
 > library(sbpiper)
 ```
 
 ## Package building (developers)
-Developers can check and build SBpiper using the following commands: 
+After cloning this repository, developers can check and build SBpiper using the following commands: 
 ```
 > devtools::check("sbpiper")
 > devtools::build("sbpiper")
@@ -60,14 +49,18 @@ Finally, sbpiper is installed with the command:
 R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
-The conda recipe for SBpiper retrieves the code from the github branch: `develop`. 
+Here are the instructions for building and installing the SBpiper conda package in the pdp10 channel. 
+This is used for testing purposes and by Travis-CI.
 ```
 # install anaconda-client
 conda install anaconda-client
 anaconda login
 
-# build conda package (channel: pdp10):
+# build the conda package (channel: pdp10):
 conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
+ 
+# install the conda package (channel: pdp10):
+conda install sbpiper -c pdp10 -c conda-forge -c defaults
 ```
-The main [documentation](http://sbpipe.readthedocs.io) contains the instruction for 
-creating the bioconda recipe for sbpiper. 
+
+Instructions for creating the recipe (channel: bioconda) for SBpiper can be found [here](http://sbpipe.readthedocs.io).
