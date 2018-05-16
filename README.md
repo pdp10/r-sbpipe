@@ -46,8 +46,7 @@ Finally, sbpiper is installed with the command:
 R CMD INSTALL sbpiper_X.Y.Z.tar.gz
 ```
 
-Here are the instructions for building and installing the SBpiper conda package in the pdp10 channel. 
-This is used for testing purposes and by Travis-CI.
+Here are the instructions for testing the conda package for SBpiper. This is stored in the `pdp10` conda channel.
 ```
 # install anaconda-client
 conda install anaconda-client
@@ -60,4 +59,4 @@ conda-build conda_recipe/meta.yaml -c conda-forge -c defaults
 conda install sbpiper -c pdp10 -c conda-forge -c defaults
 ```
 
-Instructions for creating the recipe (channel: bioconda) for SBpiper can be found [here](http://sbpipe.readthedocs.io).
+Instructions for creating the recipe for SBpiper for the bioconda channel can be found [here](http://sbpipe.readthedocs.io).
