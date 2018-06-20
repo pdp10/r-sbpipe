@@ -18,53 +18,56 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-{% set version= '1.8.0' %}
+{% set version= "1.8.0" %}
 
 package:
-  name: sbpiper
-  version: {{ version }}
+  name: "sbpiper"
+  version: '{{ version }}'
 
 source:
   git_rev: develop
   git_url: https://github.com/pdp10/sbpiper.git
-  #path: ../
   
-about:
-  summary: R functions for SBpipe
-  home: https://github.com/pdp10/sbpiper
-  license: MIT
-  license_file: LICENSE
-
 build:
-    number: '0'
-    rpaths:
-        - lib/
-        - lib/R/lib/
+  number: '0'
+  rpaths:
+    - lib/R/lib/
+    - lib/
 
 requirements:
-    build:
-        - r-base 3.4.*
-        - r-data.table
-        - r-ggplot2 2.2.*
-        - r-reshape2
-        - r-hmisc  
-        - r-scales
-        - r-stringr
-        - r-colorramps
-        - r-factoextra
-        - r-factominer
-    run:
-        - r-base 3.4.*
-        - r-data.table
-        - r-ggplot2 2.2.*
-        - r-reshape2
-        - r-hmisc  
-        - r-scales
-        - r-stringr
-        - r-colorramps
-        - r-factoextra
-        - r-factominer
+  build:
+    - r-base 3.4.*
+    - r-data.table
+    - r-ggplot2 2.2.*
+    - r-reshape2
+    - r-hmisc  
+    - r-scales
+    - r-stringr
+    - r-colorramps
+    - r-factoextra
+    - r-factominer
+  run:
+    - r-base 3.4.*
+    - r-data.table
+    - r-ggplot2 2.2.*
+    - r-reshape2
+    - r-hmisc  
+    - r-scales
+    - r-stringr
+    - r-colorramps
+    - r-factoextra
+    - r-factominer
+
 test:
-    commands:
-        - $R -e "library('sbpiper')"
+  commands:
+    - $R -e "library('sbpiper')"
+
+about:
+  home: https://cran.r-project.org/package=sbpiper
+  license: MIT
+  summary: Provides an API for analysing repetitive parameter estimations and simulations of mathematical models. Examples of mathematical models are Ordinary Differential equations (ODEs) or Stochastic Differential Equations (SDEs) models. Among the analyses for parameter estimation sbpiper calculates statistics and generates plots for parameter density, PCA of the best fits, parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These results can  be generated using all or a subset of the best computed parameter sets. Among the analyses for model simulation sbpiper calculates statistics and generates plots for deterministic and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model parameters can also be generated."
+
+extra:
+  recipe-maintainers: 'Piero Dalle Pezze'
+  identifiers:
+    - doi:10.1186/s12918-017-0423-3
