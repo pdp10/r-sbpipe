@@ -151,38 +151,41 @@ sbpiper_pe <- function(model,
   parameter_pca_analysis(model=model, filename=finalfits_filenamein, plots_dir=plots_dir, best_fits_percent=best_fits_percent)
   lapply(param.names, function(param) {
     # PLE analysis
-    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param, 
-                         plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary, 
+    sampled_ple_analysis(model=model, filename=allfits_filenamein, parameter=param,
+                         plots_dir=plots_dir, fileout_param_estim_summary=fileout_param_estim_summary,
                          logspace=logspace, scientific_notation=scientific_notation)
-    
+
     # parameter density analysis
     parameter_density_analysis(model=model, filename=finalfits_filenamein, parameter=param, plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-    # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation) 
+    if(data_point_num > 0.0) {
+     # parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+     parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+     parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+     parameter_density_analysis(model=model, filename=allfits_filenamein, parameter=param, plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+    }
   })
 
   # create summary file containing parameter best fits stats
   combine_param_best_fits_stats(plots_dir=plots_dir, fileout_param_estim_best_fits_details=fileout_param_estim_best_fits_details)
-  
+
   # create summary file containing parameter PLE stats
   combine_param_ple_stats(plots_dir=plots_dir, fileout_param_estim_details=fileout_param_estim_details)
-  
+
   # 2D PLE analysis
-  # create all the combinations we need. This will be a matrix(length(param.names) x 2), where each column is 
-  # a pair.
+  # create all the combinations we need. This will be a matrix(length(param.names) x 2), where each column is a pair.
   if(length(param.names) >= 2) {
     ind <- combn(length(param.names), 2)
     apply(ind, 2, function(x) {
-      sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_66cl_corr) 
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_95cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      if(plot_2d_99cl_corr)
-        sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
-      # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)    
+      if(data_point_num > 0.0) {
+        # sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="All", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        sampled_2d_ple_analysis(model=model, filename=finalfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="BestFits", best_fits_percent=best_fits_percent, logspace=logspace, scientific_notation=scientific_notation)
+        if(plot_2d_66cl_corr)
+          sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL66", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        if(plot_2d_95cl_corr)
+          sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL95", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+        if(plot_2d_99cl_corr)
+          sampled_2d_ple_analysis(model=model, filename=allfits_filenamein, parameter1=param.names[x[1]], parameter2=param.names[x[2]], plots_dir=plots_dir, thres="CL99", fileout_param_estim_summary=fileout_param_estim_summary, logspace=logspace, scientific_notation=scientific_notation)
+      }
     })
   }
   return()
@@ -614,9 +617,15 @@ sampled_ple_analysis <- function(model,
   dt.stats <- data.table::fread(fileout_param_estim_summary, select=c("MinObjVal", "CL66ObjVal", "CL95ObjVal", "CL99ObjVal"))
   
   # Plot the sampled profile likelihood estimations (PLE)
-  plot_sampled_ple(df[df[ ,objval.col] <= dt.stats$CL99ObjVal, ], 
-                   dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
-                   plots_dir, model, logspace, scientific_notation)
+  if (dt.stats$CL99ObjVal > 0) {
+    plot_sampled_ple(df[df[ ,objval.col] <= dt.stats$CL99ObjVal, ], 
+                     dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
+                     plots_dir, model, logspace, scientific_notation)
+  } else {
+    plot_sampled_ple(df, 
+                     dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal, 
+                     plots_dir, model, logspace, scientific_notation)    
+  }
   
   # compute the confidence levels and the value for the best parameter
   ci_obj <- compute_sampled_ple_stats(df, dt.stats$MinObjVal, dt.stats$CL66ObjVal, dt.stats$CL95ObjVal, dt.stats$CL99ObjVal,logspace)
@@ -764,6 +773,10 @@ parameter_density_analysis <- function(model,
         warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
         return
       }
+    } else { # no thresholds
+      # no filtering, but we assume that filename contains all the fits
+      fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter, ".pdf", sep=""))
+      title <- expression("all fits")
     }
   } else { 
     if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
@@ -935,6 +948,10 @@ sampled_2d_ple_analysis <- function(model, filename,
         warning("thres should be one of : BestFits, CL66, CL95, CL99, All.")
         return
       }
+    } else { # no thresholds
+      # no filtering, but we assume that filename contains all the fits
+      fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter, ".pdf", sep=""))
+      title <- expression("all fits")
     }
   } else {
     if(best_fits_percent <= 0.0 || best_fits_percent > 100.0) {
