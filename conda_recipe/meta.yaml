@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-{% set version= "1.8.0" %}
+{% set version= "1.9.0" %}
 
 package:
   name: "sbpiper"
