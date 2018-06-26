@@ -950,7 +950,7 @@ sampled_2d_ple_analysis <- function(model, filename,
       }
     } else { # no thresholds
       # no filtering, but we assume that filename contains all the fits
-      fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter, ".pdf", sep=""))
+      fileout <- file.path(plots_dir, paste(model, "_all_fits_", parameter1, "_", parameter2, ".pdf", sep=""))
       title <- expression("all fits")
     }
   } else {
